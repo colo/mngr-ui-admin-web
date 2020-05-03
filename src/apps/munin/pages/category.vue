@@ -8,8 +8,8 @@
         </q-card-section>
 
         <q-card-section>
-          <template v-for="(name) in plugins">
-            <munin-plugin-dygraph v-if="name.indexOf(host) > -1" :config="plugins_config[host][name]" :ref="name" :id="name" :name="name"  :key="name+'.plugin'"/>
+          <template v-for="(name) in plugins" v-if="name.indexOf(host) > -1" >
+            <munin-plugin-dygraph :config="plugins_config[host][name]" :ref="name" :id="name" :name="name"  :key="name+'.plugin'"/>
           </template>
         </q-card-section>
         <!-- <q-separator dark /> -->
