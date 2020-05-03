@@ -102,11 +102,11 @@
 
     <q-drawer
       v-model="leftDrawerOpen"
-      show-if-above
       bordered
       :width="280"
     >
-    <!-- content-class="bg-white" -->
+    <!-- show-if-above
+    content-class="bg-white" -->
       <q-scroll-area class="fit">
         <q-list padding class="text-grey-8">
           <q-item class="GNL__drawer-item" v-ripple v-for="link in links1" :key="link.text" clickable :to="link.to">
