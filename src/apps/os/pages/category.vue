@@ -7,10 +7,10 @@
           <div class="text-h3">{{host}}</div>
         </q-card-section>
 
-        <q-card-section v-for="(name) in plugins" :key="name" v-if="name.indexOf(host) > -1">
-          <!-- <template > -->
-            <os-plugin-dygraph :ref="name" :id="name" :name="name"  :key="name+'.plugin'"/>
-          <!-- </template> -->
+        <q-card-section>
+          <template v-for="(name) in plugins">
+            <os-plugin-dygraph v-if="name.indexOf(host) > -1" :ref="name" :id="name" :name="name"  :key="name+'.plugin'"/>
+          </template>
         </q-card-section>
         <!-- <q-separator dark /> -->
       </q-card>
