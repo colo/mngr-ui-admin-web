@@ -213,7 +213,7 @@
       </q-table>
     </div>
 
-    <q-page-scroller position="bottom-right" :scroll-offset="150" :offset="[18, 18]">
+    <q-page-scroller position="bottom-right" :scroll-offset="150" :offset="[18, 18]" :duration="50">
       <q-btn fab icon="keyboard_arrow_up" color="accent" />
     </q-page-scroller>
 

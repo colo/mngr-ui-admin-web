@@ -41,7 +41,7 @@
       </template>
     </div>
 
-    <q-page-scroller position="bottom-right" :scroll-offset="50" :offset="[18, 18]">
+    <q-page-scroller position="bottom-right" :scroll-offset="150" :offset="[18, 18]" :duration="50">
       <q-btn fab icon="keyboard_arrow_up" color="primary" />
     </q-page-scroller>
     <!-- v-if="!host || host_name === host" -->
