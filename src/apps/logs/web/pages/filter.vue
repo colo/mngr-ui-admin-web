@@ -136,12 +136,12 @@
         :pagination.sync="pagination"
         virtual-scroll
         :rows-per-page-options="[0]"
-        dark
-        color="amber"
         :visible-columns="($q.screen.lt.sm) ? visibleColumns : allColumns"
         :loading="loading_logs"
         :filter="search_filter"
       >
+      <!-- dark
+      color="amber" -->
         <template v-slot:top="props">
           <q-select
             v-if="$q.screen.lt.sm"
