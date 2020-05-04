@@ -587,8 +587,9 @@ export default {
         //   }
         // }
 
-        let zoom = max_length / data.length
-        return (zoom > min_zoom) ? zoom : min_zoom
+        // let zoom = max_length / data.length
+        // return (zoom > min_zoom) ? zoom : min_zoom
+        return max_length / data.length
       }
     },
     format_time: function (timestamp) {
