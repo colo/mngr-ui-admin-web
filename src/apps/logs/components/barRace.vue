@@ -117,10 +117,16 @@ export default {
         } else if (newData.length > 0 && this.$options.chart !== undefined) {
           let itemsWithNonZero = 0
 
-          // if (this.$options.chart.data.length === 0) {
-          //   this.$options.chart.data = newData
-          //   this.$options.categoryAxis.zoom({ start: 0, end: 1 / newData.length })
-          // } else {
+          /**
+          * if not sum, set all values to 0
+          * on next loop, only found values will get set with their new values
+          **/
+          if (this.sum !== true) {
+            for (let i = 0; i < this.$options.chart.data.length; i++) {
+              this.$options.chart.data[i][this.valueX] = 0
+            }
+          }
+
           for (let i = 0; i < newData.length; i++) {
             let val = newData[i]
             let found = false
@@ -134,16 +140,10 @@ export default {
                 found = true
               }
             }
-            if (found === false && this.sum === true) {
+            if (found === false) {
               this.$options.chart.data.push(val)
             }
-            else if (found === false && this.sum === false) {
-              this.$options.chart.data[j][this.categoryY] = 0
-            }
-            // this.$options.chart.data[i] = newData[i]
-            // if (val[this.valueX] > 0) {
-            //   itemsWithNonZero++
-            // }
+
           }
 
           // for (let i = 0; i < this.$options.chart.data.length; i++) {
