@@ -23,9 +23,13 @@
 
       <world-map :cities="periodical.world_map_cities"/>
 
-      <bar-race :categoryY="'country'" :values="periodical.country_counter" :label="'Per COUNTRY count'" :id="'country_counter'" :zoom="apply_zoom"/>
+      <bar-race :categoryY="'country'" :values="periodical.country_counter" :label="'Per COUNTRY count (last 5 secs)'" :id="'country_counter'" :zoom="apply_zoom"/>
 
-      <bar-race :categoryY="'city'" :values="periodical.city_counter" :label="'Per CITY count'" :id="'city_counter'" :zoom="apply_zoom"/>
+      <bar-race :categoryY="'country'" :values="periodical.country_counter" :label="'Per COUNTRY count (sum)'" :id="'country_counter_sum'" :zoom="apply_zoom" :sum="true"/>
+
+      <bar-race :categoryY="'city'" :values="periodical.city_counter" :label="'Per CITY count (last 5 secs)'" :id="'city_counter'" :zoom="apply_zoom"/>
+
+      <bar-race :categoryY="'city'" :values="periodical.city_counter" :label="'Per CITY count (sum)'" :id="'city_counter_sum'" :zoom="apply_zoom" :sum="true"/>
 
       <!-- <div v-for="(val, prop) in minute" :key="'minute.'+prop">
         minute: {{prop}} - {{val}} <br/>

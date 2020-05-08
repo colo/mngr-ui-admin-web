@@ -35,18 +35,22 @@
         <q-tab name="hour" label="Last Hour" />
       </q-tabs>
       <q-separator />
-      <q-tab-panels v-model="range_tab" animated>
+      <q-tab-panels v-model="range_tab">
+        <!-- animated -->
         <q-tab-panel name="periodical">
-          <bar-race :categoryY="'cgi'" :valueX="'count'" :values="periodical.cgi_count" :label="'Per CGI count'" :id="'cgi_count'" :zoom="apply_zoom"/>
+          <bar-race :categoryY="'cgi'" :valueX="'count'" :values="periodical.cgi_count" :label="'Per CGI count (last 5 secs)'" :id="'cgi_count'" :zoom="apply_zoom"/>
+          <bar-race :categoryY="'cgi'" :valueX="'count'" :values="periodical.cgi_count" :label="'Per CGI count (sum)'" :id="'cgi_count_sum'" :zoom="apply_zoom" :sum="true"/>
           <!-- :label="format_time(periodical.timestamp)" -->
 
-          <bar-race :categoryY="'domain'" :valueX="'count'" :values="periodical.per_domain" :label="'Per DOMAIN - CGI count'" :id="'per_domain_count'" :zoom="apply_zoom"/>
+          <bar-race :categoryY="'domain'" :valueX="'count'" :values="periodical.per_domain" :label="'Per DOMAIN - CGI count (last 5 secs)'" :id="'per_domain_count'" :zoom="apply_zoom"/>
+          <bar-race :categoryY="'domain'" :valueX="'count'" :values="periodical.per_domain" :label="'Per DOMAIN - CGI count (sum)'" :id="'per_domain_count_sum'" :zoom="apply_zoom" :sum="true"/>
 
-          <bar-race :categoryY="'domain'" :valueX="'sum'" :values="periodical.per_domain" :label="'Per DOMAIN - total duration'" :id="'per_domain_sum'" :zoom="apply_zoom"/>
+          <bar-race :categoryY="'host'" :valueX="'count'" :values="periodical.per_host" :label="'Per HOST - CGI count (last 5 secs)'" :id="'per_host_count'" :zoom="apply_zoom"/>
+          <bar-race :categoryY="'host'" :valueX="'count'" :values="periodical.per_host" :label="'Per HOST - CGI count (sum)'" :id="'per_host_count_sum'" :zoom="apply_zoom" :sum="true"/>
 
-          <bar-race :categoryY="'host'" :valueX="'count'" :values="periodical.per_host" :label="'Per HOST - CGI count'" :id="'per_host_count'" :zoom="apply_zoom"/>
+          <bar-race :categoryY="'domain'" :valueX="'sum'" :values="periodical.per_domain" :label="'Per DOMAIN - total duration (last 5 secs)'" :id="'per_domain_total'" :zoom="apply_zoom"/>
 
-          <bar-race :categoryY="'host'" :valueX="'sum'" :values="periodical.per_host" :label="'Per HOST - total duration'" :id="'per_host_sum'" :zoom="apply_zoom"/>
+          <!-- <bar-race :categoryY="'host'" :valueX="'sum'" :values="periodical.per_host" :label="'Per HOST - total duration'" :id="'per_host_sum'" :zoom="apply_zoom" :sum="true"/> -->
 
           <div v-for="(count, cgi) in periodical.cgi_count" :key="'cgi_count.'+cgi">
             periodical.cgi_count: {{cgi}} - {{count}} <br/>

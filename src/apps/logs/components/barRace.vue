@@ -61,6 +61,10 @@ export default {
   categoryAxis: undefined,
 
   props: {
+    sum: {
+      type: Boolean,
+      default: false
+    },
     zoom: {
       type: [Number, Function],
       default: 0.3
@@ -122,8 +126,11 @@ export default {
             let found = false
             for (let j = 0; j < this.$options.chart.data.length; j++) {
               if (val[this.categoryY] === this.$options.chart.data[j][this.categoryY]) {
-                // this.$options.chart.data[j][this.valueX] += val[this.valueX]
-                this.$options.chart.data[j][this.valueX] = val[this.valueX]
+                if (this.sum === true) {
+                  this.$options.chart.data[j][this.valueX] += val[this.valueX]
+                } else {
+                  this.$options.chart.data[j][this.valueX] = val[this.valueX]
+                }
                 found = true
               }
             }
