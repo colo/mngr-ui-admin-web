@@ -122,7 +122,8 @@ export default {
             let found = false
             for (let j = 0; j < this.$options.chart.data.length; j++) {
               if (val[this.categoryY] === this.$options.chart.data[j][this.categoryY]) {
-                this.$options.chart.data[j][this.valueX] += val[this.valueX]
+                // this.$options.chart.data[j][this.valueX] += val[this.valueX]
+                this.$options.chart.data[j][this.valueX] = val[this.valueX]
                 found = true
               }
             }
@@ -294,7 +295,8 @@ export default {
 
       this.$options.chart.data = JSON.parse(JSON.stringify(newData))
       // this.$options.categoryAxis.zoom({ start: 0, end: 1 / this.$options.chart.data.length })
-      this.$options.categoryAxis.zoom({ start: 0, end: (this.zoom > 0) ? this.zoom : 1 / this.$options.chart.data.length })
+      // this.$options.categoryAxis.zoom({ start: 0, end: (this.zoom > 0) ? this.zoom : 1 / this.$options.chart.data.length })
+      this.$options.categoryAxis.zoom({ start: 0, end: (typeof this.zoom === 'function') ? this.zoom(this.$options.chart.data, this.categoryY, this.valueX) : (this.zoom > 0) ? this.zoom : 1 })
 
       series.events.on('inited', function () {
         debug('series init')

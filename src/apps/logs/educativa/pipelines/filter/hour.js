@@ -39,8 +39,8 @@ export default {
         connect_retry_periodical: 1000,
         requests: {
           // periodical: 5000
-          // periodical: 360000 // devel
-          periodical: 60000 // devel
+          // periodical: 360000
+          periodical: 60000
         }
       }
     }
