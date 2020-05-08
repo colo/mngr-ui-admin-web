@@ -121,30 +121,30 @@ export default {
           //   this.$options.chart.data = newData
           //   this.$options.categoryAxis.zoom({ start: 0, end: 1 / newData.length })
           // } else {
-          if (this.sum !== true) {
-            this.$options.chart.data = newData
-          }
-          else{
-            for (let i = 0; i < newData.length; i++) {
-              let val = newData[i]
-              let found = false
-              for (let j = 0; j < this.$options.chart.data.length; j++) {
-
-                if (val[this.categoryY] === this.$options.chart.data[j][this.categoryY]) {
+          for (let i = 0; i < newData.length; i++) {
+            let val = newData[i]
+            let found = false
+            for (let j = 0; j < this.$options.chart.data.length; j++) {
+              if (val[this.categoryY] === this.$options.chart.data[j][this.categoryY]) {
+                if (this.sum === true) {
                   this.$options.chart.data[j][this.valueX] += val[this.valueX]
-                  found = true
+                } else {
+                  this.$options.chart.data[j][this.valueX] = val[this.valueX]
                 }
+                found = true
               }
-              if (found === false) {
-                this.$options.chart.data.push(val)
-              }
-              // this.$options.chart.data[i] = newData[i]
-              // if (val[this.valueX] > 0) {
-              //   itemsWithNonZero++
-              // }
             }
+            if (found === false && this.sum === true) {
+              this.$options.chart.data.push(val)
+            }
+            else if (found === false && this.sum === false) {
+              this.$options.chart.data[j][this.categoryY] = 0
+            }
+            // this.$options.chart.data[i] = newData[i]
+            // if (val[this.valueX] > 0) {
+            //   itemsWithNonZero++
+            // }
           }
-
 
           // for (let i = 0; i < this.$options.chart.data.length; i++) {
           //   if (this.$options.chart.data[i][this.valueX] > 0) {
