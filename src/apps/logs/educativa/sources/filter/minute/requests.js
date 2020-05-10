@@ -189,7 +189,7 @@ const host_once_component = {
       let filter = "this.r.row('metadata')('path').eq('logs.educativa').and("
 
       Object.each(vm.filter, function (value, prop) {
-        filter += "this.r.row('metadata')('" + prop + "').eq('" + value + "').and("
+        filter += "this.r.row('metadata')('" + prop + "').eq('" + value + "').or(this.r.row('metadata')('" + prop + "').contains('" + value + "')).and("
       })
 
       debug('FILTER STRING %s', filter)
