@@ -192,7 +192,7 @@ const host_once_component = {
         // filter += "this.r.row('metadata')('" + prop + "').eq('" + value + "').and("
         filter += "function(row) {"+
           "return row('metadata')('" + prop + "').do(function(val) {"+
-          "  return this.r.branch(host.typeOf().eq('ARRAY'), val.contains('" + value + "'), val.eq('" + value + "'));"+
+          "  return this.r.branch(val.typeOf().eq('ARRAY'), val.contains('" + value + "'), val.eq('" + value + "'));"+
           "});"+
         "}).and("
       })
