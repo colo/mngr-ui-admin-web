@@ -189,7 +189,12 @@ const host_once_component = {
       let filter = "this.r.row('metadata')('path').eq('logs.educativa').and("
 
       Object.each(vm.filter, function (value, prop) {
-        filter += "this.r.row('metadata')('" + prop + "').eq('" + value + "').and("
+        // filter += "this.r.row('metadata')('" + prop + "').eq('" + value + "').and("
+        filter += "function(this.r.row) {"+
+          "return this.r.row("metadata")('" + prop + "').do(function(val) {"+
+          "  return this.r.branch(host.typeOf().eq('ARRAY'), val.contains('" + value + "'), val.eq('" + value + "'));"+
+          "});"+
+        "}).and("
       })
 
       debug('FILTER STRING %s', filter)
