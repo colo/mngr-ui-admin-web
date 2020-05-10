@@ -123,7 +123,7 @@ const generic_callback = function (data, metadata, key, vm) {
     let per_host = {}
 
     Array.each(data.logs_historical, function (row) {
-      if (row.metadata.domain) {
+      if (Array.isArray(row.metadata.host)) {
         let domain = row.metadata.domain
         if (!per_domain[domain]) per_domain[domain] = row.data
       } else {
