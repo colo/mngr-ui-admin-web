@@ -187,13 +187,13 @@ const host_once_component = {
       let START
 
       // let filter = "this.r.row('metadata')('path').eq('logs.educativa').and("
-      let filter = ["this.r.row('metadata')('path').eq('logs.educativa')"]
+      let filter = ["r.row('metadata')('path').eq('logs.educativa')"]
 
       Object.each(vm.filter, function (value, prop) {
         // filter += "this.r.row('metadata')('" + prop + "').eq('" + value + "').and("
         filter.push("function(row) {"+
         "return row('metadata')('" + prop + "').do(function(val) {"+
-        "  return r.branch(val.typeOf().eq('ARRAY'), val.contains('" + value + "'), val.eq('" + value + "'));"+
+        "  return this.r.branch(val.typeOf().eq('ARRAY'), val.contains('" + value + "'), val.eq('" + value + "'));"+
         "});"+
         "}")
       })
@@ -253,7 +253,7 @@ const host_once_component = {
           START = (END - (6 * MINUTE) >= 0) ? END - (6 * MINUTE) : 0
 
           // filter += "this.r.row('metadata')('type').eq('minute')"
-          filter.push("this.r.row('metadata')('type').eq('minute')")
+          filter.push("r.row('metadata')('type').eq('minute')")
           // Object.each(vm.filter, function (value, prop) {
           //   filter += ')'
           // })
