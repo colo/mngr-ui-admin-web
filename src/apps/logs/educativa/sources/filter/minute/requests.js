@@ -192,10 +192,10 @@ const host_once_component = {
       Object.each(vm.filter, function (value, prop) {
         // filter += "this.r.row('metadata')('" + prop + "').eq('" + value + "').and("
         filter.push("function(row) {"+
-          "return row('metadata')('" + prop + "').do(function(val) {"+
-          "  return this.r.branch(val.typeOf().eq('ARRAY'), val.contains('" + value + "'), val.eq('" + value + "'));"+
-          "});"+
-        "})")
+        "return row('metadata')('" + prop + "').do(function(val) {"+
+        "  return this.r.branch(val.typeOf().eq('ARRAY'), val.contains('" + value + "'), val.eq('" + value + "'));"+
+        "});"+
+        "}")
       })
 
       debug('FILTER ARRAY %o', filter)
