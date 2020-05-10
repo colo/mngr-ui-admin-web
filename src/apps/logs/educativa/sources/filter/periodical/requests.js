@@ -290,13 +290,19 @@ const host_once_component = {
 
       let START
 
-      let filter = "this.r.row('metadata')('path').eq('logs.educativa').and("
+      // let filter = "this.r.row('metadata')('path').eq('logs.educativa').and("
+      let filter = ["r.row('metadata')('path').eq('logs.educativa')"]
 
       Object.each(vm.filter, function (value, prop) {
-        filter += "this.r.row('metadata')('" + prop + "').eq('" + value + "').and("
+        // filter += "this.r.row('metadata')('" + prop + "').eq('" + value + "').and("
+        filter.push("function:"+
+        "row('metadata')('" + prop + "').do(function(val) {"+
+        "  return this.r.branch(val.typeOf().eq('ARRAY'), val.contains('" + value + "'), val.eq('" + value + "'))"+
+        "}.bind(this))"
+        )
       })
 
-      debug('FILTER STRING %s', filter)
+      debug('FILTER ARRAY %o', filter)
 
       switch (_key) {
         case 'periodical.once':
@@ -304,14 +310,16 @@ const host_once_component = {
           // START = END - (15 * SECOND)
           START = (END - (15 * SECOND) >= 0) ? END - (15 * SECOND) : 0
 
-          filter += "this.r.row('metadata')('type').eq('periodical')"
-          Object.each(vm.filter, function (value, prop) {
-            filter += ')'
-          })
+          // filter += "this.r.row('metadata')('type').eq('periodical')"
+          filter.push("r.row('metadata')('type').eq('periodical')")
 
-          filter += ')' // "this.r.row('metadata')('path').eq('logs.educativa').and("
+          // Object.each(vm.filter, function (value, prop) {
+          //   filter += ')'
+          // })
+          //
+          // filter += ')' // "this.r.row('metadata')('path').eq('logs.educativa').and("
 
-          debug('FILTER STRING %s', filter)
+          debug('FILTER ARRAY %s', filter)
 
           source = [{
             params: { id: _key },
