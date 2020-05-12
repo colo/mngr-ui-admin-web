@@ -170,7 +170,11 @@ const generic_callback = function (data, metadata, key, vm) {
     })
     **/
 
-    let timestamp = _data[0].metadata.timestamp
+    // let timestamp = _data[0].metadata.timestamp
+    let range = {start: undefined, end: undefined}
+    let per_host_range = {start: undefined, end: undefined}
+    let timestamp = _data[0].metadata.timestamp // comes sorted by timestamp in desc order, so first item has the biggest timestamp
+    let smallest_start = roundSeconds(timestamp - (5 * SECOND))
     /**
     * logs
     **/
@@ -189,66 +193,74 @@ const generic_callback = function (data, metadata, key, vm) {
     let err_count = 0
 
     Array.each(_data, function (row) {
-      logs.push(Object.merge(Object.clone(row.metadata), { log: row.data.log }))
-      if (!cgi_count[row.data.cgi]) cgi_count[row.data.cgi] = 0
-      cgi_count[row.data.cgi]++
+      let start = row.metadata.timestamp
+      let end = row.metadata.timestamp
+      if (start >= smallest_start) { // discard any document that is previous to our smallest_start timestamp
+        if (range.start === undefined || range.start > start) { range.start = start }
 
-      // if (!domain_count[row.metadata.domain]) domain_count[row.metadata.domain] = 0
-      // domain_count[row.metadata.domain]++
+        if (range.end === undefined || range.end < end) { range.end = end }
 
-      if (!per_domain[row.metadata.domain]) per_domain[row.metadata.domain] = Object.merge(Object.clone(duration_stats_template), { count: 0, duration: [] })
-      if (!per_host[row.metadata.host]) per_host[row.metadata.host] = Object.merge(Object.clone(duration_stats_template), { count: 0, duration: [] })
+        logs.push(Object.merge(Object.clone(row.metadata), { log: row.data.log }))
+        if (!cgi_count[row.data.cgi]) cgi_count[row.data.cgi] = 0
+        cgi_count[row.data.cgi]++
 
-      let cgi_duration = ((row.data.duration / NANOSECOND).toFixed(2)) * 1
-      duration.push(cgi_duration)
+        // if (!domain_count[row.metadata.domain]) domain_count[row.metadata.domain] = 0
+        // domain_count[row.metadata.domain]++
 
-      per_domain[row.metadata.domain].duration.push(cgi_duration)
-      per_domain[row.metadata.domain].count++
+        if (!per_domain[row.metadata.domain]) per_domain[row.metadata.domain] = Object.merge(Object.clone(duration_stats_template), { count: 0, duration: [] })
+        if (!per_host[row.metadata.host]) per_host[row.metadata.host] = Object.merge(Object.clone(duration_stats_template), { count: 0, duration: [] })
 
-      per_host[row.metadata.host].duration.push(cgi_duration)
-      per_host[row.metadata.host].count++
+        let cgi_duration = ((row.data.duration / NANOSECOND).toFixed(2)) * 1
+        duration.push(cgi_duration)
 
-      // per_domain[row.metadata.domain].domain = row.metadata.domain
-      // if (cgi_duration < 0) { // ERROR
-      //   // debug('NEGATIVE DURATION ERR %O', row)
-      //   // err_count++
-      //   cgi_duration *= -1
-      // }
+        per_domain[row.metadata.domain].duration.push(cgi_duration)
+        per_domain[row.metadata.domain].count++
 
-      if (duration_stats.max.seconds === undefined || duration_stats.max.seconds < cgi_duration) {
-        duration_stats.max.seconds = cgi_duration
-        duration_stats.max.cgi = row.data.cgi
-        duration_stats.max.domain = row.metadata.domain
-      }
+        per_host[row.metadata.host].duration.push(cgi_duration)
+        per_host[row.metadata.host].count++
 
-      if (duration_stats.min.seconds === undefined || duration_stats.min.seconds > cgi_duration) {
-        duration_stats.min.seconds = cgi_duration
-        duration_stats.min.cgi = row.data.cgi
-        duration_stats.min.domain = row.metadata.domain
-      }
+        // per_domain[row.metadata.domain].domain = row.metadata.domain
+        // if (cgi_duration < 0) { // ERROR
+        //   // debug('NEGATIVE DURATION ERR %O', row)
+        //   // err_count++
+        //   cgi_duration *= -1
+        // }
 
-      if (per_domain[row.metadata.domain].max.seconds === undefined || per_domain[row.metadata.domain].max.seconds < cgi_duration) {
-        per_domain[row.metadata.domain].max.seconds = cgi_duration
-        per_domain[row.metadata.domain].max.cgi = row.data.cgi
-        // per_domain[row.metadata.domain].max.domain = row.metadata.domain
-      }
+        if (duration_stats.max.seconds === undefined || duration_stats.max.seconds < cgi_duration) {
+          duration_stats.max.seconds = cgi_duration
+          duration_stats.max.cgi = row.data.cgi
+          duration_stats.max.domain = row.metadata.domain
+        }
 
-      if (per_domain[row.metadata.domain].min.seconds === undefined || per_domain[row.metadata.domain].min.seconds > cgi_duration) {
-        per_domain[row.metadata.domain].min.seconds = cgi_duration
-        per_domain[row.metadata.domain].min.cgi = row.data.cgi
-        // per_domain[row.metadata.domain].min.domain = row.metadata.domain
-      }
+        if (duration_stats.min.seconds === undefined || duration_stats.min.seconds > cgi_duration) {
+          duration_stats.min.seconds = cgi_duration
+          duration_stats.min.cgi = row.data.cgi
+          duration_stats.min.domain = row.metadata.domain
+        }
 
-      if (per_host[row.metadata.host].max.seconds === undefined || per_host[row.metadata.host].max.seconds < cgi_duration) {
-        per_host[row.metadata.host].max.seconds = cgi_duration
-        per_host[row.metadata.host].max.cgi = row.data.cgi
-        // per_host[row.metadata.host].max.host = row.metadata.host
-      }
+        if (per_domain[row.metadata.domain].max.seconds === undefined || per_domain[row.metadata.domain].max.seconds < cgi_duration) {
+          per_domain[row.metadata.domain].max.seconds = cgi_duration
+          per_domain[row.metadata.domain].max.cgi = row.data.cgi
+          // per_domain[row.metadata.domain].max.domain = row.metadata.domain
+        }
 
-      if (per_host[row.metadata.host].min.seconds === undefined || per_host[row.metadata.host].min.seconds > cgi_duration) {
-        per_host[row.metadata.host].min.seconds = cgi_duration
-        per_host[row.metadata.host].min.cgi = row.data.cgi
-        // per_host[row.metadata.host].min.host = row.metadata.host
+        if (per_domain[row.metadata.domain].min.seconds === undefined || per_domain[row.metadata.domain].min.seconds > cgi_duration) {
+          per_domain[row.metadata.domain].min.seconds = cgi_duration
+          per_domain[row.metadata.domain].min.cgi = row.data.cgi
+          // per_domain[row.metadata.domain].min.domain = row.metadata.domain
+        }
+
+        if (per_host[row.metadata.host].max.seconds === undefined || per_host[row.metadata.host].max.seconds < cgi_duration) {
+          per_host[row.metadata.host].max.seconds = cgi_duration
+          per_host[row.metadata.host].max.cgi = row.data.cgi
+          // per_host[row.metadata.host].max.host = row.metadata.host
+        }
+
+        if (per_host[row.metadata.host].min.seconds === undefined || per_host[row.metadata.host].min.seconds > cgi_duration) {
+          per_host[row.metadata.host].min.seconds = cgi_duration
+          per_host[row.metadata.host].min.cgi = row.data.cgi
+          // per_host[row.metadata.host].min.host = row.metadata.host
+        }
       }
     })
 
@@ -289,6 +301,8 @@ const generic_callback = function (data, metadata, key, vm) {
     vm.$set(vm.periodical, 'per_domain', per_domain)
     vm.$set(vm.periodical, 'per_host', per_host)
     vm.$set(vm.periodical, 'timestamp', timestamp)
+    vm.$set(vm.periodical, 'range', range)
+    // vm.$set(vm.periodical, 'timestamp', timestamp)
   }
   // else if (/historical/.test(key) && data.logs_historical && Object.getLength(data.logs_historical) > 0) {
   //   debug('HISTORICAL HOST CALLBACK data %s %o', key, data)
