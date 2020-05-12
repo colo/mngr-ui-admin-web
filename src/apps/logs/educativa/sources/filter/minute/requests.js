@@ -4,11 +4,40 @@ const debug = Debug('apps:logs:educativa:sources:filter:minute:requests')
 // import END from '../../../etc/range'
 const end = require('../../../../etc/end')
 
-const NANOSECOND = 1000000
+const roundMilliseconds = function (timestamp) {
+  let d = new Date(timestamp)
+  d.setMilliseconds(0)
+
+  return d.getTime()
+}
+
+const roundSeconds = function (timestamp) {
+  timestamp = roundMilliseconds(timestamp)
+  let d = new Date(timestamp)
+  d.setSeconds(0)
+
+  return d.getTime()
+}
+
+const roundMinutes = function (timestamp) {
+  timestamp = roundSeconds(timestamp)
+  let d = new Date(timestamp)
+  d.setMinutes(0)
+
+  return d.getTime()
+}
+const roundHours = function (timestamp) {
+  timestamp = roundMinutes(timestamp)
+  let d = new Date(timestamp)
+  d.setHours(0)
+
+  return d.getTime()
+}
 const SECOND = 1000
 const MINUTE = 60 * SECOND
 const HOUR = 60 * MINUTE
 const DAY = HOUR * 24
+const WEEK = DAY * 7
 
 const ss = require('simple-statistics')
 
@@ -116,19 +145,35 @@ const generic_callback = function (data, metadata, key, vm) {
   const END = end()
 
   if (/historical/.test(key) && data.logs_historical && Object.getLength(data.logs_historical) > 0) {
-    // debug('HISTORICAL HOST CALLBACK data %s %o', key, data)
+    debug('HISTORICAL HOST CALLBACK data %s %o', key, data)
     // let type
     // let vm_data = {}
     let per_domain = {}
     let per_host = {}
 
+    let range = {start: undefined, end: undefined}
+    let per_host_range = {start: undefined, end: undefined}
+    let timestamp = data.logs_historical[0].metadata.timestamp // comes sorted by timestamp in desc order, so first item has the biggest timestamp
+    let smallest_start = roundSeconds(timestamp - MINUTE)
+
     Array.each(data.logs_historical, function (row) {
-      if (Array.isArray(row.metadata.host)) {
-        let domain = row.metadata.domain
-        if (!per_domain[domain]) per_domain[domain] = row.data
-      } else {
-        let host = row.metadata.host
-        if (!per_host[host]) per_host[host] = row.data
+      let start = row.metadata.range.start
+      let end = row.metadata.range.end
+
+      if (start >= smallest_start) { // discard any document that is previous to our smallest_start timestamp
+        if (range.start === undefined || range.start > start) { range.start = start }
+
+        if (range.end === undefined || range.end < end) { range.end = end }
+
+        // if (timestamp === undefined || timestamp < row.metadata.timestamp) { timestamp = row.metadata.timestamp }
+
+        if (Array.isArray(row.metadata.host)) {
+          let domain = row.metadata.domain
+          if (!per_domain[domain]) per_domain[domain] = row.data
+        } else {
+          let host = row.metadata.host
+          if (!per_host[host]) per_host[host] = row.data
+        }
       }
       // if (!type) type = row.metadata.type
       // Object.each(row.data, function (row_data, prop) {
@@ -150,9 +195,12 @@ const generic_callback = function (data, metadata, key, vm) {
       // }
     })
 
-    debug('HISTORICAL HOST CALLBACK data %s %o %o', key, per_domain, per_host)
+    // debug('HISTORICAL HOST CALLBACK data %s %o %o', key, per_domain, per_host)
     vm.$set(vm.minute, 'per_domain', per_domain)
     vm.$set(vm.minute, 'per_host', per_host)
+    vm.$set(vm.minute, 'range', range)
+    vm.$set(vm.minute, 'timestamp', timestamp)
+
     // // data = data.logs_historical[0]
     //
     // // if (/minute/.test(key)){
@@ -191,10 +239,10 @@ const host_once_component = {
 
       Object.each(vm.filter, function (value, prop) {
         // filter += "this.r.row('metadata')('" + prop + "').eq('" + value + "').and("
-        filter.push("function:"+
-        "row('metadata')('" + prop + "').do(function(val) {"+
-        "  return this.r.branch(val.typeOf().eq('ARRAY'), val.contains('" + value + "'), val.eq('" + value + "'))"+
-        "}.bind(this))"
+        filter.push('function:' +
+        "row('metadata')('" + prop + "').do(function(val) {" +
+        "  return this.r.branch(val.typeOf().eq('ARRAY'), val.contains('" + value + "'), val.eq('" + value + "'))" +
+        '}.bind(this))'
         )
       })
 

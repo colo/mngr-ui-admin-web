@@ -4,11 +4,42 @@ const debug = Debug('apps:logs:educativa:sources:filter:minute:periodical')
 // import END from '../../../etc/range'
 const end = require('../../../../etc/end')
 
+const roundMilliseconds = function (timestamp) {
+  let d = new Date(timestamp)
+  d.setMilliseconds(0)
+
+  return d.getTime()
+}
+
+const roundSeconds = function (timestamp) {
+  timestamp = roundMilliseconds(timestamp)
+  let d = new Date(timestamp)
+  d.setSeconds(0)
+
+  return d.getTime()
+}
+
+const roundMinutes = function (timestamp) {
+  timestamp = roundSeconds(timestamp)
+  let d = new Date(timestamp)
+  d.setMinutes(0)
+
+  return d.getTime()
+}
+const roundHours = function (timestamp) {
+  timestamp = roundMinutes(timestamp)
+  let d = new Date(timestamp)
+  d.setHours(0)
+
+  return d.getTime()
+}
+
 const NANOSECOND = 1000000
 const SECOND = 1000
 const MINUTE = 60 * SECOND
 const HOUR = 60 * MINUTE
 const DAY = HOUR * 24
+const WEEK = DAY * 7
 
 const ss = require('simple-statistics')
 
@@ -295,10 +326,10 @@ const host_once_component = {
 
       Object.each(vm.filter, function (value, prop) {
         // filter += "this.r.row('metadata')('" + prop + "').eq('" + value + "').and("
-        filter.push("function:"+
-        "row('metadata')('" + prop + "').do(function(val) {"+
-        "  return this.r.branch(val.typeOf().eq('ARRAY'), val.contains('" + value + "'), val.eq('" + value + "'))"+
-        "}.bind(this))"
+        filter.push('function:' +
+        "row('metadata')('" + prop + "').do(function(val) {" +
+        "  return this.r.branch(val.typeOf().eq('ARRAY'), val.contains('" + value + "'), val.eq('" + value + "'))" +
+        '}.bind(this))'
         )
       })
 

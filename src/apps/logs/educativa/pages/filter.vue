@@ -38,6 +38,7 @@
       <q-tab-panels v-model="range_tab">
         <!-- animated -->
         <q-tab-panel name="periodical">
+          <div class="text-h6">From: {{ format_time(periodical.range.start) }} - To: {{ format_time(periodical.range.end) }} / Updated on: {{ format_time(periodical.timestamp) }}</div>
           <bar-race :categoryY="'cgi'" :valueX="'count'" :values="periodical.cgi_count" :label="'Per CGI count (last 5 secs)'" :id="'cgi_count'" :zoom="apply_zoom"/>
           <bar-race :categoryY="'cgi'" :valueX="'count'" :values="periodical.cgi_count" :label="'Per CGI count (sum)'" :id="'cgi_count_sum'" :zoom="apply_zoom" :sum="true"/>
           <!-- :label="format_time(periodical.timestamp)" -->
@@ -73,6 +74,7 @@
         </q-tab-panel>
 
         <q-tab-panel name="minute">
+          <div class="text-h6">From: {{ format_time(minute.range.start) }} - To: {{ format_time(minute.range.end) }} / Updated on: {{ format_time(minute.timestamp) }}</div>
           <bar-race :categoryY="'domain'" :valueX="'hits'" :values="minute.per_domain" :label="'Minute Per DOMAIN - CGI count'" :id="'minute_per_domain_sum'" :zoom="apply_zoom"/>
           <!-- :zoom="apply_zoom" -->
 
@@ -82,6 +84,7 @@
         </q-tab-panel>
 
         <q-tab-panel name="hour">
+          <div class="text-h6">From: {{ format_time(hour.range.start) }} - To: {{ format_time(hour.range.end) }} / Updated on: {{ format_time(hour.timestamp) }}</div>
           <bar-race :categoryY="'domain'" :valueX="'hits'" :values="hour.per_domain" :label="'Hour Per DOMAIN - CGI count'" :id="'hour_per_domain_sum'" :zoom="apply_zoom"/>
           <!-- :zoom="apply_zoom" -->
 
@@ -364,8 +367,9 @@ export default {
       },
       hour: {
         per_domain: {},
-
-        per_host: {}
+        per_host: {},
+        range: { start: 0, end: 0},
+        timestamp: 0,
         // body_bytes_sent: {},
         // geoip: {},
         // qs: {},
@@ -383,8 +387,9 @@ export default {
       },
       minute: {
         per_domain: {},
-
-        per_host: {}
+        per_host: {},
+        range: { start: 0, end: 0},
+        timestamp: 0,
         // body_bytes_sent: {},
         // geoip: {},
         // qs: {},
@@ -403,14 +408,17 @@ export default {
 
       periodical: {
         // date: undefined,
-        timestamp: 0,
+        // timestamp: 0,
         logs: [],
 
         cgi_count: {},
         // domain_count: {},
         per_domain: {},
 
-        per_host: {}
+        per_host: {},
+        range: { start: 0, end: 0},
+        timestamp: 0,
+
         // total_bytes_sent: 0,
         // hits: 0,
         //

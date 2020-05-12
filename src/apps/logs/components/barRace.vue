@@ -143,7 +143,6 @@ export default {
             if (found === false) {
               this.$options.chart.data.push(val)
             }
-
           }
 
           // for (let i = 0; i < this.$options.chart.data.length; i++) {
