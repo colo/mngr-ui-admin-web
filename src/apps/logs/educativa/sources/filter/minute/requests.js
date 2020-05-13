@@ -298,7 +298,7 @@ const host_once_component = {
 
         case 'historical.minute.once':
           // START = END - MINUTE
-          START = (END - (6 * MINUTE) >= 0) ? END - (6 * MINUTE) : 0
+          START = (END - (2 * MINUTE) >= 0) ? END - (2 * MINUTE) : 0
 
           // filter += "this.r.row('metadata')('type').eq('minute')"
           filter.push("r.row('metadata')('type').eq('minute')")

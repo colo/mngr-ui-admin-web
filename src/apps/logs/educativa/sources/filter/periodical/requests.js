@@ -151,7 +151,7 @@ const generic_callback = function (data, metadata, key, vm) {
   if (/periodical/.test(key) && data) { // (data.logs || Object.getLength(data) > 0)
     // const START = END - MINUTE
     // const START = END - (15 * SECOND)
-    const START = (END - (15 * SECOND) >= 0) ? END - (15 * SECOND) : 0
+    const START = (END - (5 * SECOND) >= 0) ? END - (5 * SECOND) : 0
 
     let _data
     if (data.logs) _data = data.logs // comes from 'Range'
@@ -353,7 +353,7 @@ const host_once_component = {
         case 'periodical.once':
           // START = END - MINUTE
           // START = END - (15 * SECOND)
-          START = (END - (15 * SECOND) >= 0) ? END - (15 * SECOND) : 0
+          START = (END - (5 * SECOND) >= 0) ? END - (5 * SECOND) : 0
 
           // filter += "this.r.row('metadata')('type').eq('periodical')"
           filter.push("r.row('metadata')('type').eq('periodical')")

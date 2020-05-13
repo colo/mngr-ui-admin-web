@@ -1,5 +1,6 @@
 <template>
-  <q-card v-if="config" :class="(show === false) ? 'bg-white hidden': 'bg-white uk-light'">
+  <!-- :class="(show === false) ? 'bg-white hidden': 'bg-white'" -->
+  <q-card v-if="config" class="bg-white">
     <q-card-section>
       <div class="text-h4">{{title}}</div>
     </q-card-section>
@@ -40,6 +41,11 @@
       <!-- :key="view.minute" -->
       <!-- :always_update="true" re check this, what was used for?-->
       </component>
+      <q-placeholder
+        v-if="show === false"
+        animated
+        class="netdata-container-with-legend"
+        />
     </q-card-section>
     <!-- <q-separator dark /> -->
   </q-card>
@@ -650,12 +656,13 @@ export default {
             // debug('__process_data %s %o', this.id, processed_data)
             if (processed_data.length > 1) {
               this.$refs[this.id].update_stat_data([processed_data])
+              this.show = true
               // this.$refs[this.id].visibilityChanged(true)
             }
           }.bind(this))
 
           this.$options.__config_set = true
-          this.show = true
+          // this.show = true
           // this.no_buffer = false
         } else {
           debug('No data for %s %o', this.id, val)

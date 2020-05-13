@@ -154,7 +154,7 @@ const generic_callback = function (data, metadata, key, vm) {
     let range = {start: undefined, end: undefined}
     let per_host_range = {start: undefined, end: undefined}
     let timestamp = data.logs_historical[0].metadata.timestamp // comes sorted by timestamp in desc order, so first item has the biggest timestamp
-    let smallest_start = roundSeconds(timestamp - MINUTE)
+    let smallest_start = roundMinutes(timestamp)
 
     Array.each(data.logs_historical, function (row) {
       let start = row.metadata.range.start
@@ -347,7 +347,7 @@ const host_once_component = {
 
         case 'historical.hour.once':
           // START = END - HOUR
-          START = (END - (2 * HOUR) >= 0) ? END - (2 * HOUR) : 0
+          START = (END - HOUR >= 0) ? END - HOUR : 0
 
           // filter += "this.r.row('metadata')('type').eq('hour')"
           filter.push("r.row('metadata')('type').eq('hour')")

@@ -1,5 +1,6 @@
 <template>
-  <q-card :class="(show === false) ? 'bg-white hidden': 'bg-white uk-light'">
+  <!-- :class="(show === false) ? 'bg-white hidden': 'bg-white uk-light'" -->
+  <q-card class="bg-white">
     <q-card-section>
       <div class="text-h4">{{title}}</div>
     </q-card-section>
@@ -33,6 +34,11 @@
         :reactive="false"
         :no_buffer="false"
       >
+      <q-placeholder
+        v-if="show === false"
+        animated
+        class="netdata-container-with-legend"
+        />
       <!-- data: [processed_data] -->
       <!-- stat -> length: 300, -->
       <!-- :key="view.minute" -->
@@ -794,12 +800,13 @@ export default {
           // debug('__process_data %s %o', this.id, processed_data)
           if (processed_data.length > 0) {
             this.$refs[this.id].update_stat_data([processed_data])
+            this.show = true
             // this.$refs[this.id].visibilityChanged(true)
           }
         }.bind(this))
 
         this.$options.__config_set = true
-        this.show = true
+
         // this.no_buffer = false
       } else {
         debug('No data for %s %o', this.id, val)
