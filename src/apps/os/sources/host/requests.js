@@ -554,12 +554,12 @@ const host_range_component = {
 }
 
 const once = [
-  host_once_register,
+  // host_once_register,
   host_once_component
 ]
 
 const periodical = [
-  // host_range_component
+  host_range_component
 ]
 
 const requests = {
