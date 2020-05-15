@@ -639,7 +639,10 @@ export default {
 
           let pipeline_id = template.input[0].poll.id
 
-          template.input[0].poll.conn[0].requests = this.__components_sources_to_requests(this.components[pipeline_id], pipeline_id)
+          // template.input[0].poll.conn[0].requests = this.__components_sources_to_requests(this.components[pipeline_id], pipeline_id)
+          Array.each(template.input[0].poll.conn, function (conn, index) {
+            template.input[0].poll.conn[index].requests = this.__components_sources_to_requests(this.components[pipeline_id], pipeline_id)
+          }.bind(this))
 
           let pipe = new JSPipeline(template)
 

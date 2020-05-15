@@ -139,6 +139,9 @@ const ss = require('simple-statistics')
 //   return merged
 // }
 
+let per_domain = {}
+let per_host = {}
+
 const generic_callback = function (data, metadata, key, vm) {
   // debug('HOST CALLBACK data %s %o', key, data)
 
@@ -148,8 +151,8 @@ const generic_callback = function (data, metadata, key, vm) {
     debug('HISTORICAL HOST CALLBACK data %s %o', key, data)
     // let type
     // let vm_data = {}
-    let per_domain = {}
-    let per_host = {}
+    // let per_domain = {}
+    // let per_host = {}
 
     let range = {start: undefined, end: undefined}
     let per_host_range = {start: undefined, end: undefined}

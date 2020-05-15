@@ -151,7 +151,7 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view />
+      <router-view :key="$route.path +'.'+ $route.query.toString()"/>
     </q-page-container>
   </q-layout>
 </template>

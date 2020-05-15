@@ -175,7 +175,8 @@ export default new Class({
 		this.parent(options);//override default options
 
     // let _io = new App(DefaultConn)
-    this.add_io(IO)
+    // this.add_io(IO)
+    this.add_io(IO()[options.index])
 
 		this.profile('logs_init');//start profiling
 

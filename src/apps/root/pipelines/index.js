@@ -16,6 +16,7 @@ import * as Debug from 'debug'
 const debug = Debug('libs:pipelines:root')
 
 let qs = require('qs')
+
 let buffer = []
 // let buffer_expire = 0
 let expire_buffer_timeout = 1000 // one second
@@ -67,37 +68,7 @@ export default {
       } else {
         doc.id = doc.metadata.input + '?' + qs.stringify(doc.metadata.opts.query)
       }
-      // let newDoc = Object.clone(doc)
-      // newDoc.key = ''
-      //
-      // // // newDoc.input = doc.input
-      // // // newDoc[doc.input] = doc[doc.input]
-      // // //
-      // // // let key = {}
-      // // //
-      // // // if (doc.opts.params && Object.keys(doc.opts.params).length > 0) { key.params = doc.opts.params }
-      // // //
-      // // // if (doc.opts.query && Object.keys(doc.opts.query).length > 0) { key.query = doc.opts.query }
-      // // //
-      // // // if (Object.keys(key).length > 0) { newDoc.key = JSON.stringify(key) }
-      // // //
-      // if (newDoc.metadata.from) { newDoc.key += newDoc.metadata.from + '_' }
-      //
-      // if (newDoc.metadata.opts && newDoc.metadata.opts.params && newDoc.metadata.opts.params.props) {
-      //   newDoc.key += 'props=' + newDoc.metadata.opts.params.props + '_'
-      //
-      //   if (newDoc.metadata.opts.params.value) {
-      //     try {
-      //       newDoc.key += ':' + JSON.stringify(newDoc.metadata.opts.params.value) + '_'
-      //     } catch (e) {
-      //       newDoc.key += ':' + newDoc.metadata.opts.params.value + '_'
-      //     }
-      //   }
-      // }
-      //
-      // newDoc.key = newDoc.key.substring(0, newDoc.key.lastIndexOf('_'))
 
-      // debug('filter newDoc', newDoc)
       next(doc, opts, next, pipeline)
     }
   ],

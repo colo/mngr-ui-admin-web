@@ -29,7 +29,7 @@
         />
       </template>
 
-      <router-view :key="$route.path"></router-view>
+      <router-view :key="$route.path +'.'+ $route.query.toString()"></router-view>
 
       <template v-for="(category_hosts, category_name) in categories_paths">
         <os-category-card
