@@ -141,12 +141,12 @@ const ss = require('simple-statistics')
 //   return merged
 // }
 
-let duration_stats_template = { max: { domain: undefined, cgi: undefined, seconds: undefined }, min: { domain: undefined, cgi: undefined, seconds: undefined } }
-let duration_stats = Object.clone(duration_stats_template)
-// let log_template = _data[0].metadata
-let per_domain = {}
-let per_host = {}
-let cgi_count = {}
+// let duration_stats_template = { max: { domain: undefined, cgi: undefined, seconds: undefined }, min: { domain: undefined, cgi: undefined, seconds: undefined } }
+// let duration_stats = Object.clone(duration_stats_template)
+// // let log_template = _data[0].metadata
+// let per_domain = {}
+// let per_host = {}
+// let cgi_count = {}
 
 const generic_callback = function (data, metadata, key, vm) {
   // debug('HOST CALLBACK data %s %o', key, data)
@@ -186,16 +186,16 @@ const generic_callback = function (data, metadata, key, vm) {
     * logs
     **/
     let logs = []
-    // let cgi_count = {}
-    // let domain_count = {}
-    // let host_count = {}
 
     let duration = []
-    // let duration_stats_template = { max: { domain: undefined, cgi: undefined, seconds: undefined }, min: { domain: undefined, cgi: undefined, seconds: undefined } }
-    // let duration_stats = Object.clone(duration_stats_template)
-    // // let log_template = _data[0].metadata
-    // let per_domain = {}
-    // let per_host = {}
+    let duration_stats_template = { max: { domain: undefined, cgi: undefined, seconds: undefined }, min: { domain: undefined, cgi: undefined, seconds: undefined } }
+    let duration_stats = Object.clone(duration_stats_template)
+    // let log_template = _data[0].metadata
+    let per_domain = {}
+    let per_host = {}
+    let cgi_count = {}
+    // let domain_count = {}
+    // let host_count = {}
 
     let err_count = 0
 
