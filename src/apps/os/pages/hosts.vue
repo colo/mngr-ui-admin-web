@@ -169,14 +169,17 @@ export default {
 
         let pipeline_id = template.input[0].poll.id
 
-        template.input[0].poll.conn[0].requests = this.__components_sources_to_requests(this.components)
+        // template.input[0].poll.conn[0].requests = this.__components_sources_to_requests(this.components)
+        Array.each(template.input[0].poll.conn, function (conn, index) {
+          template.input[0].poll.conn[index].requests = this.__components_sources_to_requests(this.components)
+        }.bind(this))
 
         let pipe = new JSPipeline(template)
 
         this.$options.__pipelines_cfg[pipeline_id] = {
           ids: [],
           connected: [],
-          suspended: pipe.inputs.every(function (input) { return input.options.suspended }, this)
+          suspended: false // pipe.inputs.every(function (input) { return input.options.suspended }, this)
         }
 
         // this.__after_connect_inputs(
@@ -190,7 +193,7 @@ export default {
 
         this.$options.pipelines[pipeline_id] = pipe
 
-        debug('create_pipelines %o', this.$options.pipelines)
+        debug('create_pipelines %o', this.$options.pipelines, this.$options.__pipelines_cfg)
 
         if (next) { next() }
       }

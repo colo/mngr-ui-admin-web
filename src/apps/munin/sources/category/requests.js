@@ -5,6 +5,8 @@ const SECOND = 1000
 const MINUTE = 60 * SECOND
 
 // let hosts = []
+let _plugins_config = {}
+
 const generic_callback = function (data, metadata, key, vm) {
   // debug('PERIODICAL CATEGORY CALLBACK data %s %o', key, data, metadata)
 
@@ -315,7 +317,7 @@ const generic_callback = function (data, metadata, key, vm) {
     })
   } else if (key === 'config.once' && data.munin) {
     debug('PERIODICAL HOST CALLBACK CONFIG %o', data)
-    let _plugins_config = {}
+    // let _plugins_config = {}
     let _plugins_config_sorted = []
     Array.each(data.munin, function (plugin) {
       // debug('PERIODICAL HOST CALLBACK %o %o %s', group_path)

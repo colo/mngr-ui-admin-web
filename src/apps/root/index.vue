@@ -19,7 +19,7 @@
           <q-btn flat class="q-mr-xs" label="System" :to="{name : 'os'}"/>
           <q-btn flat class="q-mr-xs" label="Munin" :to="{name : 'munin'}"/>
           <q-btn flat class="q-mr-xs" label="Vhosts" :to="{name : 'vhosts'}"/>
-          <q-btn flat class="q-mr-xs" label="Cehcks" :to="{name : 'checks'}"/>
+          <q-btn flat class="q-mr-xs" label="Checks" :to="{name : 'checks'}"/>
           <q-btn flat class="q-mr-xs" label="Alerts" :to="{name : 'alerts'}"/>
           <!-- <q-btn flat round dense icon="gamepad"/> -->
         </q-toolbar>
@@ -174,7 +174,10 @@ export default {
 
         let pipeline_id = template.input[0].poll.id
 
-        template.input[0].poll.conn[0].requests = this.__components_sources_to_requests(this.components)
+        // template.input[0].poll.conn[0].requests = this.__components_sources_to_requests(this.components)
+        Array.each(template.input[0].poll.conn, function (conn, index) {
+          template.input[0].poll.conn[index].requests = this.__components_sources_to_requests(this.components)
+        }.bind(this))
 
         let pipe = new JSPipeline(template)
 

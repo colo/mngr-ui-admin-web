@@ -3,6 +3,8 @@ const debug = Debug('apps:checks:sources:requests')
 
 const MINUTE = 60000
 
+let _checks = {}
+
 const checks_range = {
   params: function (_key, vm) {
     let source
@@ -43,18 +45,28 @@ const checks_range = {
     debug('All callback RANGE', data)
 
     if (data && data.educativa && data.educativa.length > 0) {
-      let _checks = []
-      Array.each(data.educativa, function (check) {
+      // let _checks = []
+      Array.each(data.educativa, function (check, index) {
+        let host = check.metadata.host
         let _check = Object.merge(check.data, check.metadata)
 
-        _checks.push(_check)
+        if (!_checks[host] || index === 0) _checks[host] = []
+
+        _checks[host].push(_check)
+        // _checks.combine([_check ])
       })
 
-      _checks.sort(function (a, b) { return (a.timestamp < b.timestamp) ? 1 : ((b.timestamp < a.timestamp) ? -1 : 0) })
+      let checks = []
+      Object.each(_checks, function (data, host) {
+        debug('All callback RANGE HOST', host)
+        checks.combine(data)
+      })
 
-      vm.checks = _checks
+      checks.sort(function (a, b) { return (a.timestamp < b.timestamp) ? 1 : ((b.timestamp < a.timestamp) ? -1 : 0) })
+
+      vm.checks = checks
       vm.loading = false
-      debug('All callback', _checks)
+      debug('All callback', checks, _checks)
     }
   }
 }
@@ -77,19 +89,27 @@ const checks_lasts = {
     }
   },
   callback: function (data, meta, key, vm) {
-    let _checks = []
+    // let _checks = []
     debug('All callback ONCE', data)
-    Array.each(data.educativa, function (check) {
+    Array.each(data.educativa, function (check, index) {
+      let host = check.metadata.host
       let _check = Object.merge(check.data, check.metadata)
 
-      _checks.push(_check)
+      if (!_checks[host] || index === 0) _checks[host] = []
+
+      _checks[host].push(_check)
+      // _checks.combine([_check ])
     })
 
-    _checks.sort(function (a, b) { return (a.timestamp < b.timestamp) ? 1 : ((b.timestamp < a.timestamp) ? -1 : 0) })
+    let checks = []
+    Object.each(_checks, function (data) {
+      checks.combine(data)
+    })
+    checks.sort(function (a, b) { return (a.timestamp < b.timestamp) ? 1 : ((b.timestamp < a.timestamp) ? -1 : 0) })
 
-    vm.checks = _checks
+    vm.checks = checks
     vm.loading = false
-    debug('All callback', _checks)
+    debug('All callback', checks, _checks)
   }
 }
 

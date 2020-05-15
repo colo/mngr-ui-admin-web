@@ -106,7 +106,10 @@ export default {
         let pipeline_id = template.input[0].poll.id
         // let pipeline_id = 'input.os.category'
 
-        template.input[0].poll.conn[0].requests = this.__components_sources_to_requests(this.components)
+        // template.input[0].poll.conn[0].requests = this.__components_sources_to_requests(this.components)
+        Array.each(template.input[0].poll.conn, function (conn, index) {
+          template.input[0].poll.conn[index].requests = this.__components_sources_to_requests(this.components)
+        }.bind(this))
 
         let pipe = new JSPipeline(template)
 

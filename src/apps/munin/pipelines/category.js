@@ -10,12 +10,27 @@ import InputIO from './input/io'
 // const App = require ( 'node-app-socket.io-client/index' )
 // let app_io = new App(DefaultConn)
 
-let buffer = {}
+// let buffer = {}
 
 import * as Debug from 'debug'
 const debug = Debug('apps:munin:pipelines:category')
 
 let qs = require('qs')
+
+let buffer = []
+let buffer_expire = 0
+let expire_buffer_timeout = 1000 // one second
+
+import IO from '@etc/munin.io'
+
+let ios = []
+Array.each(IO(), function (io, index) {
+  ios.push({
+    id: 'input.munin.category' + index,
+    module: InputIO,
+    index: index
+  },)
+})
 
 export default {
   input: [
@@ -23,18 +38,19 @@ export default {
       poll: {
         suspended: true,
         id: 'input.munin.category',
-        conn: [
-
-          Object.merge(
-            // Object.clone(DefaultConn),
-            {
-              id: 'input.munin.category',
-              module: InputIO
-
-            }
-          )
-
-        ],
+        conn: ios,
+        // conn: [
+        //
+        //   Object.merge(
+        //     // Object.clone(DefaultConn),
+        //     {
+        //       id: 'input.munin.category',
+        //       module: InputIO
+        //
+        //     }
+        //   )
+        //
+        // ],
         connect_retry_count: -1,
         connect_retry_periodical: 1000,
         requests: {

@@ -6,7 +6,7 @@
 const App = require ( 'node-app-socket.io-client/index' )
 
 import * as Debug from "debug"
-const debug = Debug("libs:input:io")
+const debug = Debug("apps:vhosts:pipelines:input:io")
 
 // debug_internals = Debug("mngr-ui:libs:input:io:Internals"),
 // debug_events = Debug("mngr-ui:libs:input:io:Events");
@@ -175,7 +175,8 @@ export default new Class({
 		this.parent(options);//override default options
 
     // let _io = new App(DefaultConn)
-    this.add_io(IO)
+    // this.add_io(IO)
+    this.add_io(IO()[options.index])
 
 		this.profile('vhosts_init');//start profiling
 
