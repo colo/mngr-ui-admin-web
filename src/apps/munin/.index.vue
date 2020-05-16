@@ -39,7 +39,7 @@
       />
     </template>
 
-    <router-view :key="$route.path +'.'+ $route.query.toString()"></router-view>
+    <router-view :key="$route.path +'.'+ JSON.stringify($route.query)"></router-view>
 
     <template v-for="(host_categories, host_name) in hosts_categories">
       <munin-host-card

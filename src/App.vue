@@ -1,6 +1,6 @@
 <template>
   <div id="q-app">
-    <router-view :key="$route.path +'.'+ $route.query.toString()"/>
+    <router-view :key="$route.path +'.'+ JSON.stringify($route.query)"/>
   </div>
 </template>
 

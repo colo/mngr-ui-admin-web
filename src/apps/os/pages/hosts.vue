@@ -29,7 +29,7 @@
         />
       </template>
 
-      <router-view :key="$route.path +'.'+ $route.query.toString()"></router-view>
+      <router-view :key="$route.path +'.'+ JSON.stringify($route.query)"></router-view>
 
       <template v-for="(host_paths, host_name) in hosts_paths">
         <os-host-card

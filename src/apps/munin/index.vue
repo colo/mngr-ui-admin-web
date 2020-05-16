@@ -1,5 +1,5 @@
 <template>
-  <router-view :key="$route.path +'.'+ $route.query.toString()"></router-view>
+  <router-view :key="$route.path +'.'+ JSON.stringify($route.query)"></router-view>
 
 </template>
 

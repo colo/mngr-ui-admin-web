@@ -90,6 +90,11 @@ export default {
       debug('cities %o', data)
     }
   },
+  destroyed () {
+    if (this.$options.chart !== undefined && this.$options.chart.clear && typeof this.$options.chart.clear === 'function') {
+      this.$options.chart.clear()
+    }
+  },
   mounted () {
     let chart = am4core.create(this.$refs.chartdiv, am4maps.MapChart)
     chart.projection = new am4maps.projections.Miller()

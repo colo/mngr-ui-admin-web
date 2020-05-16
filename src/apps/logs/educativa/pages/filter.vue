@@ -1,5 +1,5 @@
 <template>
-  <q-page>
+  <q-page :key="$route.path +'.'+ JSON.stringify($route.query)+'.page'">
     <div class="q-pa-md">
       <div class="bg-primary text-white">
         <q-toolbar >
@@ -37,19 +37,82 @@
       <q-separator />
       <q-tab-panels v-model="range_tab">
         <!-- animated -->
-        <q-tab-panel name="periodical">
+        <q-tab-panel name="periodical" :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical'">
           <div class="text-h6">From: {{ format_time(periodical.range.start) }} - To: {{ format_time(periodical.range.end) }} / Updated on: {{ format_time(periodical.timestamp) }}</div>
-          <bar-race :categoryY="'cgi'" :valueX="'count'" :values="periodical.cgi_count" :label="'Per CGI count (last 5 secs)'" :id="'cgi_count'" :zoom="apply_zoom"/>
-          <bar-race :categoryY="'cgi'" :valueX="'count'" :values="periodical.cgi_count" :label="'Per CGI count (sum)'" :id="'cgi_count_sum'" :zoom="apply_zoom" :sum="true"/>
+
+          <bar-race
+            :categoryY="'cgi'"
+            :valueX="'count'"
+            :values="periodical.cgi_count"
+            :label="'Per CGI count (last 5 secs)'"
+            :id="'cgi_count'"
+            :zoom="apply_zoom"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.cgi_count'"
+          />
+
+          <bar-race
+            :categoryY="'cgi'"
+            :valueX="'count'"
+            :values="periodical.cgi_count"
+            :label="'Per CGI count (sum)'"
+            :id="'cgi_count_sum'"
+            :zoom="apply_zoom"
+            :sum="true"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.cgi_count_sum'"
+          />
           <!-- :label="format_time(periodical.timestamp)" -->
 
-          <bar-race :categoryY="'domain'" :valueX="'count'" :values="periodical.per_domain" :label="'Per DOMAIN - CGI count (last 5 secs)'" :id="'per_domain_count'" :zoom="apply_zoom"/>
-          <bar-race :categoryY="'domain'" :valueX="'count'" :values="periodical.per_domain" :label="'Per DOMAIN - CGI count (sum)'" :id="'per_domain_count_sum'" :zoom="apply_zoom" :sum="true"/>
+          <bar-race
+            :categoryY="'domain'"
+            :valueX="'count'"
+            :values="periodical.per_domain"
+            :label="'Per DOMAIN - CGI count (last 5 secs)'"
+            :id="'per_domain_count'"
+            :zoom="apply_zoom"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.per_domain_count'"
+          />
 
-          <bar-race :categoryY="'host'" :valueX="'count'" :values="periodical.per_host" :label="'Per HOST - CGI count (last 5 secs)'" :id="'per_host_count'" :zoom="apply_zoom"/>
-          <bar-race :categoryY="'host'" :valueX="'count'" :values="periodical.per_host" :label="'Per HOST - CGI count (sum)'" :id="'per_host_count_sum'" :zoom="apply_zoom" :sum="true"/>
+          <bar-race
+            :categoryY="'domain'"
+            :valueX="'count'"
+            :values="periodical.per_domain"
+            :label="'Per DOMAIN - CGI count (sum)'"
+            :id="'per_domain_count_sum'"
+            :zoom="apply_zoom"
+            :sum="true"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.per_domain_count_sum'"
+          />
 
-          <bar-race :categoryY="'domain'" :valueX="'sum'" :values="periodical.per_domain" :label="'Per DOMAIN - total duration (last 5 secs)'" :id="'per_domain_total'" :zoom="apply_zoom"/>
+          <bar-race
+            :categoryY="'host'"
+            :valueX="'count'"
+            :values="periodical.per_host"
+            :label="'Per HOST - CGI count (last 5 secs)'"
+            :id="'per_host_count'"
+            :zoom="apply_zoom"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.per_host_count'"
+          />
+
+          <bar-race
+            :categoryY="'host'"
+            :valueX="'count'"
+            :values="periodical.per_host"
+            :label="'Per HOST - CGI count (sum)'"
+            :id="'per_host_count_sum'"
+            :zoom="apply_zoom"
+            :sum="true"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.per_host_count_sum'"
+          />
+
+          <bar-race
+            :categoryY="'domain'"
+            :valueX="'sum'"
+            :values="periodical.per_domain"
+            :label="'Per DOMAIN - total duration (last 5 secs)'"
+            :id="'per_domain_total'"
+            :zoom="apply_zoom"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.per_domain_total'"
+          />
 
           <!-- <bar-race :categoryY="'host'" :valueX="'sum'" :values="periodical.per_host" :label="'Per HOST - total duration'" :id="'per_host_sum'" :zoom="apply_zoom" :sum="true"/> -->
 
@@ -73,22 +136,56 @@
 
         </q-tab-panel>
 
-        <q-tab-panel name="minute">
+        <q-tab-panel name="minute" :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute'">
           <div class="text-h6">From: {{ format_time(minute.range.start) }} - To: {{ format_time(minute.range.end) }} / Updated on: {{ format_time(minute.timestamp) }}</div>
-          <bar-race :categoryY="'domain'" :valueX="'hits'" :values="minute.per_domain" :label="'Minute Per DOMAIN - CGI count'" :id="'minute_per_domain_sum'" :zoom="apply_zoom"/>
+          <bar-race
+            :categoryY="'domain'"
+            :valueX="'hits'"
+            :values="minute.per_domain"
+            :label="'Minute Per DOMAIN - CGI count'"
+            :id="'minute_per_domain_sum'"
+            :zoom="apply_zoom"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute_per_domain_sum'"
+            />
+            <!-- :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute_per_domain_sum'" -->
           <!-- :zoom="apply_zoom" -->
 
-          <bar-race :categoryY="'host'" :valueX="'hits'" :values="minute.per_host" :label="'Minute Per HOST - CGI count'" :id="'minute_per_host_sum'" :zoom="apply_zoom"/>
+          <bar-race
+            :categoryY="'host'"
+            :valueX="'hits'"
+            :values="minute.per_host"
+            :label="'Minute Per HOST - CGI count'"
+            :id="'minute_per_host_sum'"
+            :zoom="apply_zoom"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute_per_host_sum'"
+          />
+          <!-- :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute_per_host_sum'" -->
           <!-- :zoom="apply_zoom" -->
 
         </q-tab-panel>
 
-        <q-tab-panel name="hour">
+        <q-tab-panel name="hour" :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour'">
           <div class="text-h6">From: {{ format_time(hour.range.start) }} - To: {{ format_time(hour.range.end) }} / Updated on: {{ format_time(hour.timestamp) }}</div>
-          <bar-race :categoryY="'domain'" :valueX="'hits'" :values="hour.per_domain" :label="'Hour Per DOMAIN - CGI count'" :id="'hour_per_domain_sum'" :zoom="apply_zoom"/>
+          <bar-race
+            :categoryY="'domain'"
+            :valueX="'hits'"
+            :values="hour.per_domain"
+            :label="'Hour Per DOMAIN - CGI count'"
+            :id="'hour_per_domain_sum'"
+            :zoom="apply_zoom"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour_per_domain_sum'"
+            />
           <!-- :zoom="apply_zoom" -->
 
-          <bar-race :categoryY="'host'" :valueX="'hits'" :values="hour.per_host" :label="'Hour Per HOST - CGI count'" :id="'hour_per_host_sum'" :zoom="apply_zoom"/>
+          <bar-race
+            :categoryY="'host'"
+            :valueX="'hits'"
+            :values="hour.per_host"
+            :label="'Hour Per HOST - CGI count'"
+            :id="'hour_per_host_sum'"
+            :zoom="apply_zoom"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour_per_host_sum'"
+            />
           <!-- :zoom="apply_zoom" -->
         </q-tab-panel>
       </q-tab-panels>
@@ -105,6 +202,7 @@
         :visible-columns="($q.screen.lt.sm) ? visibleColumns : allColumns"
         :loading="loading_logs"
         :filter="search_filter"
+        :key="$route.path +'.'+ JSON.stringify($route.query)+'.table'"
       >
       <!-- dark
       color="amber" -->
@@ -160,19 +258,19 @@
           <q-td key="domain" :props="props">
             {{ props.row.domain }}
             <!-- <q-btn type="a" :href="props.row.schema+'://'+props.row.uri+':'+props.row.port" target="_blank" flat icon="open_in_new" /> -->
-            <q-btn :to="'/logs/educativa/filter/?domain=' + props.row.domain" flat icon="open_in_new" />
+            <q-btn v-on:click="destroy_pipelines()" :to="'/logs/educativa/filter/?domain=' + props.row.domain" flat icon="open_in_new" />
           </q-td>
 
           <q-td key="host" :props="props">
             {{ props.row.host }}
 
-            <q-btn :to="'/logs/educativa/filter/?host=' + props.row.host" flat icon="open_in_new" />
+            <q-btn v-on:click="destroy_pipelines()" :to="'/logs/educativa/filter/?host=' + props.row.host" flat icon="open_in_new" />
           </q-td>
 
           <q-td key="path" :props="props">
             {{ props.row.path }}
 
-            <q-btn :to="'/logs/educativa/filter/?path=' + props.row.path" flat icon="open_in_new" />
+            <q-btn v-on:click="destroy_pipelines()" :to="'/logs/educativa/filter/?path=' + props.row.path" flat icon="open_in_new" />
           </q-td>
         </q-tr>
         </template>
@@ -568,9 +666,9 @@ export default {
   //   }
   // },
   watch: {
-    'periodical.logs': function (val) {
-      debug('periodical.logs %o', val)
-    }
+    // 'periodical.logs': function (val) {
+    //   debug('periodical.logs %o', val)
+    // }
 
     // 'periodical.total_bytes_sent': {
     //   handler: function(val){

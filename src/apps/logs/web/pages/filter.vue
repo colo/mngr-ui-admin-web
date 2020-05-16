@@ -1,5 +1,5 @@
 <template>
-  <q-page>
+  <q-page :key="$route.path +'.'+ JSON.stringify($route.query)+'.page'">
     <div class="q-pa-md">
       <div class="bg-primary text-white">
         <q-toolbar >
@@ -23,13 +23,42 @@
 
       <world-map :cities="periodical.world_map_cities"/>
 
-      <bar-race :categoryY="'country'" :values="periodical.country_counter" :label="'Per COUNTRY count (last 5 secs)'" :id="'country_counter'" :zoom="apply_zoom"/>
+      <bar-race
+        :categoryY="'country'"
+        :values="periodical.country_counter"
+        :label="'Per COUNTRY count (last 5 secs)'"
+        :id="'country_counter'" :zoom="apply_zoom"
+        :key="$route.path +'.'+ JSON.stringify($route.query)+'.country_counter'"
+      />
 
-      <bar-race :categoryY="'country'" :values="periodical.country_counter" :label="'Per COUNTRY count (sum)'" :id="'country_counter_sum'" :zoom="apply_zoom" :sum="true"/>
+      <bar-race
+        :categoryY="'country'"
+        :values="periodical.country_counter"
+        :label="'Per COUNTRY count (sum)'"
+        :id="'country_counter_sum'"
+        :zoom="apply_zoom"
+        :sum="true"
+        :key="$route.path +'.'+ JSON.stringify($route.query)+'.country_counter_sum'"
+      />
 
-      <bar-race :categoryY="'city'" :values="periodical.city_counter" :label="'Per CITY count (last 5 secs)'" :id="'city_counter'" :zoom="apply_zoom"/>
+      <bar-race
+        :categoryY="'city'"
+        :values="periodical.city_counter"
+        :label="'Per CITY count (last 5 secs)'"
+        :id="'city_counter'"
+        :zoom="apply_zoom"
+        :key="$route.path +'.'+ JSON.stringify($route.query)+'.city_counter'"
+      />
 
-      <bar-race :categoryY="'city'" :values="periodical.city_counter" :label="'Per CITY count (sum)'" :id="'city_counter_sum'" :zoom="apply_zoom" :sum="true"/>
+      <bar-race
+        :categoryY="'city'"
+        :values="periodical.city_counter"
+        :label="'Per CITY count (sum)'"
+        :id="'city_counter_sum'"
+        :zoom="apply_zoom"
+        :sum="true"
+        :key="$route.path +'.'+ JSON.stringify($route.query)+'.city_counter_sum'"
+      />
 
       <!-- <div v-for="(val, prop) in minute" :key="'minute.'+prop">
         minute: {{prop}} - {{val}} <br/>
@@ -198,19 +227,19 @@
           <q-td key="domain" :props="props">
             {{ props.row.domain }}
             <!-- <q-btn type="a" :href="props.row.schema+'://'+props.row.uri+':'+props.row.port" target="_blank" flat icon="open_in_new" /> -->
-            <q-btn :to="'/logs/webs/filter/?domain=' + props.row.domain" flat icon="open_in_new" />
+            <q-btn v-on:click="destroy_pipelines()" :to="'/logs/webs/filter/?domain=' + props.row.domain" flat icon="open_in_new" />
           </q-td>
 
           <q-td key="host" :props="props">
             {{ props.row.host }}
 
-            <q-btn :to="'/logs/webs/filter/?host=' + props.row.host" flat icon="open_in_new" />
+            <q-btn v-on:click="destroy_pipelines()" :to="'/logs/webs/filter/?host=' + props.row.host" flat icon="open_in_new" />
           </q-td>
 
           <q-td key="path" :props="props">
             {{ props.row.path }}
 
-            <q-btn :to="'/logs/webs/filter/?path=' + props.row.path" flat icon="open_in_new" />
+            <q-btn v-on:click="destroy_pipelines()" :to="'/logs/webs/filter/?path=' + props.row.path" flat icon="open_in_new" />
           </q-td>
         </q-tr>
         </template>
@@ -428,9 +457,9 @@ export default {
   //   }
   // },
   watch: {
-    'periodical.logs': function (val) {
-      debug('periodical.logs %o', val)
-    }
+    // 'periodical.logs': function (val) {
+    //   debug('periodical.logs %o', val)
+    // }
 
     // 'periodical.total_bytes_sent': {
     //   handler: function(val){
