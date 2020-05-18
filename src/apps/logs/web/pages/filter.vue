@@ -32,7 +32,7 @@
       >
         <q-tab name="periodical" label="Now" />
         <q-tab name="minute" label="Last Minute" />
-        <q-tab name="hour" label="Last Hour" />
+        <q-tab name="hour" label="Current Hour" />
         <q-tab name="day" label="Today" />
       </q-tabs>
       <q-separator />
@@ -188,12 +188,12 @@
           <bar-race
             :categoryY="'country'"
             :values="minute.country_counter"
-            :label="'Per COUNTRY count (last 5 secs)'"
-            :id="'country_counter'" :zoom="apply_zoom"
-            :key="$route.path +'.'+ JSON.stringify($route.query)+'.country_counter'"
+            :label="'Minute Per COUNTRY count'"
+            :id="'minute.country_counter'" :zoom="apply_zoom"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute.country_counter'"
           />
 
-          <bar-race
+          <!-- <bar-race
             :categoryY="'country'"
             :values="minute.country_counter"
             :label="'Per COUNTRY count (sum)'"
@@ -201,137 +201,107 @@
             :zoom="apply_zoom"
             :sum="true"
             :key="$route.path +'.'+ JSON.stringify($route.query)+'.country_counter_sum'"
-          />
+          /> -->
 
           <bar-race
             :categoryY="'city'"
             :values="minute.city_counter"
-            :label="'Per CITY count (last 5 secs)'"
-            :id="'city_counter'"
+            :label="'Minute Per CITY count'"
+            :id="'minute.city_counter'"
             :zoom="apply_zoom"
-            :key="$route.path +'.'+ JSON.stringify($route.query)+'.city_counter'"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute.city_counter'"
           />
 
           <bar-race
-            :categoryY="'city'"
-            :values="minute.city_counter"
-            :label="'Per CITY count (sum)'"
-            :id="'city_counter_sum'"
+            :categoryY="'continent'"
+            :values="minute.continent_counter"
+            :label="'Minute Per CONTINENT count'"
+            :id="'minute.continent_counter'"
             :zoom="apply_zoom"
-            :sum="true"
-            :key="$route.path +'.'+ JSON.stringify($route.query)+'.city_counter_sum'"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute.continent'"
           />
-
-          <!-- <div v-for="(val, prop) in minute" :key="'minute.'+prop">
-            minute: {{prop}} - {{val}} <br/>
-          </div>
-          <hr>
-
-          <div v-for="(val, prop) in hour" :key="'hour.'+prop">
-            hour: {{prop}} - {{val}} <br/>
-          </div>
-          <hr>
-
-          <div v-for="(val, prop) in day" :key="'day.'+prop">
-            day: {{prop}} - {{val}} <br/>
-          </div>
-          <hr> -->
-
-          minute.total_bytes_sent: {{ minute.total_bytes_sent }} <br/>
-          minute.hits: {{ minute.hits }} <br/>
-
-          <hr>
-
-          minute.current_bytes_sent: {{ minute.current_bytes_sent }}
-
-          <hr>
-
-          <div v-for="(val, status) in minute.status_counter" :key="'status.'+status">
-            minute.status_counter: {{status}} - {{val}} <br/>
-          </div>
-
-          <hr>
-
-          <div v-for="(val, city) in minute.city_counter" :key="'city.'+city">
-            minute.city_counter: {{city}} - {{val}} <br/>
-          </div>
-
-          <hr>
-
-          <div v-for="(val, country) in minute.country_counter" :key="'country.'+country">
-            minute.country_counter: {{country}} - {{val}} <br/>
-          </div>
-
-          <hr>
-
-          <div v-for="(val, continent) in minute.continent_counter" :key="'continent.'+continent">
-            minute.continent_counter: {{continent}} - {{val}} <br/>
-          </div>
-
-          <hr>
-
-          <div v-for="(val, addr) in minute.addr_counter" :key="'addr.'+addr">
-            minute.addr_counter: {{addr}} - {{val}} <br/>
-          </div>
-
-          <hr>
-
-          <div v-for="(val, user) in minute.user_counter" :key="'user.'+user">
-            minute.user_counter: {{user}} - {{val}} <br/>
-          </div>
-
-          <hr>
-
-          <div v-for="(val, referer) in minute.referer_counter" :key="'referer.'+referer">
-            minute.referer_counter: {{referer}} - {{val}} <br/>
-          </div>
-
-          <hr>
-
-          <div v-for="(val, type) in minute.type_counter" :key="'type.'+type">
-            minute.type_counter: {{type}} - {{val}} <br/>
-          </div>
-
-          <hr>
-
-          <div v-for="(val, os) in minute.user_agent_os_counter" :key="'os.'+os">
-            minute.user_agent_os_counter: {{os}} - {{val}} <br/>
-          </div>
-
-          <hr>
-
-          <div v-for="(val, os) in minute.user_agent_os_family_counter" :key="'os_family.'+os+'-'+val">
-            minute.user_agent_os_family_counter: {{os}} - {{val}} <br/>
-          </div>
-
-          <hr>
-
-          <div v-for="(val, engine) in minute.user_agent_engine_counter" :key="'engine.'+engine+'-'+val">
-            minute.user_agent_engine_counter: {{engine}} - {{val}} <br/>
-          </div>
-
-          <hr>
-
-          <div v-for="(val, browser) in minute.user_agent_browser_counter" :key="'browser.'+browser+'-'+val">
-            minute.user_agent_browser_counter: {{browser}} - {{val}} <br/>
-          </div>
-
-          <hr>
-
-          <div v-for="(val, device) in minute.user_agent_device_counter" :key="'device.'+device+'-'+val">
-            minute.user_agent_device_counter: {{device}} - {{val}} <br/>
-          </div>
-
         </q-tab-panel>
 
         <q-tab-panel name="hour" :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour'">
-          <!-- <div class="text-h6">From: {{ format_time(hour.range.start) }} - To: {{ format_time(hour.range.end) }} / Updated on: {{ format_time(hour.timestamp) }}</div> -->
+          <div class="text-h6">From: {{ format_time(hour.range.start) }} - To: {{ format_time(hour.range.end) }} / Updated on: {{ format_time(hour.timestamp) }}</div>
+          <world-map :cities="hour.world_map_cities"/>
 
+          <bar-race
+            :categoryY="'country'"
+            :values="hour.country_counter"
+            :label="'Hour Per COUNTRY count'"
+            :id="'hour.country_counter'" :zoom="apply_zoom"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour.country_counter'"
+          />
+
+          <!-- <bar-race
+            :categoryY="'country'"
+            :values="hour.country_counter"
+            :label="'Per COUNTRY count (sum)'"
+            :id="'country_counter_sum'"
+            :zoom="apply_zoom"
+            :sum="true"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.country_counter_sum'"
+          /> -->
+
+          <bar-race
+            :categoryY="'city'"
+            :values="hour.city_counter"
+            :label="'Hour Per CITY count'"
+            :id="'hour.city_counter'"
+            :zoom="apply_zoom"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour.city_counter'"
+          />
+
+          <bar-race
+            :categoryY="'continent'"
+            :values="hour.continent_counter"
+            :label="'Hour Per CONTINENT count'"
+            :id="'hour.continent_counter'"
+            :zoom="apply_zoom"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour.continent'"
+          />
         </q-tab-panel>
 
         <q-tab-panel name="day" :key="$route.path +'.'+ JSON.stringify($route.query)+'.day'">
-          <!-- <div class="text-h6">From: {{ format_time(day.range.start) }} - To: {{ format_time(day.range.end) }} / Updated on: {{ format_time(day.timestamp) }}</div> -->
+          <div class="text-h6">From: {{ format_time(day.range.start) }} - To: {{ format_time(day.range.end) }} / Updated on: {{ format_time(day.timestamp) }}</div>
+          <world-map :cities="day.world_map_cities"/>
 
+          <bar-race
+            :categoryY="'country'"
+            :values="day.country_counter"
+            :label="'Day Per COUNTRY count'"
+            :id="'day.country_counter'" :zoom="apply_zoom"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.day.country_counter'"
+          />
+
+          <!-- <bar-race
+            :categoryY="'country'"
+            :values="day.country_counter"
+            :label="'Per COUNTRY count (sum)'"
+            :id="'country_counter_sum'"
+            :zoom="apply_zoom"
+            :sum="true"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.country_counter_sum'"
+          /> -->
+
+          <bar-race
+            :categoryY="'city'"
+            :values="day.city_counter"
+            :label="'Day Per CITY count'"
+            :id="'day.city_counter'"
+            :zoom="apply_zoom"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.day.city_counter'"
+          />
+
+          <bar-race
+            :categoryY="'continent'"
+            :values="day.continent_counter"
+            :label="'Day Per CONTINENT count'"
+            :id="'day.continent_counter'"
+            :zoom="apply_zoom"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.day.continent'"
+          />
         </q-tab-panel>
       </q-tab-panels>
 
@@ -447,13 +417,13 @@ import JSPipeline from 'js-pipeline'
 
 import PeriodicalPipeline from '@apps/logs/web/pipelines/filter/periodical'
 import MinutePipeline from '@apps/logs/web/pipelines/filter/minute'
-// import HourPipeline from '@apps/logs/web/pipelines/filter/hour'
-// import DayPipeline from '@apps/logs/web/pipelines/filter/day'
+import HourPipeline from '@apps/logs/web/pipelines/filter/hour'
+import DayPipeline from '@apps/logs/web/pipelines/filter/day'
 
 import * as PeriodicalSources from '@apps/logs/web/sources/filter/periodical/index'
 import * as MinuteSources from '@apps/logs/web/sources/filter/minute/index'
-// import * as HourSources from '@apps/logs/web/sources/filter/hour/index'
-// import * as DaySources from '@apps/logs/web/sources/filter/day/index'
+import * as HourSources from '@apps/logs/web/sources/filter/hour/index'
+import * as DaySources from '@apps/logs/web/sources/filter/day/index'
 
 // import { requests, store } from '@apps/logs/web/sources/filter/index'
 
@@ -479,6 +449,9 @@ export default {
         per_host: {},
         range: { start: 0, end: 0},
         timestamp: 0,
+        city_counter: {},
+        country_counter: {},
+        continent_counter: {},
         // body_bytes_sent: {},
         // geoip: {},
         // qs: {},
@@ -499,6 +472,9 @@ export default {
         per_host: {},
         range: { start: 0, end: 0},
         timestamp: 0,
+        city_counter: {},
+        country_counter: {},
+        continent_counter: {},
         // body_bytes_sent: {},
         // geoip: {},
         // qs: {},
@@ -519,6 +495,9 @@ export default {
         per_host: {},
         range: { start: 0, end: 0},
         timestamp: 0,
+        city_counter: {},
+        country_counter: {},
+        continent_counter: {},
         // body_bytes_sent: {},
         // geoip: {},
         // qs: {},
@@ -568,8 +547,8 @@ export default {
       pipeline_id: [
         'input.logs.web.filter.periodical',
         'input.logs.web.filter.minute',
-        // 'input.logs.web.filter.hour',
-        // 'input.logs.web.filter.day'
+        'input.logs.web.filter.hour',
+        'input.logs.web.filter.day'
       ],
 
       // logs: [],
@@ -636,22 +615,22 @@ export default {
             }
           }
         },
-        // 'input.logs.web.filter.hour': {
-        //   range: {
-        //     source: {
-        //       requests: HourSources.requests
-        //       // store: store
-        //     }
-        //   }
-        // },
-        // 'input.logs.web.filter.day': {
-        //   range: {
-        //     source: {
-        //       requests: DaySources.requests
-        //       // store: store
-        //     }
-        //   }
-        // }
+        'input.logs.web.filter.hour': {
+          range: {
+            source: {
+              requests: HourSources.requests
+              // store: store
+            }
+          }
+        },
+        'input.logs.web.filter.day': {
+          range: {
+            source: {
+              requests: DaySources.requests
+              // store: store
+            }
+          }
+        }
 
       }
     }
@@ -743,8 +722,7 @@ export default {
         //   this.$options.pipelines['input.logs.web.filter'].get_input_by_id('input.os').conn_pollers[0].fireEvent('onPeriodicalRequestsUpdated')
         // }
       } else {
-        // const pipelines = [PeriodicalPipeline, MinutePipeline, HourPipeline, DayPipeline]
-        const pipelines = [PeriodicalPipeline, MinutePipeline]
+        const pipelines = [PeriodicalPipeline, MinutePipeline, HourPipeline, DayPipeline]
         Array.each(pipelines, function (Pipeline) {
           let template = Object.clone(Pipeline)
 

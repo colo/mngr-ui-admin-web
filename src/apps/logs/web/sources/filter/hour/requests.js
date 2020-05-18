@@ -1,5 +1,5 @@
 import * as Debug from 'debug'
-const debug = Debug('apps:logs:web:sources:filter:minute:requests')
+const debug = Debug('apps:logs:web:sources:filter:hour:requests')
 
 // import END from '../../../etc/range'
 const end = require('../../../../etc/end')
@@ -157,7 +157,7 @@ const generic_callback = function (data, metadata, key, vm) {
     let range = {start: undefined, end: undefined}
     let per_host_range = {start: undefined, end: undefined}
     let timestamp = data.logs_historical[0].metadata.timestamp // comes sorted by timestamp in desc order, so first item has the biggest timestamp
-    let smallest_start = roundSeconds(timestamp - MINUTE)
+    let smallest_start = roundMinutes(timestamp)
 
     Array.each(data.logs_historical, function (row) {
       let start = row.metadata.range.start
@@ -232,14 +232,14 @@ const generic_callback = function (data, metadata, key, vm) {
     })
 
     // debug('HISTORICAL HOST CALLBACK data %s %o %o', key, per_domain, per_host)
-    vm.$set(vm.minute, 'per_domain', per_domain)
-    vm.$set(vm.minute, 'per_host', per_host)
-    vm.$set(vm.minute, 'range', range)
-    vm.$set(vm.minute, 'timestamp', timestamp)
-    vm.$set(vm.minute, 'world_map_cities', world_map_city_counter)
-    vm.$set(vm.minute, 'city_counter', city_counter)
-    vm.$set(vm.minute, 'country_counter', country_counter)
-    vm.$set(vm.minute, 'continent_counter', continent_counter)
+    vm.$set(vm.hour, 'per_domain', per_domain)
+    vm.$set(vm.hour, 'per_host', per_host)
+    vm.$set(vm.hour, 'range', range)
+    vm.$set(vm.hour, 'timestamp', timestamp)
+    vm.$set(vm.hour, 'world_map_cities', world_map_city_counter)
+    vm.$set(vm.hour, 'city_counter', city_counter)
+    vm.$set(vm.hour, 'country_counter', country_counter)
+    vm.$set(vm.hour, 'continent_counter', continent_counter)
 
     debug('HISTORICAL HOST CALLBACK data %s %o', key, city_counter, country_counter, continent_counter)
     // // data = data.logs_historical[0]
@@ -258,8 +258,8 @@ const host_once_component = {
     let key
 
     if (!_key) {
-      // key = ['periodical.once', 'historical.minute.once', 'historical.hour.once', 'historical.day.once']// 'config.once',
-      key = ['historical.minute.once']// 'config.once',
+      // key = ['periodical.once', 'historical.hour.once', 'historical.hour.once', 'historical.day.once']// 'config.once',
+      key = ['historical.hour.once']// 'config.once',
     }
 
     if (
@@ -337,12 +337,12 @@ const host_once_component = {
         //   }]
         //   break
 
-        case 'historical.minute.once':
+        case 'historical.hour.once':
           // START = END - MINUTE
-          START = (END - (2 * MINUTE) >= 0) ? END - (2 * MINUTE) : 0
+          START = (END - (2 * HOUR) >= 0) ? END - (2 * HOUR) : 0
 
           // filter += "this.r.row('metadata')('type').eq('minute')"
-          filter.push("r.row('metadata')('type').eq('minute')")
+          filter.push("r.row('metadata')('type').eq('hour')")
           // Object.each(vm.filter, function (value, prop) {
           //   filter += ')'
           // })

@@ -85,7 +85,7 @@ export default {
         // debug('cities %o', city, { 'color': self.$options.colorSet.next() })
         _data.push(city)
       })
-
+      this.$options.chart.invalidateData()
       this.$options.imageSeries.data = _data
       debug('cities %o', data)
     }

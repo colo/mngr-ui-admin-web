@@ -32,7 +32,7 @@
       >
         <q-tab name="periodical" label="Now" />
         <q-tab name="minute" label="Last Minute" />
-        <q-tab name="hour" label="Last Hour" />
+        <q-tab name="hour" label="Current Hour" />
         <q-tab name="day" label="Today" />
       </q-tabs>
       <q-separator />
