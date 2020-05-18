@@ -143,7 +143,7 @@ const ss = require('simple-statistics')
 // let per_host = {}
 
 const generic_callback = function (data, metadata, key, vm) {
-  // debug('HISTORICAL HOST CALLBACK data %s %o', key, data)
+  debug('HISTORICAL HOUR HOST CALLBACK data %s %o', key, data)
 
   const END = end()
 
@@ -339,7 +339,7 @@ const host_once_component = {
 
         case 'historical.hour.once':
           // START = END - MINUTE
-          START = (END - (2 * HOUR) >= 0) ? END - (2 * HOUR) : 0
+          START = (END - HOUR >= 0) ? END - HOUR : 0
 
           // filter += "this.r.row('metadata')('type').eq('minute')"
           filter.push("r.row('metadata')('type').eq('hour')")
