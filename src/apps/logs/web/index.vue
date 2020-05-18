@@ -7,16 +7,16 @@
 // import HelloWorld from '@/components/HelloWorld.vue'
 
 import * as Debug from 'debug'
-const debug = Debug('apps:os:pages:webs')
+const debug = Debug('apps:os:pages:web')
 
 // import JSPipeline from 'js-pipeline'
-// import Pipeline from '@apps/logs/pipelines/webs'
+// import Pipeline from '@apps/logs/pipelines/web'
 //
 // import DataSourcesMixin from '@components/mixins/dataSources'
 //
 // // import LogsWebCard from '@apps/logs/components/webCard.vue'
 //
-// import { requests, store } from '@apps/logs/sources/webs/index'
+// import { requests, store } from '@apps/logs/sources/web/index'
 
 export default {
   // mixins: [DataSourcesMixin],

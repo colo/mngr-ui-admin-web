@@ -13,7 +13,7 @@
           <!-- <q-btn flat round dense icon="assignment_ind"/> -->
           <!-- <q-toolbar-title>Quasar</q-toolbar-title> -->
 
-          <q-btn flat class="q-mr-xs" label="Web" :to="{name : 'logs_webs'}"/>
+          <q-btn flat class="q-mr-xs" label="Web" :to="{name : 'logs_web'}"/>
           <q-btn flat class="q-mr-xs" label="Educativa" :to="{name : 'logs_educativa'}"/>
           <!-- <q-btn flat round dense icon="gamepad"/> -->
         </q-toolbar>
@@ -78,22 +78,41 @@
           <q-td key="View" :props="props">
             <!-- View -->
             <!-- <q-btn type="a" :href="props.row.schema+'://'+props.row.uri+':'+props.row.port" target="_blank" flat icon="open_in_new" /> -->
-            <q-btn :to="'/logs/webs/filter/?domain=' + props.row.domain+'&host=' + props.row.host+'&path=' + props.row.path" flat icon="open_in_browser" />
+            <q-btn
+              v-on:click="destroy_pipelines()"
+              :to="'/logs/web/filter/?domain=' + props.row.domain+'&host=' + props.row.host+'&path=' + props.row.path"
+              flat
+              icon="open_in_browser"
+            />
           </q-td>
 
           <q-td key="domain" :props="props">
             <!-- <q-btn type="a" :href="props.row.schema+'://'+props.row.uri+':'+props.row.port" target="_blank" flat icon="open_in_new" /> -->
-            <q-btn :to="'/logs/webs/filter/?domain=' + props.row.domain" flat icon="open_in_browser" :label="props.row.domain"/>
+            <q-btn
+              v-on:click="destroy_pipelines()"
+              :to="'/logs/web/filter/?domain=' + props.row.domain" flat icon="open_in_browser"
+              :label="props.row.domain"
+            />
           </q-td>
 
           <q-td key="host" :props="props">
-            <q-btn :to="'/logs/webs/filter/?host=' + props.row.host" flat icon="open_in_browser" :label="props.row.host"/>
+            <q-btn
+              v-on:click="destroy_pipelines()"
+              :to="'/logs/web/filter/?host=' + props.row.host"
+              flat
+              icon="open_in_browser"
+              :label="props.row.host"
+            />
           </q-td>
           <!-- <q-td key="timestamp" :props="props">
             {{ format_time(props.row.timestamp) }}
           </q-td> -->
           <q-td key="path" :props="props">
-            <q-btn :to="'/logs/webs/filter/?path=' + props.row.path" flat icon="open_in_browser" :label="props.row.path"/>
+            <q-btn
+              v-on:click="destroy_pipelines()"
+              :to="'/logs/web/filter/?path=' + props.row.path" flat icon="open_in_browser"
+              :label="props.row.path"
+            />
           </q-td>
         </q-tr>
         </template>
@@ -169,16 +188,16 @@ export default {
         { name: 'path', align: 'left', label: 'Type', field: 'path', sortable: true }
       ],
 
-      // web: undefined,
+      // webs: undefined,
       // webs_paths: {},
       // paths: [],
       /**
       * dataSources
       **/
       store: false,
-      pipeline_id: 'input.logs.webs.all',
+      pipeline_id: 'input.logs.web.all',
 
-      id: 'logs.webs.all',
+      id: 'logs.web.all',
       path: 'all',
 
       components: {
@@ -215,16 +234,16 @@ export default {
     create_pipelines: function (next) {
       debug('create_pipelines %o', this.$options.pipelines)
 
-      if (this.$options.pipelines['input.logs.webs.all'] && this.$options.pipelines['input.logs.webs.all'].get_input_by_id('input.logs.webs.all')) {
+      if (this.$options.pipelines['input.logs.web.all'] && this.$options.pipelines['input.logs.web.all'].get_input_by_id('input.logs.web.all')) {
         // let requests = this.__components_sources_to_requests(this.components)
         // if (requests.once) {
-        //   this.$options.pipelines['input.logs.webs.all'].get_input_by_id('input.logs.webs.all').conn_pollers[0].options.requests.once.combine(requests.once)
-        //   this.$options.pipelines['input.logs.webs.all'].get_input_by_id('input.logs.webs.all').conn_pollers[0].fireEvent('onOnceRequestsUpdated')
+        //   this.$options.pipelines['input.logs.web.all'].get_input_by_id('input.logs.web.all').conn_pollers[0].options.requests.once.combine(requests.once)
+        //   this.$options.pipelines['input.logs.web.all'].get_input_by_id('input.logs.web.all').conn_pollers[0].fireEvent('onOnceRequestsUpdated')
         // }
         //
         // if (requests.periodical) {
-        //   this.$options.pipelines['input.logs.webs.all'].get_input_by_id('input.logs.webs.all').conn_pollers[0].options.requests.periodical.combine(requests.periodical)
-        //   this.$options.pipelines['input.logs.webs.all'].get_input_by_id('input.logs.webs.all').conn_pollers[0].fireEvent('onPeriodicalRequestsUpdated')
+        //   this.$options.pipelines['input.logs.web.all'].get_input_by_id('input.logs.web.all').conn_pollers[0].options.requests.periodical.combine(requests.periodical)
+        //   this.$options.pipelines['input.logs.web.all'].get_input_by_id('input.logs.web.all').conn_pollers[0].fireEvent('onPeriodicalRequestsUpdated')
         // }
       } else {
         let template = Object.clone(Pipeline)

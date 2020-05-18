@@ -1,8 +1,8 @@
 import * as Debug from 'debug'
-const debug = Debug('apps:logs:web:sources:filter:requests')
+const debug = Debug('apps:logs:web:sources:filter:periodical:requests')
 
 // import END from '../../../etc/range'
-const end = require('../../../etc/end')
+const end = require('../../../../etc/end')
 
 const SECOND = 1000
 const MINUTE = 60 * SECOND
@@ -31,7 +31,7 @@ let referer_counter = {}
 
 let type_counter = {}
 
-import static_types from '../../data/static_extentions'
+import static_types from '../../../data/static_extentions'
 const ss = require('simple-statistics')
 
 const _merge = function (prop, val1, val2) {
@@ -142,7 +142,7 @@ const generic_callback = function (data, metadata, key, vm) {
   if (/periodical/.test(key) && data) { // (data.logs || Object.getLength(data) > 0)
     // const START = END - MINUTE
     // const START = END - (15 * SECOND)
-    const START = (END - (15 * SECOND) >= 0) ? END - (15 * SECOND) : 0
+    const START = (END - (5 * SECOND) >= 0) ? END - (5 * SECOND) : 0
 
     let _data
     if (data.logs) _data = data.logs // comes from 'Range'
@@ -484,38 +484,39 @@ const generic_callback = function (data, metadata, key, vm) {
     vm.$set(vm.periodical, 'user_agent_engine_counter', periodical_user_agent_engine_counter)
     vm.$set(vm.periodical, 'user_agent_browser_counter', periodical_user_agent_browser_counter)
     vm.$set(vm.periodical, 'user_agent_device_counter', periodical_user_agent_device_counter)
-  } else if (/historical/.test(key) && data.logs_historical && Object.getLength(data.logs_historical) > 0) {
-    // debug('HISTORICAL HOST CALLBACK data %s %o', key, data)
-    let type
-    let vm_data = {}
-    Object.each(data.logs_historical, function (row) {
-      if (!type) type = row.metadata.type
-      Object.each(row.data, function (row_data, prop) {
-        if (!vm_data[prop]) {
-          vm_data[prop] = JSON.parse(JSON.stringify(row_data[0].value))
-        } else if (row_data[0] && row_data[0].value) {
-          // if (prop === 'user_agent') {
-          //   // debug('HISTORICAL HOST CALLBACK data %s %s %o %o', key, type, prop, vm_data[prop], row_data)
-          //   debug('HISTORICAL HOST CALLBACK data %s %s %o %o', key, type, prop)
-          //   vm_data[prop] = _merge(prop, vm_data[prop], JSON.parse(JSON.stringify(row_data[0].value)))
-          // }
-          vm_data[prop] = _merge(prop, vm_data[prop], JSON.parse(JSON.stringify(row_data[0].value)))
-          // debug('HISTORICAL HOST CALLBACK data %s %s %o', key, type, prop, row_data)
-        }
-      })
-
-      if (Object.getLength(vm_data) > 0) {
-        vm[type] = vm_data
-      }
-    })
-
-    debug('HISTORICAL HOST CALLBACK data %s %s %o', key, type, vm_data)
-    // data = data.logs_historical[0]
-
-    // if (/minute/.test(key)){
-    //   const START = END - MINUTE
-    // }
   }
+  // else if (/historical/.test(key) && data.logs_historical && Object.getLength(data.logs_historical) > 0) {
+  //   // debug('HISTORICAL HOST CALLBACK data %s %o', key, data)
+  //   let type
+  //   let vm_data = {}
+  //   Object.each(data.logs_historical, function (row) {
+  //     if (!type) type = row.metadata.type
+  //     Object.each(row.data, function (row_data, prop) {
+  //       if (!vm_data[prop]) {
+  //         vm_data[prop] = JSON.parse(JSON.stringify(row_data[0].value))
+  //       } else if (row_data[0] && row_data[0].value) {
+  //         // if (prop === 'user_agent') {
+  //         //   // debug('HISTORICAL HOST CALLBACK data %s %s %o %o', key, type, prop, vm_data[prop], row_data)
+  //         //   debug('HISTORICAL HOST CALLBACK data %s %s %o %o', key, type, prop)
+  //         //   vm_data[prop] = _merge(prop, vm_data[prop], JSON.parse(JSON.stringify(row_data[0].value)))
+  //         // }
+  //         vm_data[prop] = _merge(prop, vm_data[prop], JSON.parse(JSON.stringify(row_data[0].value)))
+  //         // debug('HISTORICAL HOST CALLBACK data %s %s %o', key, type, prop, row_data)
+  //       }
+  //     })
+  //
+  //     if (Object.getLength(vm_data) > 0) {
+  //       vm[type] = vm_data
+  //     }
+  //   })
+  //
+  //   debug('HISTORICAL HOST CALLBACK data %s %s %o', key, type, vm_data)
+  //   // data = data.logs_historical[0]
+  //
+  //   // if (/minute/.test(key)){
+  //   //   const START = END - MINUTE
+  //   // }
+  // }
 }
 
 const host_once_component = {
@@ -526,8 +527,7 @@ const host_once_component = {
     let key
 
     if (!_key) {
-      key = ['periodical.once', 'historical.minute.once', 'historical.hour.once', 'historical.day.once']// 'config.once',
-      // key = ['periodical.once']// 'config.once',
+      key = ['periodical.once']// , 'historical.minute.once', 'historical.hour.once', 'historical.day.once'
     }
 
     if (
@@ -555,7 +555,7 @@ const host_once_component = {
         case 'periodical.once':
           // START = END - MINUTE
           // START = END - (15 * SECOND)
-          START = (END - (15 * SECOND) >= 0) ? END - (15 * SECOND) : 0
+          START = (END - (5 * SECOND) >= 0) ? END - (5 * SECOND) : 0
 
           filter += "this.r.row('metadata')('type').eq('periodical')"
           Object.each(vm.filter, function (value, prop) {
@@ -599,161 +599,161 @@ const host_once_component = {
           }]
           break
 
-        case 'historical.minute.once':
-          // START = END - MINUTE
-          START = (END - MINUTE >= 0) ? END - MINUTE : 0
-
-          filter += "this.r.row('metadata')('type').eq('minute')"
-          Object.each(vm.filter, function (value, prop) {
-            filter += ')'
-          })
-
-          filter += ')' // -> this.r.row('metadata')('tag').contains('web').and(
-
-          debug('FILTER STRING %s', filter)
-
-          source = [{
-            params: { id: _key },
-            path: 'all',
-            // range: 'posix ' + (Date.now() - (7 * MINUTE)) + '-' + Date.now() + '/*',
-            range: 'posix ' + START + '-' + END + '/*',
-            query: {
-              'from': 'logs_historical',
-              // 'register': 'changes',
-              'format': 'stat',
-              'index': false,
-              /**
-              * right now needed to match OUTPUT 'id' with this query (need to @fix)
-              **/
-              'q': [
-                // {
-                //   'metadata': [
-                //     'timestamp',
-                //     'path'
-                //   ]
-                // },
-                'data',
-                'metadata'
-              ],
-              'transformation': [
-                {
-                  'orderBy': { 'index': 'r.desc(timestamp)' }
-                }
-              ],
-              filter: filter
-              // 'filter': [
-              //   { 'metadata': vm.filter },
-              //   "r.row('metadata')('type').eq('minute')"
-              // ]
-
-            }
-          }]
-
-          break
-
-        case 'historical.hour.once':
-          // START = END - HOUR
-          START = START(END - HOUR >= 0) ? END - HOUR : 0
-
-          filter += "this.r.row('metadata')('type').eq('hour')"
-          Object.each(vm.filter, function (value, prop) {
-            filter += ')'
-          })
-
-          filter += ')' // -> this.r.row('metadata')('tag').contains('web').and(
-
-          debug('FILTER STRING %s', filter)
-
-          source = [{
-            params: { id: _key },
-            path: 'all',
-            // range: 'posix ' + (Date.now() - (7 * MINUTE)) + '-' + Date.now() + '/*',
-            range: 'posix ' + START + '-' + END + '/*',
-            query: {
-              'from': 'logs_historical',
-              // 'register': 'changes',
-              'format': 'stat',
-              'index': false,
-              /**
-              * right now needed to match OUTPUT 'id' with this query (need to @fix)
-              **/
-              'q': [
-                // {
-                //   'metadata': [
-                //     'timestamp',
-                //     'path'
-                //   ]
-                // },
-                'data',
-                'metadata'
-              ],
-              'transformation': [
-                {
-                  'orderBy': { 'index': 'r.desc(timestamp)' }
-                }
-              ],
-              filter: filter
-              // 'filter': [
-              //   { 'metadata': vm.filter },
-              //   "r.row('metadata')('type').eq('hour')"
-              // ]
-
-            }
-          }]
-
-          break
-
-        case 'historical.day.once':
-          // START = END - DAY
-          START = START(END - DAY >= 0) ? END - DAY : 0
-
-          filter += "this.r.row('metadata')('type').eq('day')"
-          Object.each(vm.filter, function (value, prop) {
-            filter += ')'
-          })
-
-          filter += ')' // -> this.r.row('metadata')('tag').contains('web').and(
-
-          debug('FILTER STRING %s', filter)
-
-          source = [{
-            params: { id: _key },
-            path: 'all',
-            // range: 'posix ' + (Date.now() - (7 * MINUTE)) + '-' + Date.now() + '/*',
-            range: 'posix ' + START + '-' + END + '/*',
-            query: {
-              'from': 'logs_historical',
-              // 'register': 'changes',
-              'format': 'stat',
-              'index': false,
-              /**
-                * right now needed to match OUTPUT 'id' with this query (need to @fix)
-                **/
-              'q': [
-                // {
-                //   'metadata': [
-                //     'timestamp',
-                //     'path'
-                //   ]
-                // },
-                'data',
-                'metadata'
-              ],
-              'transformation': [
-                {
-                  'orderBy': { 'index': 'r.desc(timestamp)' }
-                }
-              ],
-              filter: filter
-              // 'filter': [
-              //   { 'metadata': vm.filter },
-              //   "r.row('metadata')('type').eq('hour')"
-              // ]
-
-            }
-          }]
-
-          break
+        // case 'historical.minute.once':
+        //   // START = END - MINUTE
+        //   START = (END - MINUTE >= 0) ? END - MINUTE : 0
+        //
+        //   filter += "this.r.row('metadata')('type').eq('minute')"
+        //   Object.each(vm.filter, function (value, prop) {
+        //     filter += ')'
+        //   })
+        //
+        //   filter += ')' // -> this.r.row('metadata')('tag').contains('web').and(
+        //
+        //   debug('FILTER STRING %s', filter)
+        //
+        //   source = [{
+        //     params: { id: _key },
+        //     path: 'all',
+        //     // range: 'posix ' + (Date.now() - (7 * MINUTE)) + '-' + Date.now() + '/*',
+        //     range: 'posix ' + START + '-' + END + '/*',
+        //     query: {
+        //       'from': 'logs_historical',
+        //       // 'register': 'changes',
+        //       'format': 'stat',
+        //       'index': false,
+        //       /**
+        //       * right now needed to match OUTPUT 'id' with this query (need to @fix)
+        //       **/
+        //       'q': [
+        //         // {
+        //         //   'metadata': [
+        //         //     'timestamp',
+        //         //     'path'
+        //         //   ]
+        //         // },
+        //         'data',
+        //         'metadata'
+        //       ],
+        //       'transformation': [
+        //         {
+        //           'orderBy': { 'index': 'r.desc(timestamp)' }
+        //         }
+        //       ],
+        //       filter: filter
+        //       // 'filter': [
+        //       //   { 'metadata': vm.filter },
+        //       //   "r.row('metadata')('type').eq('minute')"
+        //       // ]
+        //
+        //     }
+        //   }]
+        //
+        //   break
+        //
+        // case 'historical.hour.once':
+        //   // START = END - HOUR
+        //   START = START(END - HOUR >= 0) ? END - HOUR : 0
+        //
+        //   filter += "this.r.row('metadata')('type').eq('hour')"
+        //   Object.each(vm.filter, function (value, prop) {
+        //     filter += ')'
+        //   })
+        //
+        //   filter += ')' // -> this.r.row('metadata')('tag').contains('web').and(
+        //
+        //   debug('FILTER STRING %s', filter)
+        //
+        //   source = [{
+        //     params: { id: _key },
+        //     path: 'all',
+        //     // range: 'posix ' + (Date.now() - (7 * MINUTE)) + '-' + Date.now() + '/*',
+        //     range: 'posix ' + START + '-' + END + '/*',
+        //     query: {
+        //       'from': 'logs_historical',
+        //       // 'register': 'changes',
+        //       'format': 'stat',
+        //       'index': false,
+        //       /**
+        //       * right now needed to match OUTPUT 'id' with this query (need to @fix)
+        //       **/
+        //       'q': [
+        //         // {
+        //         //   'metadata': [
+        //         //     'timestamp',
+        //         //     'path'
+        //         //   ]
+        //         // },
+        //         'data',
+        //         'metadata'
+        //       ],
+        //       'transformation': [
+        //         {
+        //           'orderBy': { 'index': 'r.desc(timestamp)' }
+        //         }
+        //       ],
+        //       filter: filter
+        //       // 'filter': [
+        //       //   { 'metadata': vm.filter },
+        //       //   "r.row('metadata')('type').eq('hour')"
+        //       // ]
+        //
+        //     }
+        //   }]
+        //
+        //   break
+        //
+        // case 'historical.day.once':
+        //   // START = END - DAY
+        //   START = START(END - DAY >= 0) ? END - DAY : 0
+        //
+        //   filter += "this.r.row('metadata')('type').eq('day')"
+        //   Object.each(vm.filter, function (value, prop) {
+        //     filter += ')'
+        //   })
+        //
+        //   filter += ')' // -> this.r.row('metadata')('tag').contains('web').and(
+        //
+        //   debug('FILTER STRING %s', filter)
+        //
+        //   source = [{
+        //     params: { id: _key },
+        //     path: 'all',
+        //     // range: 'posix ' + (Date.now() - (7 * MINUTE)) + '-' + Date.now() + '/*',
+        //     range: 'posix ' + START + '-' + END + '/*',
+        //     query: {
+        //       'from': 'logs_historical',
+        //       // 'register': 'changes',
+        //       'format': 'stat',
+        //       'index': false,
+        //       /**
+        //         * right now needed to match OUTPUT 'id' with this query (need to @fix)
+        //         **/
+        //       'q': [
+        //         // {
+        //         //   'metadata': [
+        //         //     'timestamp',
+        //         //     'path'
+        //         //   ]
+        //         // },
+        //         'data',
+        //         'metadata'
+        //       ],
+        //       'transformation': [
+        //         {
+        //           'orderBy': { 'index': 'r.desc(timestamp)' }
+        //         }
+        //       ],
+        //       filter: filter
+        //       // 'filter': [
+        //       //   { 'metadata': vm.filter },
+        //       //   "r.row('metadata')('type').eq('hour')"
+        //       // ]
+        //
+        //     }
+        //   }]
+        //
+        //   break
       }
     }
 

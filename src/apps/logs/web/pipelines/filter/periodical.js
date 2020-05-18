@@ -3,7 +3,7 @@
 // import InputIOApp from '@libs/input/poller/io.app'
 import { EventBus } from '@libs/eventbus'
 
-import InputIO from '../../pipelines/input/io'
+import InputIO from '../../../pipelines/input/io'
 
 // import DefaultConn from '@etc/default.io'
 
@@ -13,7 +13,7 @@ import InputIO from '../../pipelines/input/io'
 // let buffer = {}
 
 import * as Debug from 'debug'
-const debug = Debug('apps:logs:web:pipelines:filter')
+const debug = Debug('apps:logs:web:pipelines:filter:periodical')
 
 let qs = require('qs')
 
@@ -26,7 +26,7 @@ import IO from '@etc/logs.io'
 let ios = []
 Array.each(IO(), function (io, index) {
   ios.push({
-    id: 'input.logs.webs.filter.' + index,
+    id: 'input.logs.web.filter.periodical.' + index,
     module: InputIO,
     index: index
   },)
@@ -37,14 +37,14 @@ export default {
     {
       poll: {
         suspended: true,
-        id: 'input.logs.webs.filter',
+        id: 'input.logs.web.filter.periodical',
         conn: ios,
         // conn: [
         //
         //   Object.merge(
         //     // Object.clone(DefaultConn),
         //     {
-        //       id: 'input.logs.webs.filter',
+        //       id: 'input.logs.web.filter.periodical',
         //       module: InputIO
         //
         //     }
@@ -72,7 +72,7 @@ export default {
       next(doc, opts, next, pipeline)
     },
     function (doc, opts, next, pipeline) {
-      debug('MERGE %o %o', doc, buffer, pipeline.get_input_by_id('input.logs.webs.filter').conn_pollers)
+      debug('MERGE %o %o', doc, buffer, pipeline.get_input_by_id('input.logs.web.filter.periodical').conn_pollers)
 
       let timeout
 
@@ -125,9 +125,9 @@ export default {
       }
 
       // if (buffer.length === 0) { buffer_expire = Date.now() + expire_buffer_timeout } // start counting expire time on first doc
-      if (buffer.length < Object.getLength(pipeline.get_input_by_id('input.logs.webs.filter').conn_pollers)) { buffer.push(Object.clone(doc)) }
+      if (buffer.length < Object.getLength(pipeline.get_input_by_id('input.logs.web.filter.periodical').conn_pollers)) { buffer.push(Object.clone(doc)) }
 
-      if (buffer.length >= Object.getLength(pipeline.get_input_by_id('input.logs.webs.filter').conn_pollers)) { // || buffer_expire < Date.now()
+      if (buffer.length >= Object.getLength(pipeline.get_input_by_id('input.logs.web.filter.periodical').conn_pollers)) { // || buffer_expire < Date.now()
         _merge()
       }
       // else {
@@ -140,15 +140,15 @@ export default {
     // function (payload) {
     //   debug('OUTPUT', payload)
     //
-    //   if (!payload.err) { EventBus.$emit('input.logs.webs.filter.' + payload.metadata.input, payload) }
+    //   if (!payload.err) { EventBus.$emit('input.logs.web.filter.periodical.' + payload.metadata.input, payload) }
     //
     //   // if (!payload.err) { EventBus.$emit('log', payload) }
     // }
     function (payload) {
-      if (!payload.err && /^input\.logs\.webs\.filter\[.*\]$/.test(payload.id)) {
-        payload.id = payload.id.replace('input.logs.webs.filter[', '').slice(0, -1)
+      if (!payload.err && /^input\.logs\.web\.filter\.periodical\[.*\]$/.test(payload.id)) {
+        payload.id = payload.id.replace('input.logs.web.filter.periodical[', '').slice(0, -1)
         debug('OUTPUT', payload)
-        EventBus.$emit('input.logs.webs.filter.' + payload.metadata.input, payload)
+        EventBus.$emit('input.logs.web.filter.periodical.' + payload.metadata.input, payload)
       }
 
       // if (!payload.err) { EventBus.$emit('log', payload) }

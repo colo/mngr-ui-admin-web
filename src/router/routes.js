@@ -211,23 +211,23 @@ const routes = [
             path: '',
             name: 'logs_all',
             // redirect: { name: 'logs_all' },
-            component: () => import(/* webpackChunkName: "logs.webs" */ '@apps/logs/pages/all.vue'),
+            component: () => import(/* webpackChunkName: "logs.web" */ '@apps/logs/pages/all.vue'),
             meta: {
               breadcrumb: { label: 'Logs All', icon: 'widgets', app: 'logs' }
             }
             // children: [
             //   {
             //     path: '',
-            //     name: 'logs_webs_all',
-            //     component: () => import(/* webpackChunkName: "logs.webs.all" */ '@apps/logs/pages/webs/all.vue'),
+            //     name: 'logs_web_all',
+            //     component: () => import(/* webpackChunkName: "logs.web.all" */ '@apps/logs/pages/web/all.vue'),
             //     meta: {
             //       breadcrumb: { label: 'Logs Webs All', icon: 'widgets', app: 'logs' }
             //     }
             //   },
             //   {
             //     path: 'filter',
-            //     name: 'logs_webs_filter',
-            //     component: () => import(/* webpackChunkName: "logs.webs.filter" */ '@apps/logs/pages/webs/filter.vue'),
+            //     name: 'logs_web_filter',
+            //     component: () => import(/* webpackChunkName: "logs.web.filter" */ '@apps/logs/pages/web/filter.vue'),
             //     meta: {
             //       breadcrumb: { label: 'Logs Webs Filter', icon: 'widgets', app: 'logs' }
             //     }
@@ -262,26 +262,26 @@ const routes = [
             ]
           },
           {
-            path: 'webs',
-            name: 'logs_webs',
-            redirect: { name: 'logs_webs_all' },
-            component: () => import(/* webpackChunkName: "logs.webs" */ '@apps/logs/web/index.vue'),
+            path: 'web',
+            name: 'logs_web',
+            redirect: { name: 'logs_web_all' },
+            component: () => import(/* webpackChunkName: "logs.web" */ '@apps/logs/web/index.vue'),
             meta: {
               breadcrumb: { label: 'Logs Webs', icon: 'widgets', app: 'logs' }
             },
             children: [
               {
                 path: '',
-                name: 'logs_webs_all',
-                component: () => import(/* webpackChunkName: "logs.webs.all" */ '@apps/logs/web/pages/all.vue'),
+                name: 'logs_web_all',
+                component: () => import(/* webpackChunkName: "logs.web.all" */ '@apps/logs/web/pages/all.vue'),
                 meta: {
                   breadcrumb: { label: 'Logs Webs All', icon: 'widgets', app: 'logs' }
                 }
               },
               {
                 path: 'filter',
-                name: 'logs_webs_filter',
-                component: () => import(/* webpackChunkName: "logs.webs.filter" */ '@apps/logs/web/pages/filter.vue'),
+                name: 'logs_web_filter',
+                component: () => import(/* webpackChunkName: "logs.web.filter" */ '@apps/logs/web/pages/filter.vue'),
                 meta: {
                   breadcrumb: { label: 'Logs Webs Filter', icon: 'widgets', app: 'logs' }
                 }

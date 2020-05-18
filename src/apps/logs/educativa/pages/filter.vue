@@ -15,7 +15,7 @@
           <!-- <q-btn flat round dense icon="assignment_ind"/> -->
           <!-- <q-toolbar-title>Quasar</q-toolbar-title> -->
 
-          <q-btn flat class="q-mr-xs" label="Web" :to="{name : 'logs_webs'}"/>
+          <q-btn flat class="q-mr-xs" label="Web" :to="{name : 'logs_web'}"/>
           <q-btn flat class="q-mr-xs" label="Educativa" :to="{name : 'logs_educativa'}"/>
           <!-- <q-btn flat round dense icon="gamepad"/> -->
         </q-toolbar>
@@ -33,6 +33,7 @@
         <q-tab name="periodical" label="Now" />
         <q-tab name="minute" label="Last Minute" />
         <q-tab name="hour" label="Last Hour" />
+        <q-tab name="day" label="Today" />
       </q-tabs>
       <q-separator />
       <q-tab-panels v-model="range_tab">
@@ -185,6 +186,31 @@
             :id="'hour_per_host_sum'"
             :zoom="apply_zoom"
             :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour_per_host_sum'"
+            />
+          <!-- :zoom="apply_zoom" -->
+        </q-tab-panel>
+
+        <q-tab-panel name="day" :key="$route.path +'.'+ JSON.stringify($route.query)+'.day'">
+          <div class="text-h6">From: {{ format_time(day.range.start) }} - To: {{ format_time(day.range.end) }} / Updated on: {{ format_time(day.timestamp) }}</div>
+          <bar-race
+            :categoryY="'domain'"
+            :valueX="'hits'"
+            :values="day.per_domain"
+            :label="'Day Per DOMAIN - CGI count'"
+            :id="'day_per_domain_sum'"
+            :zoom="apply_zoom"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.day_per_domain_sum'"
+            />
+          <!-- :zoom="apply_zoom" -->
+
+          <bar-race
+            :categoryY="'host'"
+            :valueX="'hits'"
+            :values="day.per_host"
+            :label="'Day Per HOST - CGI count'"
+            :id="'day_per_host_sum'"
+            :zoom="apply_zoom"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.day_per_host_sum'"
             />
           <!-- :zoom="apply_zoom" -->
         </q-tab-panel>
@@ -425,10 +451,12 @@ import JSPipeline from 'js-pipeline'
 import PeriodicalPipeline from '@apps/logs/educativa/pipelines/filter/periodical'
 import MinutePipeline from '@apps/logs/educativa/pipelines/filter/minute'
 import HourPipeline from '@apps/logs/educativa/pipelines/filter/hour'
+import DayPipeline from '@apps/logs/educativa/pipelines/filter/day'
 
 import * as PeriodicalSources from '@apps/logs/educativa/sources/filter/periodical/index'
 import * as MinuteSources from '@apps/logs/educativa/sources/filter/minute/index'
 import * as HourSources from '@apps/logs/educativa/sources/filter/hour/index'
+import * as DaySources from '@apps/logs/educativa/sources/filter/day/index'
 
 // const MAX_FEED_DATA = 10
 import moment from 'moment'
@@ -438,7 +466,7 @@ export default {
 
   components: { BarRace },
 
-  name: 'LogsWebFilter',
+  name: 'LogsEducativaFilter',
 
   data () {
     return {
@@ -448,20 +476,10 @@ export default {
       range_tab: 'minute',
 
       day: {
-        // body_bytes_sent: {},
-        // geoip: {},
-        // qs: {},
-        // referer: {},
-        // pathname: {},
-        // method: {},
-        // remote_addr: {},
-        // remote_user: {},
-        // status: {},
-        // unique_visitors: 0,
-        // unique_visitors_by_ip: {},
-        // user_agent: {},
-        //
-        // type_counter: {}
+        per_domain: {},
+        per_host: {},
+        range: { start: 0, end: 0},
+        timestamp: 0,
       },
       hour: {
         per_domain: {},
@@ -543,7 +561,12 @@ export default {
       },
 
       store: false,
-      pipeline_id: ['input.logs.educativa.filter.periodical', 'input.logs.educativa.filter.minute', 'input.logs.educativa.filter.hour'],
+      pipeline_id: [
+        'input.logs.educativa.filter.periodical',
+        'input.logs.educativa.filter.minute',
+        'input.logs.educativa.filter.hour',
+        'input.logs.educativa.filter.day'
+      ],
 
       // logs: [],
 
@@ -595,45 +618,32 @@ export default {
       components: {
         'input.logs.educativa.filter.periodical': {
           range: {
-            // source: {
-            //   requests: {
-            //     once: [],
-            //     periodical: []
-            //   }
-            // }
             source: {
               requests: PeriodicalSources.requests
-
               // store: store
             }
           }
         },
         'input.logs.educativa.filter.minute': {
           range: {
-            // source: {
-            //   requests: {
-            //     once: [],
-            //     periodical: []
-            //   }
-            // }
             source: {
               requests: MinuteSources.requests
-
               // store: store
             }
           }
         },
         'input.logs.educativa.filter.hour': {
           range: {
-            // source: {
-            //   requests: {
-            //     once: [],
-            //     periodical: []
-            //   }
-            // }
             source: {
               requests: HourSources.requests
-
+              // store: store
+            }
+          }
+        },
+        'input.logs.educativa.filter.day': {
+          range: {
+            source: {
+              requests: DaySources.requests
               // store: store
             }
           }
@@ -729,7 +739,7 @@ export default {
         //   this.$options.pipelines['input.logs.educativa.filter'].get_input_by_id('input.os').conn_pollers[0].fireEvent('onPeriodicalRequestsUpdated')
         // }
       } else {
-        const pipelines = [PeriodicalPipeline, MinutePipeline, HourPipeline]
+        const pipelines = [PeriodicalPipeline, MinutePipeline, HourPipeline, DayPipeline]
         Array.each(pipelines, function (Pipeline) {
           let template = Object.clone(Pipeline)
 

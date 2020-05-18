@@ -6,7 +6,7 @@
           <q-breadcrumbs active-color="white" style="font-size: 16px">
             <q-breadcrumbs-el label="Home" icon="home" to="/"/>
             <q-breadcrumbs-el label="Logs" :to="{name : 'logs'}"/>
-            <q-breadcrumbs-el label="Web" :to="{name : 'logs_webs'}"/>
+            <q-breadcrumbs-el label="Web" :to="{name : 'logs_web'}"/>
             <q-breadcrumbs-el label="Filter" v-if="type"/>
             <q-breadcrumbs-el :label="type +':'+ web" v-if="type && web" />
           </q-breadcrumbs>
@@ -15,150 +15,325 @@
           <!-- <q-btn flat round dense icon="assignment_ind"/> -->
           <!-- <q-toolbar-title>Quasar</q-toolbar-title> -->
 
-          <q-btn flat class="q-mr-xs" label="Web" :to="{name : 'logs_webs'}"/>
+          <q-btn flat class="q-mr-xs" label="Web" :to="{name : 'logs_web'}"/>
           <q-btn flat class="q-mr-xs" label="Educativa" :to="{name : 'logs_educativa'}"/>
           <!-- <q-btn flat round dense icon="gamepad"/> -->
         </q-toolbar>
       </div>
 
-      <world-map :cities="periodical.world_map_cities"/>
+      <q-tabs
+        v-model="range_tab"
+        dense
+        class="text-grey"
+        active-color="primary"
+        indicator-color="primary"
+        align="justify"
+        narrow-indicator
+      >
+        <q-tab name="periodical" label="Now" />
+        <q-tab name="minute" label="Last Minute" />
+        <q-tab name="hour" label="Last Hour" />
+        <q-tab name="day" label="Today" />
+      </q-tabs>
+      <q-separator />
+      <q-tab-panels v-model="range_tab">
+        <!-- animated -->
+        <q-tab-panel name="periodical" :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical'">
+          <!-- <div class="text-h6">From: {{ format_time(periodical.range.start) }} - To: {{ format_time(periodical.range.end) }} / Updated on: {{ format_time(periodical.timestamp) }}</div> -->
+          <world-map :cities="periodical.world_map_cities"/>
 
-      <bar-race
-        :categoryY="'country'"
-        :values="periodical.country_counter"
-        :label="'Per COUNTRY count (last 5 secs)'"
-        :id="'country_counter'" :zoom="apply_zoom"
-        :key="$route.path +'.'+ JSON.stringify($route.query)+'.country_counter'"
-      />
+          <bar-race
+            :categoryY="'country'"
+            :values="periodical.country_counter"
+            :label="'Per COUNTRY count (last 5 secs)'"
+            :id="'country_counter'" :zoom="apply_zoom"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.country_counter'"
+          />
 
-      <bar-race
-        :categoryY="'country'"
-        :values="periodical.country_counter"
-        :label="'Per COUNTRY count (sum)'"
-        :id="'country_counter_sum'"
-        :zoom="apply_zoom"
-        :sum="true"
-        :key="$route.path +'.'+ JSON.stringify($route.query)+'.country_counter_sum'"
-      />
+          <bar-race
+            :categoryY="'country'"
+            :values="periodical.country_counter"
+            :label="'Per COUNTRY count (sum)'"
+            :id="'country_counter_sum'"
+            :zoom="apply_zoom"
+            :sum="true"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.country_counter_sum'"
+          />
 
-      <bar-race
-        :categoryY="'city'"
-        :values="periodical.city_counter"
-        :label="'Per CITY count (last 5 secs)'"
-        :id="'city_counter'"
-        :zoom="apply_zoom"
-        :key="$route.path +'.'+ JSON.stringify($route.query)+'.city_counter'"
-      />
+          <bar-race
+            :categoryY="'city'"
+            :values="periodical.city_counter"
+            :label="'Per CITY count (last 5 secs)'"
+            :id="'city_counter'"
+            :zoom="apply_zoom"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.city_counter'"
+          />
 
-      <bar-race
-        :categoryY="'city'"
-        :values="periodical.city_counter"
-        :label="'Per CITY count (sum)'"
-        :id="'city_counter_sum'"
-        :zoom="apply_zoom"
-        :sum="true"
-        :key="$route.path +'.'+ JSON.stringify($route.query)+'.city_counter_sum'"
-      />
+          <bar-race
+            :categoryY="'city'"
+            :values="periodical.city_counter"
+            :label="'Per CITY count (sum)'"
+            :id="'city_counter_sum'"
+            :zoom="apply_zoom"
+            :sum="true"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.city_counter_sum'"
+          />
 
-      <!-- <div v-for="(val, prop) in minute" :key="'minute.'+prop">
-        minute: {{prop}} - {{val}} <br/>
-      </div>
-      <hr>
+          <!-- <div v-for="(val, prop) in minute" :key="'minute.'+prop">
+            minute: {{prop}} - {{val}} <br/>
+          </div>
+          <hr>
 
-      <div v-for="(val, prop) in hour" :key="'hour.'+prop">
-        hour: {{prop}} - {{val}} <br/>
-      </div>
-      <hr>
+          <div v-for="(val, prop) in hour" :key="'hour.'+prop">
+            hour: {{prop}} - {{val}} <br/>
+          </div>
+          <hr>
 
-      <div v-for="(val, prop) in day" :key="'day.'+prop">
-        day: {{prop}} - {{val}} <br/>
-      </div>
-      <hr> -->
+          <div v-for="(val, prop) in day" :key="'day.'+prop">
+            day: {{prop}} - {{val}} <br/>
+          </div>
+          <hr> -->
 
-      periodical.total_bytes_sent: {{ periodical.total_bytes_sent }} <br/>
-      periodical.hits: {{ periodical.hits }} <br/>
+          periodical.total_bytes_sent: {{ periodical.total_bytes_sent }} <br/>
+          periodical.hits: {{ periodical.hits }} <br/>
 
-      <hr>
+          <hr>
 
-      periodical.current_bytes_sent: {{ periodical.current_bytes_sent }}
+          periodical.current_bytes_sent: {{ periodical.current_bytes_sent }}
 
-      <hr>
+          <hr>
 
-      <div v-for="(val, status) in periodical.status_counter" :key="'status.'+status">
-        periodical.status_counter: {{status}} - {{val}} <br/>
-      </div>
+          <div v-for="(val, status) in periodical.status_counter" :key="'status.'+status">
+            periodical.status_counter: {{status}} - {{val}} <br/>
+          </div>
 
-      <hr>
+          <hr>
 
-      <div v-for="(val, city) in periodical.city_counter" :key="'city.'+city">
-        periodical.city_counter: {{city}} - {{val}} <br/>
-      </div>
+          <div v-for="(val, city) in periodical.city_counter" :key="'city.'+city">
+            periodical.city_counter: {{city}} - {{val}} <br/>
+          </div>
 
-      <hr>
+          <hr>
 
-      <div v-for="(val, country) in periodical.country_counter" :key="'country.'+country">
-        periodical.country_counter: {{country}} - {{val}} <br/>
-      </div>
+          <div v-for="(val, country) in periodical.country_counter" :key="'country.'+country">
+            periodical.country_counter: {{country}} - {{val}} <br/>
+          </div>
 
-      <hr>
+          <hr>
 
-      <div v-for="(val, continent) in periodical.continent_counter" :key="'continent.'+continent">
-        periodical.continent_counter: {{continent}} - {{val}} <br/>
-      </div>
+          <div v-for="(val, continent) in periodical.continent_counter" :key="'continent.'+continent">
+            periodical.continent_counter: {{continent}} - {{val}} <br/>
+          </div>
 
-      <hr>
+          <hr>
 
-      <div v-for="(val, addr) in periodical.addr_counter" :key="'addr.'+addr">
-        periodical.addr_counter: {{addr}} - {{val}} <br/>
-      </div>
+          <div v-for="(val, addr) in periodical.addr_counter" :key="'addr.'+addr">
+            periodical.addr_counter: {{addr}} - {{val}} <br/>
+          </div>
 
-      <hr>
+          <hr>
 
-      <div v-for="(val, user) in periodical.user_counter" :key="'user.'+user">
-        periodical.user_counter: {{user}} - {{val}} <br/>
-      </div>
+          <div v-for="(val, user) in periodical.user_counter" :key="'user.'+user">
+            periodical.user_counter: {{user}} - {{val}} <br/>
+          </div>
 
-      <hr>
+          <hr>
 
-      <div v-for="(val, referer) in periodical.referer_counter" :key="'referer.'+referer">
-        periodical.referer_counter: {{referer}} - {{val}} <br/>
-      </div>
+          <div v-for="(val, referer) in periodical.referer_counter" :key="'referer.'+referer">
+            periodical.referer_counter: {{referer}} - {{val}} <br/>
+          </div>
 
-      <hr>
+          <hr>
 
-      <div v-for="(val, type) in periodical.type_counter" :key="'type.'+type">
-        periodical.type_counter: {{type}} - {{val}} <br/>
-      </div>
+          <div v-for="(val, type) in periodical.type_counter" :key="'type.'+type">
+            periodical.type_counter: {{type}} - {{val}} <br/>
+          </div>
 
-      <hr>
+          <hr>
 
-      <div v-for="(val, os) in periodical.user_agent_os_counter" :key="'os.'+os">
-        periodical.user_agent_os_counter: {{os}} - {{val}} <br/>
-      </div>
+          <div v-for="(val, os) in periodical.user_agent_os_counter" :key="'os.'+os">
+            periodical.user_agent_os_counter: {{os}} - {{val}} <br/>
+          </div>
 
-      <hr>
+          <hr>
 
-      <div v-for="(val, os) in periodical.user_agent_os_family_counter" :key="'os_family.'+os+'-'+val">
-        periodical.user_agent_os_family_counter: {{os}} - {{val}} <br/>
-      </div>
+          <div v-for="(val, os) in periodical.user_agent_os_family_counter" :key="'os_family.'+os+'-'+val">
+            periodical.user_agent_os_family_counter: {{os}} - {{val}} <br/>
+          </div>
 
-      <hr>
+          <hr>
 
-      <div v-for="(val, engine) in periodical.user_agent_engine_counter" :key="'engine.'+engine+'-'+val">
-        periodical.user_agent_engine_counter: {{engine}} - {{val}} <br/>
-      </div>
+          <div v-for="(val, engine) in periodical.user_agent_engine_counter" :key="'engine.'+engine+'-'+val">
+            periodical.user_agent_engine_counter: {{engine}} - {{val}} <br/>
+          </div>
 
-      <hr>
+          <hr>
 
-      <div v-for="(val, browser) in periodical.user_agent_browser_counter" :key="'browser.'+browser+'-'+val">
-        periodical.user_agent_browser_counter: {{browser}} - {{val}} <br/>
-      </div>
+          <div v-for="(val, browser) in periodical.user_agent_browser_counter" :key="'browser.'+browser+'-'+val">
+            periodical.user_agent_browser_counter: {{browser}} - {{val}} <br/>
+          </div>
 
-      <hr>
+          <hr>
 
-      <div v-for="(val, device) in periodical.user_agent_device_counter" :key="'device.'+device+'-'+val">
-        periodical.user_agent_device_counter: {{device}} - {{val}} <br/>
-      </div>
+          <div v-for="(val, device) in periodical.user_agent_device_counter" :key="'device.'+device+'-'+val">
+            periodical.user_agent_device_counter: {{device}} - {{val}} <br/>
+          </div>
+
+        </q-tab-panel>
+
+        <q-tab-panel name="minute" :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute'">
+          <div class="text-h6">From: {{ format_time(minute.range.start) }} - To: {{ format_time(minute.range.end) }} / Updated on: {{ format_time(minute.timestamp) }}</div>
+          <world-map :cities="minute.world_map_cities"/>
+
+          <bar-race
+            :categoryY="'country'"
+            :values="minute.country_counter"
+            :label="'Per COUNTRY count (last 5 secs)'"
+            :id="'country_counter'" :zoom="apply_zoom"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.country_counter'"
+          />
+
+          <bar-race
+            :categoryY="'country'"
+            :values="minute.country_counter"
+            :label="'Per COUNTRY count (sum)'"
+            :id="'country_counter_sum'"
+            :zoom="apply_zoom"
+            :sum="true"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.country_counter_sum'"
+          />
+
+          <bar-race
+            :categoryY="'city'"
+            :values="minute.city_counter"
+            :label="'Per CITY count (last 5 secs)'"
+            :id="'city_counter'"
+            :zoom="apply_zoom"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.city_counter'"
+          />
+
+          <bar-race
+            :categoryY="'city'"
+            :values="minute.city_counter"
+            :label="'Per CITY count (sum)'"
+            :id="'city_counter_sum'"
+            :zoom="apply_zoom"
+            :sum="true"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.city_counter_sum'"
+          />
+
+          <!-- <div v-for="(val, prop) in minute" :key="'minute.'+prop">
+            minute: {{prop}} - {{val}} <br/>
+          </div>
+          <hr>
+
+          <div v-for="(val, prop) in hour" :key="'hour.'+prop">
+            hour: {{prop}} - {{val}} <br/>
+          </div>
+          <hr>
+
+          <div v-for="(val, prop) in day" :key="'day.'+prop">
+            day: {{prop}} - {{val}} <br/>
+          </div>
+          <hr> -->
+
+          minute.total_bytes_sent: {{ minute.total_bytes_sent }} <br/>
+          minute.hits: {{ minute.hits }} <br/>
+
+          <hr>
+
+          minute.current_bytes_sent: {{ minute.current_bytes_sent }}
+
+          <hr>
+
+          <div v-for="(val, status) in minute.status_counter" :key="'status.'+status">
+            minute.status_counter: {{status}} - {{val}} <br/>
+          </div>
+
+          <hr>
+
+          <div v-for="(val, city) in minute.city_counter" :key="'city.'+city">
+            minute.city_counter: {{city}} - {{val}} <br/>
+          </div>
+
+          <hr>
+
+          <div v-for="(val, country) in minute.country_counter" :key="'country.'+country">
+            minute.country_counter: {{country}} - {{val}} <br/>
+          </div>
+
+          <hr>
+
+          <div v-for="(val, continent) in minute.continent_counter" :key="'continent.'+continent">
+            minute.continent_counter: {{continent}} - {{val}} <br/>
+          </div>
+
+          <hr>
+
+          <div v-for="(val, addr) in minute.addr_counter" :key="'addr.'+addr">
+            minute.addr_counter: {{addr}} - {{val}} <br/>
+          </div>
+
+          <hr>
+
+          <div v-for="(val, user) in minute.user_counter" :key="'user.'+user">
+            minute.user_counter: {{user}} - {{val}} <br/>
+          </div>
+
+          <hr>
+
+          <div v-for="(val, referer) in minute.referer_counter" :key="'referer.'+referer">
+            minute.referer_counter: {{referer}} - {{val}} <br/>
+          </div>
+
+          <hr>
+
+          <div v-for="(val, type) in minute.type_counter" :key="'type.'+type">
+            minute.type_counter: {{type}} - {{val}} <br/>
+          </div>
+
+          <hr>
+
+          <div v-for="(val, os) in minute.user_agent_os_counter" :key="'os.'+os">
+            minute.user_agent_os_counter: {{os}} - {{val}} <br/>
+          </div>
+
+          <hr>
+
+          <div v-for="(val, os) in minute.user_agent_os_family_counter" :key="'os_family.'+os+'-'+val">
+            minute.user_agent_os_family_counter: {{os}} - {{val}} <br/>
+          </div>
+
+          <hr>
+
+          <div v-for="(val, engine) in minute.user_agent_engine_counter" :key="'engine.'+engine+'-'+val">
+            minute.user_agent_engine_counter: {{engine}} - {{val}} <br/>
+          </div>
+
+          <hr>
+
+          <div v-for="(val, browser) in minute.user_agent_browser_counter" :key="'browser.'+browser+'-'+val">
+            minute.user_agent_browser_counter: {{browser}} - {{val}} <br/>
+          </div>
+
+          <hr>
+
+          <div v-for="(val, device) in minute.user_agent_device_counter" :key="'device.'+device+'-'+val">
+            minute.user_agent_device_counter: {{device}} - {{val}} <br/>
+          </div>
+
+        </q-tab-panel>
+
+        <q-tab-panel name="hour" :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour'">
+          <!-- <div class="text-h6">From: {{ format_time(hour.range.start) }} - To: {{ format_time(hour.range.end) }} / Updated on: {{ format_time(hour.timestamp) }}</div> -->
+
+        </q-tab-panel>
+
+        <q-tab-panel name="day" :key="$route.path +'.'+ JSON.stringify($route.query)+'.day'">
+          <!-- <div class="text-h6">From: {{ format_time(day.range.start) }} - To: {{ format_time(day.range.end) }} / Updated on: {{ format_time(day.timestamp) }}</div> -->
+
+        </q-tab-panel>
+      </q-tab-panels>
 
       <q-table
         class="my-sticky-header-table"
@@ -227,19 +402,19 @@
           <q-td key="domain" :props="props">
             {{ props.row.domain }}
             <!-- <q-btn type="a" :href="props.row.schema+'://'+props.row.uri+':'+props.row.port" target="_blank" flat icon="open_in_new" /> -->
-            <q-btn v-on:click="destroy_pipelines()" :to="'/logs/webs/filter/?domain=' + props.row.domain" flat icon="open_in_new" />
+            <q-btn v-on:click="destroy_pipelines()" :to="'/logs/web/filter/?domain=' + props.row.domain" flat icon="open_in_new" />
           </q-td>
 
           <q-td key="host" :props="props">
             {{ props.row.host }}
 
-            <q-btn v-on:click="destroy_pipelines()" :to="'/logs/webs/filter/?host=' + props.row.host" flat icon="open_in_new" />
+            <q-btn v-on:click="destroy_pipelines()" :to="'/logs/web/filter/?host=' + props.row.host" flat icon="open_in_new" />
           </q-td>
 
           <q-td key="path" :props="props">
             {{ props.row.path }}
 
-            <q-btn v-on:click="destroy_pipelines()" :to="'/logs/webs/filter/?path=' + props.row.path" flat icon="open_in_new" />
+            <q-btn v-on:click="destroy_pipelines()" :to="'/logs/web/filter/?path=' + props.row.path" flat icon="open_in_new" />
           </q-td>
         </q-tr>
         </template>
@@ -269,9 +444,18 @@ import WorldMap from '@apps/logs/web/components/worldMap'
 import DataSourcesMixin from '@components/mixins/dataSources'
 
 import JSPipeline from 'js-pipeline'
-import Pipeline from '@apps/logs/web/pipelines/filter'
 
-import { requests, store } from '@apps/logs/web/sources/filter/index'
+import PeriodicalPipeline from '@apps/logs/web/pipelines/filter/periodical'
+import MinutePipeline from '@apps/logs/web/pipelines/filter/minute'
+// import HourPipeline from '@apps/logs/web/pipelines/filter/hour'
+// import DayPipeline from '@apps/logs/web/pipelines/filter/day'
+
+import * as PeriodicalSources from '@apps/logs/web/sources/filter/periodical/index'
+import * as MinuteSources from '@apps/logs/web/sources/filter/minute/index'
+// import * as HourSources from '@apps/logs/web/sources/filter/hour/index'
+// import * as DaySources from '@apps/logs/web/sources/filter/day/index'
+
+// import { requests, store } from '@apps/logs/web/sources/filter/index'
 
 // const MAX_FEED_DATA = 10
 import moment from 'moment'
@@ -285,56 +469,70 @@ export default {
 
   data () {
     return {
-      id: 'logs.webs.filter',
+      id: 'logs.web.filter',
       path: 'all',
 
-      day: {
-        body_bytes_sent: {},
-        geoip: {},
-        qs: {},
-        referer: {},
-        pathname: {},
-        method: {},
-        remote_addr: {},
-        remote_user: {},
-        status: {},
-        unique_visitors: 0,
-        unique_visitors_by_ip: {},
-        user_agent: {},
+      range_tab: 'minute',
 
-        type_counter: {}
+      day: {
+        per_domain: {},
+        per_host: {},
+        range: { start: 0, end: 0},
+        timestamp: 0,
+        // body_bytes_sent: {},
+        // geoip: {},
+        // qs: {},
+        // referer: {},
+        // pathname: {},
+        // method: {},
+        // remote_addr: {},
+        // remote_user: {},
+        // status: {},
+        // unique_visitors: 0,
+        // unique_visitors_by_ip: {},
+        // user_agent: {},
+        //
+        // type_counter: {}
       },
       hour: {
-        body_bytes_sent: {},
-        geoip: {},
-        qs: {},
-        referer: {},
-        pathname: {},
-        method: {},
-        remote_addr: {},
-        remote_user: {},
-        status: {},
-        unique_visitors: 0,
-        unique_visitors_by_ip: {},
-        user_agent: {},
-
-        type_counter: {}
+        per_domain: {},
+        per_host: {},
+        range: { start: 0, end: 0},
+        timestamp: 0,
+        // body_bytes_sent: {},
+        // geoip: {},
+        // qs: {},
+        // referer: {},
+        // pathname: {},
+        // method: {},
+        // remote_addr: {},
+        // remote_user: {},
+        // status: {},
+        // unique_visitors: 0,
+        // unique_visitors_by_ip: {},
+        // user_agent: {},
+        //
+        // type_counter: {}
       },
       minute: {
-        body_bytes_sent: {},
-        geoip: {},
-        qs: {},
-        referer: {},
-        pathname: {},
-        method: {},
-        remote_addr: {},
-        remote_user: {},
-        status: {},
-        unique_visitors: 0,
-        unique_visitors_by_ip: {},
-        user_agent: {},
-
-        type_counter: {}
+        per_domain: {},
+        per_host: {},
+        range: { start: 0, end: 0},
+        timestamp: 0,
+        // body_bytes_sent: {},
+        // geoip: {},
+        // qs: {},
+        // referer: {},
+        // pathname: {},
+        // method: {},
+        // remote_addr: {},
+        // remote_user: {},
+        // status: {},
+        // unique_visitors: 0,
+        // unique_visitors_by_ip: {},
+        // user_agent: {},
+        //
+        // type_counter: {}
       },
 
       periodical: {
@@ -366,7 +564,13 @@ export default {
       },
 
       store: false,
-      pipeline_id: 'input.logs.webs.filter',
+      // pipeline_id: 'input.logs.web.filter',
+      pipeline_id: [
+        'input.logs.web.filter.periodical',
+        'input.logs.web.filter.minute',
+        // 'input.logs.web.filter.hour',
+        // 'input.logs.web.filter.day'
+      ],
 
       // logs: [],
 
@@ -416,19 +620,38 @@ export default {
       ],
 
       components: {
-        range: {
-          // source: {
-          //   requests: {
-          //     once: [],
-          //     periodical: []
-          //   }
-          // }
-          source: {
-            requests: requests
-
-            // store: store
+        'input.logs.web.filter.periodical': {
+          range: {
+            source: {
+              requests: PeriodicalSources.requests
+              // store: store
+            }
           }
-        }
+        },
+        'input.logs.web.filter.minute': {
+          range: {
+            source: {
+              requests: MinuteSources.requests
+              // store: store
+            }
+          }
+        },
+        // 'input.logs.web.filter.hour': {
+        //   range: {
+        //     source: {
+        //       requests: HourSources.requests
+        //       // store: store
+        //     }
+        //   }
+        // },
+        // 'input.logs.web.filter.day': {
+        //   range: {
+        //     source: {
+        //       requests: DaySources.requests
+        //       // store: store
+        //     }
+        //   }
+        // }
 
       }
     }
@@ -505,46 +728,54 @@ export default {
     create_pipelines: function (next) {
       debug('create_pipelines %o', this.$options.pipelines)
 
-      if (this.$options.pipelines['input.logs.webs.filter'] && this.$options.pipelines['input.logs.webs.filter'].get_input_by_id('input.os')) {
+      if (
+        this.$options.pipelines['input.logs.web.filter.periodical'] &&
+        this.$options.pipelines['input.logs.web.filter.periodical'].get_input_by_id('input.logs.web.filter.periodical')
+      ) {
         // let requests = this.__components_sources_to_requests(this.components)
         // if (requests.once) {
-        //   this.$options.pipelines['input.logs.webs.filter'].get_input_by_id('input.os').conn_pollers[0].options.requests.once.combine(requests.once)
-        //   this.$options.pipelines['input.logs.webs.filter'].get_input_by_id('input.os').conn_pollers[0].fireEvent('onOnceRequestsUpdated')
+        //   this.$options.pipelines['input.logs.web.filter'].get_input_by_id('input.os').conn_pollers[0].options.requests.once.combine(requests.once)
+        //   this.$options.pipelines['input.logs.web.filter'].get_input_by_id('input.os').conn_pollers[0].fireEvent('onOnceRequestsUpdated')
         // }
         //
         // if (requests.periodical) {
-        //   this.$options.pipelines['input.logs.webs.filter'].get_input_by_id('input.os').conn_pollers[0].options.requests.periodical.combine(requests.periodical)
-        //   this.$options.pipelines['input.logs.webs.filter'].get_input_by_id('input.os').conn_pollers[0].fireEvent('onPeriodicalRequestsUpdated')
+        //   this.$options.pipelines['input.logs.web.filter'].get_input_by_id('input.os').conn_pollers[0].options.requests.periodical.combine(requests.periodical)
+        //   this.$options.pipelines['input.logs.web.filter'].get_input_by_id('input.os').conn_pollers[0].fireEvent('onPeriodicalRequestsUpdated')
         // }
       } else {
-        let template = Object.clone(Pipeline)
+        // const pipelines = [PeriodicalPipeline, MinutePipeline, HourPipeline, DayPipeline]
+        const pipelines = [PeriodicalPipeline, MinutePipeline]
+        Array.each(pipelines, function (Pipeline) {
+          let template = Object.clone(Pipeline)
 
-        let pipeline_id = template.input[0].poll.id
-        // let pipeline_id = 'input.logs.webs.filter'
+          debug('create_pipelines template %o', template)
 
-        // template.input[0].poll.conn[0].requests = this.__components_sources_to_requests(this.components)
-        Array.each(template.input[0].poll.conn, function (conn, index) {
-          template.input[0].poll.conn[index].requests = this.__components_sources_to_requests(this.components)
+          let pipeline_id = template.input[0].poll.id
+
+          // template.input[0].poll.conn[0].requests = this.__components_sources_to_requests(this.components[pipeline_id], pipeline_id)
+          Array.each(template.input[0].poll.conn, function (conn, index) {
+            template.input[0].poll.conn[index].requests = this.__components_sources_to_requests(this.components[pipeline_id], pipeline_id)
+          }.bind(this))
+
+          let pipe = new JSPipeline(template)
+
+          this.$options.__pipelines_cfg[pipeline_id] = {
+            ids: [],
+            connected: [],
+            suspended: pipe.inputs.every(function (input) { return input.options.suspended }, this)
+          }
+
+          // this.__after_connect_inputs(
+          //   pipe,
+          //   this.$options.__pipelines_cfg[pipeline_id],
+          //   this.__resume_pipeline.pass([pipe, this.$options.__pipelines_cfg[pipeline_id], this.id, function () {
+          //     debug('__resume_pipeline CALLBACK')
+          //     pipe.fireEvent('onOnce')
+          //   }], this)
+          // )
+
+          this.$options.pipelines[pipeline_id] = pipe
         }.bind(this))
-
-        let pipe = new JSPipeline(template)
-
-        this.$options.__pipelines_cfg[pipeline_id] = {
-          ids: [],
-          connected: [],
-          suspended: pipe.inputs.every(function (input) { return input.options.suspended }, this)
-        }
-
-        // this.__after_connect_inputs(
-        //   pipe,
-        //   this.$options.__pipelines_cfg[pipeline_id],
-        //   this.__resume_pipeline.pass([pipe, this.$options.__pipelines_cfg[pipeline_id], this.id, function () {
-        //     debug('__resume_pipeline CALLBACK')
-        //     pipe.fireEvent('onOnce')
-        //   }], this)
-        // )
-
-        this.$options.pipelines[pipeline_id] = pipe
 
         debug('create_pipelines %o', this.$options.pipelines)
 
@@ -570,7 +801,7 @@ export default {
   // //   }
   // },
   // mounted: function () {
-  //   this.pipeline_id = 'input.logs.webs.filter'
+  //   this.pipeline_id = 'input.logs.web.filter'
   // },
   // create: function () {
   //   debug('created HOST %s %o %o', this.web, this.$options.range_component, this.$options.__pipelines_cfg)
