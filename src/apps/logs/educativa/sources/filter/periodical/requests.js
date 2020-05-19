@@ -354,7 +354,7 @@ const host_once_component = {
         )
       })
 
-      debug('FILTER ARRAY %o', filter)
+      debug('PERIODICAL FILTER ARRAY %o', filter)
 
       switch (_key) {
         case 'periodical.once':
@@ -371,7 +371,7 @@ const host_once_component = {
           //
           // filter += ')' // "this.r.row('metadata')('path').eq('logs.educativa').and("
 
-          debug('FILTER ARRAY %s', filter)
+          debug('PERIODICAL FILTER ARRAY %s', filter)
 
           source = [{
             params: { id: _key },

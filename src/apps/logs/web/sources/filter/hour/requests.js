@@ -220,13 +220,13 @@ const generic_callback = function (data, metadata, key, vm) {
           // let world_map_city_name = (row.city) ? (row.city.names) ? (row.city.names.en) ? row.city.names.en + ' - ' + country : row.city.names.es + ' - ' + country : undefined : undefined
 
           if (city !== undefined && !city_counter[city]) city_counter[city] = 0
-          if (city !== undefined) city_counter[city] += 1
+          if (city !== undefined) city_counter[city] += row.count
 
           if (country !== undefined && !country_counter[country]) country_counter[country] = 0
-          if (country !== undefined) country_counter[country] += 1
+          if (country !== undefined) country_counter[country] += row.count
 
           if (continent !== undefined && !continent_counter[continent]) continent_counter[continent] = 0
-          if (continent !== undefined) continent_counter[continent] += 1
+          if (continent !== undefined) continent_counter[continent] += row.count
         })
       }
     })
