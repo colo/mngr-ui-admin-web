@@ -383,7 +383,7 @@ const host_once_component = {
                 //     'path'
                 //   ]
                 // },
-                'data',
+                {'data': 'hits'},
                 'metadata'
               ],
               'transformation': [

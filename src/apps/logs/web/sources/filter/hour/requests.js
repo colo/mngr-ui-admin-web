@@ -339,7 +339,7 @@ const host_once_component = {
 
         case 'historical.hour.once':
           // START = END - MINUTE
-          START = (END - HOUR >= 0) ? END - HOUR : 0
+          START = (END - (2 * HOUR) >= 0) ? END - (2 * HOUR) : 0
 
           // filter += "this.r.row('metadata')('type').eq('minute')"
           filter.push("r.row('metadata')('type').eq('hour')")
@@ -371,7 +371,7 @@ const host_once_component = {
                 //     'path'
                 //   ]
                 // },
-                'data',
+                {'data': 'geoip'},
                 'metadata'
               ],
               'transformation': [

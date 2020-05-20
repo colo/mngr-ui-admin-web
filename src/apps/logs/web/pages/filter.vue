@@ -183,7 +183,7 @@
 
         <q-tab-panel name="minute" :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute'">
           <div class="text-h6">From: {{ format_time(minute.range.start) }} - To: {{ format_time(minute.range.end) }} / Updated on: {{ format_time(minute.timestamp) }}</div>
-          <world-map :cities="minute.world_map_cities"/>
+          <!-- <world-map :cities="minute.world_map_cities"/> -->
 
           <bar-race
             :categoryY="'country'"
@@ -265,7 +265,7 @@
 
         <q-tab-panel name="day" :key="$route.path +'.'+ JSON.stringify($route.query)+'.day'">
           <div class="text-h6">From: {{ format_time(day.range.start) }} - To: {{ format_time(day.range.end) }} / Updated on: {{ format_time(day.timestamp) }}</div>
-          <world-map :cities="day.world_map_cities"/>
+          <!-- <world-map :cities="day.world_map_cities"/> -->
 
           <bar-race
             :categoryY="'country'"

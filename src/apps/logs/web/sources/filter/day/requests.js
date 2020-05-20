@@ -371,7 +371,7 @@ const host_once_component = {
                 //     'path'
                 //   ]
                 // },
-                'data',
+                {'data': 'geoip'},
                 'metadata'
               ],
               'transformation': [
