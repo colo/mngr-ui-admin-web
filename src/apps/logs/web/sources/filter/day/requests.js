@@ -148,6 +148,7 @@ const generic_callback = function (data, metadata, key, vm) {
   const END = end()
 
   if (/historical/.test(key) && data.logs_historical && Object.getLength(data.logs_historical) > 0) {
+    data = JSON.parse(JSON.stringify(data))
     debug('HISTORICAL HOST CALLBACK data %s %o', key, data)
     // let type
     // let vm_data = {}
@@ -207,7 +208,7 @@ const generic_callback = function (data, metadata, key, vm) {
       if (data.geoip) {
         Object.each(data.geoip.location, function (row) {
           world_map_city_counter.push({
-            title: row.city + ' ( hits: ' + row.count + ' )',
+            title: row.city + ' ( hits: ' + row.count.length + ' )',
             latitude: row.latitude,
             longitude: row.longitude
           })
@@ -220,13 +221,13 @@ const generic_callback = function (data, metadata, key, vm) {
           // let world_map_city_name = (row.city) ? (row.city.names) ? (row.city.names.en) ? row.city.names.en + ' - ' + country : row.city.names.es + ' - ' + country : undefined : undefined
 
           if (city !== undefined && !city_counter[city]) city_counter[city] = 0
-          if (city !== undefined) city_counter[city] += row.count
+          if (city !== undefined) city_counter[city] += row.count.length
 
           if (country !== undefined && !country_counter[country]) country_counter[country] = 0
-          if (country !== undefined) country_counter[country] += row.count
+          if (country !== undefined) country_counter[country] += row.count.length
 
           if (continent !== undefined && !continent_counter[continent]) continent_counter[continent] = 0
-          if (continent !== undefined) continent_counter[continent] += row.count
+          if (continent !== undefined) continent_counter[continent] += row.count.length
         })
       }
     })

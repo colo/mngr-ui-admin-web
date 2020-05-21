@@ -224,7 +224,7 @@
 
         <q-tab-panel name="hour" :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour'">
           <div class="text-h6">From: {{ format_time(hour.range.start) }} - To: {{ format_time(hour.range.end) }} / Updated on: {{ format_time(hour.timestamp) }}</div>
-          <world-map :cities="hour.world_map_cities"/>
+          <!-- <world-map :cities="hour.world_map_cities"/> -->
 
           <bar-race
             :categoryY="'country'"
