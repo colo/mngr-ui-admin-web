@@ -112,83 +112,84 @@ const generic_callback = function (data, metadata, key, vm) {
     // if (_plugins_categories.length > 0 && _plugins_categories.length !== vm.plugins_categories.length) {
     //   vm.plugins_categories = _plugins_categories
     // }
-  } else if (/minute/.test(key) && (data.os_historical || Object.getLength(data) > 0)) {
-    let _data
-    if (data.os_historical) _data = data.os_historical // comes from 'Range'
-    else _data = data // comes from 'register'
-
-    debug('MINUTE HOST CALLBACK data %s %o', key, _data)
-
-    Object.each(data.os_historical, function (plugin, name) {
-      if (plugin && Object.getLength(plugin) > 0) {
-        // if (!vm.plugins[name]) vm.$set(vm.plugins, name, { periodical: undefined, minute: undefined })
-        if (!vm.plugins.contains(name)) vm.plugins.push(name)
-
-        vm.$nextTick(function () {
-          if (vm.$refs[name] && vm.$refs[name][0]) { // if data already exists
-            if (!vm.$refs[name][0].$options.plugin_data) vm.$refs[name][0].$options.plugin_data = { periodical: undefined, minute: undefined }
-
-            let _plugin = {}
-            if (
-              vm.$refs[name][0].$options.plugin_data &&
-              vm.$refs[name][0].$options.plugin_data.minute &&
-              Object.getLength(vm.$refs[name][0].$options.plugin_data.minute) > 0
-            ) {
-              _plugin = JSON.parse(JSON.stringify(vm.$refs[name][0].$options.plugin_data.minute))
-
-              Object.each(plugin, function (data, prop) {
-                if (_plugin[prop] && Array.isArray(_plugin[prop])) {
-                  _plugin[prop].combine(data)
-
-                  // sort by first column, timestamp
-                  _plugin[prop].sort(function (a, b) { return (a[0] < b[0]) ? 1 : ((a[0] > b[0]) ? -1 : 0) })
-
-                  // filter based on not repeated timestamp
-                  // let filtered = _plugin[prop].filter(function (item, index) {
-                  //   if (!_plugin[prop][index - 1] || !_plugin[prop][index + 1]) {
-                  //     return true
-                  //   } else {
-                  //     return item[0] !== _plugin[prop][index - 1][0] && item[0] !== _plugin[prop][index + 1][0]
-                  //   }
-                  // })
-                  //
-                  let filtered = []
-                  Array.each(_plugin[prop], function (item, index) {
-                    if (index === 0) { filtered.push(item) } else if (item[0] !== _plugin[prop][index - 1][0]) {
-                      filtered.push(item)
-                    }
-                  })
-                  // debug('MINUTE HOST CALLBACK %s %o', name, filtered)
-
-                  _plugin[prop] = filtered
-                } else {
-                  debug('MINUTE HOST CALLBACK BUG %s %s %o %o', name, prop, _plugin[prop], data)
-                  // _plugin[prop] = Array.clone(data)
-                  // _plugin[prop].sort(function (a, b) { return (a[0] < b[0]) ? 1 : ((a[0] > b[0]) ? -1 : 0) })
-                }
-              })
-            } else {
-              // debug('MINUTE HOST CALLBACK no prev data %o ', plugin)
-              _plugin = plugin
-              Object.each(_plugin, function (data, prop) {
-                // sort by first column, timestamp
-                if (Array.isArray(data) && data.length > 0) { // on 'register' data may be empty
-                  _plugin[prop] = Array.clone(data)
-                  _plugin[prop].sort(function (a, b) { return (a[0] < b[0]) ? 1 : ((a[0] > b[0]) ? -1 : 0) })
-                }
-              })
-            }
-
-            if (Object.getLength(_plugin) > 0) {
-              debug('MINUTE HOST CALLBACK %s %o', name, _plugin)
-
-              vm.$refs[name][0].set_data({ minute: _plugin })
-            }
-          }
-        })
-      }
-    })
   }
+  // else if (/minute/.test(key) && (data.os_historical || Object.getLength(data) > 0)) {
+  //   let _data
+  //   if (data.os_historical) _data = data.os_historical // comes from 'Range'
+  //   else _data = data // comes from 'register'
+  //
+  //   debug('MINUTE HOST CALLBACK data %s %o', key, _data)
+  //
+  //   Object.each(data.os_historical, function (plugin, name) {
+  //     if (plugin && Object.getLength(plugin) > 0) {
+  //       // if (!vm.plugins[name]) vm.$set(vm.plugins, name, { periodical: undefined, minute: undefined })
+  //       if (!vm.plugins.contains(name)) vm.plugins.push(name)
+  //
+  //       vm.$nextTick(function () {
+  //         if (vm.$refs[name] && vm.$refs[name][0]) { // if data already exists
+  //           if (!vm.$refs[name][0].$options.plugin_data) vm.$refs[name][0].$options.plugin_data = { periodical: undefined, minute: undefined }
+  //
+  //           let _plugin = {}
+  //           if (
+  //             vm.$refs[name][0].$options.plugin_data &&
+  //             vm.$refs[name][0].$options.plugin_data.minute &&
+  //             Object.getLength(vm.$refs[name][0].$options.plugin_data.minute) > 0
+  //           ) {
+  //             _plugin = JSON.parse(JSON.stringify(vm.$refs[name][0].$options.plugin_data.minute))
+  //
+  //             Object.each(plugin, function (data, prop) {
+  //               if (_plugin[prop] && Array.isArray(_plugin[prop])) {
+  //                 _plugin[prop].combine(data)
+  //
+  //                 // sort by first column, timestamp
+  //                 _plugin[prop].sort(function (a, b) { return (a[0] < b[0]) ? 1 : ((a[0] > b[0]) ? -1 : 0) })
+  //
+  //                 // filter based on not repeated timestamp
+  //                 // let filtered = _plugin[prop].filter(function (item, index) {
+  //                 //   if (!_plugin[prop][index - 1] || !_plugin[prop][index + 1]) {
+  //                 //     return true
+  //                 //   } else {
+  //                 //     return item[0] !== _plugin[prop][index - 1][0] && item[0] !== _plugin[prop][index + 1][0]
+  //                 //   }
+  //                 // })
+  //                 //
+  //                 let filtered = []
+  //                 Array.each(_plugin[prop], function (item, index) {
+  //                   if (index === 0) { filtered.push(item) } else if (item[0] !== _plugin[prop][index - 1][0]) {
+  //                     filtered.push(item)
+  //                   }
+  //                 })
+  //                 // debug('MINUTE HOST CALLBACK %s %o', name, filtered)
+  //
+  //                 _plugin[prop] = filtered
+  //               } else {
+  //                 debug('MINUTE HOST CALLBACK BUG %s %s %o %o', name, prop, _plugin[prop], data)
+  //                 // _plugin[prop] = Array.clone(data)
+  //                 // _plugin[prop].sort(function (a, b) { return (a[0] < b[0]) ? 1 : ((a[0] > b[0]) ? -1 : 0) })
+  //               }
+  //             })
+  //           } else {
+  //             // debug('MINUTE HOST CALLBACK no prev data %o ', plugin)
+  //             _plugin = plugin
+  //             Object.each(_plugin, function (data, prop) {
+  //               // sort by first column, timestamp
+  //               if (Array.isArray(data) && data.length > 0) { // on 'register' data may be empty
+  //                 _plugin[prop] = Array.clone(data)
+  //                 _plugin[prop].sort(function (a, b) { return (a[0] < b[0]) ? 1 : ((a[0] > b[0]) ? -1 : 0) })
+  //               }
+  //             })
+  //           }
+  //
+  //           if (Object.getLength(_plugin) > 0) {
+  //             debug('MINUTE HOST CALLBACK %s %o', name, _plugin)
+  //
+  //             vm.$refs[name][0].set_data({ minute: _plugin })
+  //           }
+  //         }
+  //       })
+  //     }
+  //   })
+  // }
   // else if (key === 'config.once' && data.os) {
   //   debug('PERIODICAL HOST CALLBACK CONFIG %o', data)
   //   let _plugins_config = {}
@@ -226,7 +227,7 @@ const host_once_component = {
     let key
 
     if (!_key) {
-      key = ['periodical.once', 'minute.once']// 'config.once',
+      key = ['periodical.once']// , 'minute.once' 'config.once',
     }
 
     if (
@@ -289,44 +290,44 @@ const host_once_component = {
         //   }]
         //
         //   break
-        case 'minute.once':
-          source = [{
-            params: { id: _key },
-            path: 'all',
-            range: 'posix ' + (Date.now() - (7 * MINUTE)) + '-' + Date.now() + '/*',
-            query: {
-              'from': 'os_historical',
-              // 'register': 'changes',
-              'format': 'tabular',
-              'index': false,
-              /**
-              * right now needed to match OUTPUT 'id' with this query (need to @fix)
-              **/
-              'q': [
-                // {
-                //   'metadata': [
-                //     'timestamp',
-                //     'path'
-                //   ]
-                // },
-                // 'metadata',
-                'data'
-              ],
-              'transformation': [
-                {
-                  'orderBy': { 'index': 'r.desc(timestamp)' }
-                }
-              ],
-              'filter': [
-                { 'metadata': { 'host': vm.host } },
-                { 'metadata': { 'type': 'minute' } },
-                "r.row('metadata')('path').ne('os.procs')"
-              ]
-
-            }
-          }]
-
-          break
+        // case 'minute.once':
+        //   source = [{
+        //     params: { id: _key },
+        //     path: 'all',
+        //     range: 'posix ' + (Date.now() - (7 * MINUTE)) + '-' + Date.now() + '/*',
+        //     query: {
+        //       'from': 'os_historical',
+        //       // 'register': 'changes',
+        //       'format': 'tabular',
+        //       'index': false,
+        //       /**
+        //       * right now needed to match OUTPUT 'id' with this query (need to @fix)
+        //       **/
+        //       'q': [
+        //         // {
+        //         //   'metadata': [
+        //         //     'timestamp',
+        //         //     'path'
+        //         //   ]
+        //         // },
+        //         // 'metadata',
+        //         'data'
+        //       ],
+        //       'transformation': [
+        //         {
+        //           'orderBy': { 'index': 'r.desc(timestamp)' }
+        //         }
+        //       ],
+        //       'filter': [
+        //         { 'metadata': { 'host': vm.host } },
+        //         { 'metadata': { 'type': 'minute' } },
+        //         "r.row('metadata')('path').ne('os.procs')"
+        //       ]
+        //
+        //     }
+        //   }]
+        //
+        //   break
       }
     }
 

@@ -45,7 +45,7 @@
         v-if="show === false"
         animated
         class="netdata-container-with-legend"
-        />
+      />
     </q-card-section>
     <!-- <q-separator dark /> -->
   </q-card>

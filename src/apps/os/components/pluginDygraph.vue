@@ -34,16 +34,16 @@
         :reactive="false"
         :no_buffer="false"
       >
-      <q-placeholder
-        v-if="show === false"
-        animated
-        class="netdata-container-with-legend"
-        />
       <!-- data: [processed_data] -->
       <!-- stat -> length: 300, -->
       <!-- :key="view.minute" -->
       <!-- :always_update="true" re check this, what was used for?-->
       </component>
+      <q-placeholder
+        v-if="show === false"
+        animated
+        class="netdata-container-with-legend"
+      />
     </q-card-section>
     <!-- <q-separator dark /> -->
   </q-card>

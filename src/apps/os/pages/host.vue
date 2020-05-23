@@ -1,6 +1,7 @@
 <template>
   <div>
     <template v-for="(category) in plugins_categories">
+      <!-- {{category}} -->
       <q-card :key="category">
         <a :id="category" :key="category+'.anchor'"/>
         <q-card-section>
@@ -9,6 +10,7 @@
 
         <q-card-section>
           <template v-for="(name) in plugins">
+            <!-- {{name}} -->
             <os-plugin-dygraph v-if="name.indexOf(category) > -1" :ref="name" :id="'os.'+name" :name="name"  :key="name+'.plugin'"/>
           </template>
         </q-card-section>
