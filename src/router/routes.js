@@ -238,7 +238,7 @@ const routes = [
             path: 'educativa',
             name: 'logs_educativa',
             redirect: { name: 'logs_educativa_all' },
-            component: () => import(/* webpackChunkName: "logs.educativa" */ '@apps/logs/index.vue'),
+            component: () => import(/* webpackChunkName: "logs.educativa" */ '@apps/logs/educativa/index.vue'),
             meta: {
               breadcrumb: { label: 'Logs Webs', icon: 'widgets', app: 'logs' }
             },

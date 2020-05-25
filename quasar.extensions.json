@@ -3,5 +3,6 @@
     "common_root_object": "none",
     "add_qenv_to_gitignore": true
   },
-  "@quasar/qplaceholder": {}
+  "@quasar/qplaceholder": {},
+  "@quasar/qcalendar": {}
 }

@@ -23,7 +23,7 @@ export default {
   // components: { LogsWebCard },
   // extends: DataSourcesMixin,
 
-  name: 'LogsWebs',
+  name: 'LogsEducativa',
 
   // pipelines: {},
   // __pipelines_cfg: {},

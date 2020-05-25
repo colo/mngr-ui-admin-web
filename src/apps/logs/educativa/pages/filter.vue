@@ -1,5 +1,6 @@
 <template>
-  <q-page :key="$route.path +'.'+ JSON.stringify($route.query)+'.page'">
+  <q-page>
+     <!-- :key="$route.path +'.'+ JSON.stringify($route.query)+'.'+end()+'.page'" -->
     <div class="q-pa-md">
       <div class="bg-primary text-white">
         <q-toolbar >
@@ -142,7 +143,7 @@
           <bar-race
             :categoryY="'domain'"
             :valueX="'hits'"
-            :values="minute.per_domain"
+            :values="minute.top_per_domain"
             :label="'Minute Per DOMAIN - CGI count'"
             :id="'minute_per_domain_sum'"
             :zoom="apply_zoom"
@@ -154,7 +155,7 @@
           <bar-race
             :categoryY="'host'"
             :valueX="'hits'"
-            :values="minute.per_host"
+            :values="minute.top_per_host"
             :label="'Minute Per HOST - CGI count'"
             :id="'minute_per_host_sum'"
             :zoom="apply_zoom"
@@ -170,7 +171,7 @@
           <bar-race
             :categoryY="'domain'"
             :valueX="'hits'"
-            :values="hour.per_domain"
+            :values="hour.top_per_domain"
             :label="'Hour Per DOMAIN - CGI count'"
             :id="'hour_per_domain_sum'"
             :zoom="apply_zoom"
@@ -181,7 +182,7 @@
           <bar-race
             :categoryY="'host'"
             :valueX="'hits'"
-            :values="hour.per_host"
+            :values="hour.top_per_host"
             :label="'Hour Per HOST - CGI count'"
             :id="'hour_per_host_sum'"
             :zoom="apply_zoom"
@@ -191,11 +192,43 @@
         </q-tab-panel>
 
         <q-tab-panel name="day" :key="$route.path +'.'+ JSON.stringify($route.query)+'.day'">
-          <div class="text-h6">From: {{ format_time(day.range.start) }} - To: {{ format_time(day.range.end) }} / Updated on: {{ format_time(day.timestamp) }}</div>
+          <q-toolbar class="text-primary">
+          <!-- <q-btn flat round dense icon="menu" /> -->
+          <q-toolbar-title>
+            From: {{ format_time(day.range.start) }} - To: {{ format_time(day.range.end) }} / Updated on: {{ format_time(day.timestamp) }}
+          </q-toolbar-title>
+          <!-- <q-space class="text-primary"/> -->
+          <template>
+            <div class="q-pa-md">
+              <!-- <q-btn name="calendar_roday" /> -->
+                <q-btn flat dense icon="calendar_today" />
+                <!-- round -->
+                <!-- <q-icon name="calendar_today" class="cursor-pointer q-ma-md"/> -->
+                <q-popup-proxy v-model="showCalendar">
+                  <q-calendar
+                    ref="calendar"
+                    v-model="selectedDate"
+                    view="month"
+                    locale="en-us"
+                    mini-mode
+                    :selected-start-end-dates="startEndDates"
+                    :day-class="classDay"
+                    @mousedown:day="onMouseDownDay"
+                    @mouseup:day="onMouseUpDay"
+                    @mousemove:day="onMouseMoveDay"
+                    :disabled-after="disabled_after()"
+                  />
+                </q-popup-proxy>
+
+            </div>
+          </template>
+        </q-toolbar>
+
+          <!-- <div class="text-h6">From: {{ format_time(day.range.start) }} - To: {{ format_time(day.range.end) }} / Updated on: {{ format_time(day.timestamp) }}</div> -->
           <bar-race
             :categoryY="'domain'"
             :valueX="'hits'"
-            :values="day.per_domain"
+            :values="day.top_per_domain"
             :label="'Day Per DOMAIN - CGI count'"
             :id="'day_per_domain_sum'"
             :zoom="apply_zoom"
@@ -206,7 +239,7 @@
           <bar-race
             :categoryY="'host'"
             :valueX="'hits'"
-            :values="day.per_host"
+            :values="day.top_per_host"
             :label="'Day Per HOST - CGI count'"
             :id="'day_per_host_sum'"
             :zoom="apply_zoom"
@@ -461,6 +494,18 @@ import * as DaySources from '@apps/logs/educativa/sources/filter/day/index'
 // const MAX_FEED_DATA = 10
 import moment from 'moment'
 
+import QCalendar from '@quasar/quasar-ui-qcalendar'
+
+function leftClick (e) {
+  return e.button === 0
+}
+
+const SECOND = 1000
+const MINUTE = 60 * SECOND
+const HOUR = 60 * MINUTE
+const DAY = HOUR * 24
+const WEEK = DAY * 7
+
 export default {
   mixins: [DataSourcesMixin],
 
@@ -475,13 +520,31 @@ export default {
 
       range_tab: 'minute',
 
+      // end: Date.now(),
+      current_end: undefined,
+      top: 15,
+
+      /** calendar **/
+      selectedDate: '',
+      convertedDates: '',
+      showCalendar: false,
+      anchorTimestamp: '',
+      otherTimestamp: '',
+      mouseDown: false,
+      mobile: false,
+      /** calendar **/
+
       day: {
+        top_per_domain: {},
+        top_per_host: {},
         per_domain: {},
         per_host: {},
         range: { start: 0, end: 0},
         timestamp: 0,
       },
       hour: {
+        top_per_domain: {},
+        top_per_host: {},
         per_domain: {},
         per_host: {},
         range: { start: 0, end: 0},
@@ -502,6 +565,8 @@ export default {
         // type_counter: {}
       },
       minute: {
+        top_per_domain: {},
+        top_per_host: {},
         per_domain: {},
         per_host: {},
         range: { start: 0, end: 0},
@@ -665,6 +730,42 @@ export default {
     },
     'web': function () {
       return (this.filter && this.type) ? this.filter[this.type] : undefined
+    },
+    /** calendar **/
+    startEndDates () {
+      const dates = []
+      if (this.anchorDayIdentifier !== false && this.otherDayIdentifier !== false) {
+        if (this.anchorDayIdentifier <= this.otherDayIdentifier) {
+          dates.push(this.anchorTimestamp.date, this.otherTimestamp.date)
+        } else {
+          dates.push(this.otherTimestamp.date, this.anchorTimestamp.date)
+        }
+      }
+      return dates
+    },
+
+    anchorDayIdentifier () {
+      if (this.anchorTimestamp !== '') {
+        return QCalendar.getDayIdentifier(this.anchorTimestamp)
+      }
+      return false
+    },
+
+    otherDayIdentifier () {
+      if (this.otherTimestamp !== '') {
+        return QCalendar.getDayIdentifier(this.otherTimestamp)
+      }
+      return false
+    },
+
+    lowIdentifier () {
+      // returns lowest of the two values
+      return Math.min(this.anchorDayIdentifier, this.otherDayIdentifier)
+    },
+
+    highIdentifier () {
+      // returns highest of the two values
+      return Math.max(this.anchorDayIdentifier, this.otherDayIdentifier)
     }
   },
   // computed: {
@@ -676,19 +777,29 @@ export default {
   //   }
   // },
   watch: {
-    // 'periodical.logs': function (val) {
-    //   debug('periodical.logs %o', val)
-    // }
+    /** calendar **/
+    startEndDates () {
+      const [start, end] = this.startEndDates
+      this.current_end = (moment(end).unix() * 1000) + DAY
+      // this.$nextTick(function () {
+      this.destroy_pipelines()
+      this.create_pipelines()
+      this.resume_pipelines()
+      // }.bind(this))
 
-    // 'periodical.total_bytes_sent': {
-    //   handler: function(val){
-    //       periodical_total_bytes_sent
-    //   }
-    //   deep:true
-    // }
+      // this.convertedDates = `${start} - ${end}`
+      debug('startEndDates', this.end)
+    }
 
   },
   methods: {
+    end: function () {
+      if (this.current_end === undefined) {
+        return Date.now()
+      } else {
+        return this.current_end
+      }
+    },
     apply_zoom: function (data, categoryY, valueX) {
       const min_zoom = 0.3
       const max_zoom = 1
@@ -712,6 +823,7 @@ export default {
         return max_length / data.length
       }
     },
+
     format_time: function (timestamp) {
       return moment(timestamp).format('dddd, MMMM Do YYYY, h:mm:ss a')
     },
@@ -724,96 +836,128 @@ export default {
     create_pipelines: function (next) {
       debug('create_pipelines %o', this.$options.pipelines)
 
-      if (
-        this.$options.pipelines['input.logs.educativa.filter.periodical'] &&
-        this.$options.pipelines['input.logs.educativa.filter.periodical'].get_input_by_id('input.logs.educativa.filter.periodical')
-      ) {
-        // let requests = this.__components_sources_to_requests(this.components)
-        // if (requests.once) {
-        //   this.$options.pipelines['input.logs.educativa.filter'].get_input_by_id('input.os').conn_pollers[0].options.requests.once.combine(requests.once)
-        //   this.$options.pipelines['input.logs.educativa.filter'].get_input_by_id('input.os').conn_pollers[0].fireEvent('onOnceRequestsUpdated')
-        // }
-        //
-        // if (requests.periodical) {
-        //   this.$options.pipelines['input.logs.educativa.filter'].get_input_by_id('input.os').conn_pollers[0].options.requests.periodical.combine(requests.periodical)
-        //   this.$options.pipelines['input.logs.educativa.filter'].get_input_by_id('input.os').conn_pollers[0].fireEvent('onPeriodicalRequestsUpdated')
-        // }
-      } else {
-        const pipelines = [PeriodicalPipeline, MinutePipeline, HourPipeline, DayPipeline]
-        Array.each(pipelines, function (Pipeline) {
-          let template = Object.clone(Pipeline)
+      // if (
+      //   this.$options.pipelines['input.logs.educativa.filter.periodical'] &&
+      //   this.$options.pipelines['input.logs.educativa.filter.periodical'].get_input_by_id('input.logs.educativa.filter.periodical')
+      // ) {
+      //   // let requests = this.__components_sources_to_requests(this.components)
+      //   // if (requests.once) {
+      //   //   this.$options.pipelines['input.logs.educativa.filter'].get_input_by_id('input.os').conn_pollers[0].options.requests.once.combine(requests.once)
+      //   //   this.$options.pipelines['input.logs.educativa.filter'].get_input_by_id('input.os').conn_pollers[0].fireEvent('onOnceRequestsUpdated')
+      //   // }
+      //   //
+      //   // if (requests.periodical) {
+      //   //   this.$options.pipelines['input.logs.educativa.filter'].get_input_by_id('input.os').conn_pollers[0].options.requests.periodical.combine(requests.periodical)
+      //   //   this.$options.pipelines['input.logs.educativa.filter'].get_input_by_id('input.os').conn_pollers[0].fireEvent('onPeriodicalRequestsUpdated')
+      //   // }
+      // } else {
+      const pipelines = [PeriodicalPipeline, MinutePipeline, HourPipeline, DayPipeline]
+      Array.each(pipelines, function (Pipeline) {
+        let template = Object.clone(Pipeline)
 
-          debug('create_pipelines template %o', template)
+        debug('create_pipelines template %o', template)
 
-          let pipeline_id = template.input[0].poll.id
+        let pipeline_id = template.input[0].poll.id
 
-          // template.input[0].poll.conn[0].requests = this.__components_sources_to_requests(this.components[pipeline_id], pipeline_id)
-          Array.each(template.input[0].poll.conn, function (conn, index) {
-            template.input[0].poll.conn[index].requests = this.__components_sources_to_requests(this.components[pipeline_id], pipeline_id)
-          }.bind(this))
-
-          let pipe = new JSPipeline(template)
-
-          this.$options.__pipelines_cfg[pipeline_id] = {
-            ids: [],
-            connected: [],
-            suspended: pipe.inputs.every(function (input) { return input.options.suspended }, this)
-          }
-
-          // this.__after_connect_inputs(
-          //   pipe,
-          //   this.$options.__pipelines_cfg[pipeline_id],
-          //   this.__resume_pipeline.pass([pipe, this.$options.__pipelines_cfg[pipeline_id], this.id, function () {
-          //     debug('__resume_pipeline CALLBACK')
-          //     pipe.fireEvent('onOnce')
-          //   }], this)
-          // )
-
-          this.$options.pipelines[pipeline_id] = pipe
+        // template.input[0].poll.conn[0].requests = this.__components_sources_to_requests(this.components[pipeline_id], pipeline_id)
+        Array.each(template.input[0].poll.conn, function (conn, index) {
+          template.input[0].poll.conn[index].requests = this.__components_sources_to_requests(this.components[pipeline_id], pipeline_id)
         }.bind(this))
 
-        debug('create_pipelines %o', this.$options.pipelines)
+        let pipe = new JSPipeline(template)
 
-        if (next) { next() }
-      }
-    }
+        this.$options.__pipelines_cfg[pipeline_id] = {
+          ids: [],
+          connected: [],
+          suspended: pipe.inputs.every(function (input) { return input.options.suspended }, this)
+        }
+
+        // this.__after_connect_inputs(
+        //   pipe,
+        //   this.$options.__pipelines_cfg[pipeline_id],
+        //   this.__resume_pipeline.pass([pipe, this.$options.__pipelines_cfg[pipeline_id], this.id, function () {
+        //     debug('__resume_pipeline CALLBACK')
+        //     pipe.fireEvent('onOnce')
+        //   }], this)
+        // )
+
+        this.$options.pipelines[pipeline_id] = pipe
+      }.bind(this))
+
+      debug('create_pipelines %o', this.$options.pipelines)
+
+      if (next) { next() }
+      // }
+    },
 
     /**
     * @end pipelines
     **/
 
-  }
+    /** calendar **/
+    disabled_after: function () {
+      return moment().day(1).format('YYYY-MM-DD')
+    },
+    onInputChanged (val) {
+      const items = val.split(' - ')
+      if (items[0] && items[0].length === 10) this.anchorTimestamp = QCalendar.parseTimestamp(items[0])
+      if (items[1] && items[1].length === 10) this.otherTimestamp = QCalendar.parseTimestamp(items[1])
+    },
 
-  // computed: {
-  //
-  // //   count: function () {
-  // //     let result = 0
-  // //     Array.each(this.groups, function (group) {
-  // //       result += group.count
-  // //     })
-  // //
-  // //     return result
-  // //   }
-  // },
-  // mounted: function () {
-  //   this.pipeline_id = 'input.logs.educativa.filter'
-  // },
-  // create: function () {
-  //   debug('created HOST %s %o %o', this.web, this.$options.range_component, this.$options.__pipelines_cfg)
-  //   // EventBus.$on(this.pipeline_id, this.__process_input_data)
-  //
-  //   // if (this.store) this.__register_store_module(this.id, sourceStore)
-  //   // this.__bind_components_to_sources(this.components)
-  //   // this.create_pipelines()
-  //
-  //   // this.$options.range_component.source.requests.once[0].params.query.filter.metadata.web = this.web
-  //   // this.$options.feed_component.source.requests.periodical[0].params.query.filter.metadata.web = this.web
-  //   // this.$set(this.components, 'range', this.$options.range_component)
-  //   // this.$set(this.components, 'feed', this.$options.feed_component)
-  //   // this.components.range.source.requests.once.push(this.$options.range_component)
-  //
-  //   this.components.range.source.requests.periodical.push(this.$options.range_component)
-  // }
+    calendarNext () {
+      this.$refs.calendar.next()
+    },
+
+    calendarPrev () {
+      this.$refs.calendar.prev()
+    },
+
+    classDay (timestamp) {
+      if (this.anchorDayIdentifier !== false && this.otherDayIdentifier !== false) {
+        return this.getBetween(timestamp)
+      }
+    },
+
+    getBetween (timestamp) {
+      const nowIdentifier = QCalendar.getDayIdentifier(timestamp)
+      return {
+        'q-selected-day-first': this.lowIdentifier === nowIdentifier,
+        'q-selected-day': this.lowIdentifier <= nowIdentifier && this.highIdentifier >= nowIdentifier,
+        'q-selected-day-last': this.highIdentifier === nowIdentifier
+      }
+    },
+
+    onMouseDownDay ({ scope, event }) {
+      if (leftClick(event)) {
+        if (this.mobile === true &&
+          this.anchorTimestamp !== null &&
+          this.otherTimestamp !== null &&
+          this.anchorTimestamp.date === this.otherTimestamp.date) {
+          this.otherTimestamp = scope
+          this.mouseDown = false
+          return
+        }
+        // mouse is down, start selection and capture current
+        this.mouseDown = true
+        this.anchorTimestamp = scope
+        this.otherTimestamp = scope
+      }
+    },
+
+    onMouseUpDay ({ scope, event }) {
+      if (leftClick(event)) {
+        // mouse is up, capture last and cancel selection
+        this.otherTimestamp = scope
+        this.mouseDown = false
+      }
+    },
+
+    onMouseMoveDay ({ scope, event }) {
+      if (this.mouseDown === true) {
+        this.otherTimestamp = scope
+      }
+    }
+  }
 
 }
 </script>

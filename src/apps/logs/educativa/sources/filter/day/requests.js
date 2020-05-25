@@ -2,7 +2,7 @@ import * as Debug from 'debug'
 const debug = Debug('apps:logs:educativa:sources:filter:day:requests')
 
 // import END from '../../../etc/range'
-const end = require('../../../../etc/end')
+// const end = require('../../../../etc/end')
 
 const roundMilliseconds = function (timestamp) {
   let d = new Date(timestamp)
@@ -145,10 +145,12 @@ const ss = require('simple-statistics')
 const generic_callback = function (data, metadata, key, vm) {
   // debug('HOST CALLBACK data %s %o', key, data)
 
-  const END = end()
+  // const END = end()
+  const END = vm.end()
+  const TOP = vm.top
 
   if (/historical/.test(key) && data.logs_historical && Object.getLength(data.logs_historical) > 0) {
-    // debug('HISTORICAL HOST CALLBACK data %s %o', key, data)
+    debug('HISTORICAL HOST CALLBACK data %s %o', key, data)
     // let type
     // let vm_data = {}
     let per_domain = {}
@@ -196,9 +198,43 @@ const generic_callback = function (data, metadata, key, vm) {
       // }
     })
 
-    debug('HISTORICAL HOST CALLBACK data %s %o %o', key, per_domain, per_host)
+    let top_per_domain = {}
+    let _top_per_domain = []
+    let top_per_host = {}
+    let _top_per_host = []
+    Object.each(per_domain, function (data, domain) {
+      _top_per_domain.push(data.hits)
+    })
+    Object.each(per_host, function (data, host) {
+      _top_per_host.push(data.hits)
+    })
+    _top_per_domain = _top_per_domain.sort((a, b) => b - a)
+    _top_per_host = _top_per_host.sort((a, b) => b - a)
+
+    for (let i = 0; i < TOP; i++) {
+      let value = _top_per_domain[i]
+
+      Object.each(per_domain, function (data, domain) {
+        if (data.hits === value) {
+          top_per_domain[domain] = data
+        }
+      })
+    }
+    for (let i = 0; i < TOP; i++) {
+      let value = _top_per_host[i]
+
+      Object.each(per_host, function (data, host) {
+        if (data.hits === value) {
+          top_per_host[host] = data
+        }
+      })
+    }
+
+    debug('HISTORICAL HOST CALLBACK data %s %o %o', key, top_per_domain, top_per_host)
     vm.$set(vm.day, 'per_domain', per_domain)
     vm.$set(vm.day, 'per_host', per_host)
+    vm.$set(vm.day, 'top_per_domain', top_per_domain)
+    vm.$set(vm.day, 'top_per_host', top_per_host)
     vm.$set(vm.day, 'range', range)
     vm.$set(vm.day, 'timestamp', timestamp)
     // // data = data.logs_historical[0]
@@ -225,7 +261,8 @@ const host_once_component = {
       _key
     ) {
       // const END = 1586055600972 //= > test data
-      const END = end()
+      // const END = end()
+      const END = vm.end()
 
       /**
       * production
@@ -350,7 +387,7 @@ const host_once_component = {
 
         case 'historical.day.once':
           // START = END - HOUR
-          START = (END - DAY >= 0) ? END - DAY : 0
+          START = (roundHours(END) - DAY >= 0) ? roundHours(END) - DAY : 0
 
           // filter += "this.r.row('metadata')('type').eq('day')"
           filter.push("r.row('metadata')('type').eq('day')")
@@ -361,7 +398,7 @@ const host_once_component = {
           //
           // filter += ')' // -> "this.r.row('metadata')('path').eq('logs.educativa').and("
 
-          debug('FILTER ARRAY %s', filter)
+          debug('FILTER ARRAY historical.day.once %o %s %s', filter, new Date(START), new Date(END))
 
           source = [{
             params: { id: _key },
