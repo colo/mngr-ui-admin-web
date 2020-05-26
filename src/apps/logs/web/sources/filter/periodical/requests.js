@@ -184,13 +184,13 @@ const generic_callback = function (data, metadata, key, vm) {
 
     if (!_data.data) _data.data = {}
 
-    // debug('PERIODICAL HOST CALLBACK _data %o', _data)
+    debug('PERIODICAL HOST CALLBACK _data %o', _data)
 
     let range = {start: undefined, end: undefined}
     // let per_host_range = {start: undefined, end: undefined}
     let timestamp = _data[0].metadata.timestamp // comes sorted by timestamp in desc order, so first item has the biggest timestamp
     let smallest_start = roundSeconds(timestamp - (5 * SECOND))
-    const START = roundSeconds(timestamp - (5 * SECOND))
+    // const START = roundSeconds(timestamp - (5 * SECOND))
 
     /**
     * logs
@@ -253,8 +253,8 @@ const generic_callback = function (data, metadata, key, vm) {
           type_counter[row.metadata.timestamp][value] += 1
         }
 
-        if (row.data.referer || row.value.medium) {
-          debug('PERIODICAL HOST CALLBACK _data %o', row.data.referer, row.data.medium)
+        if (row.data.referer || row.data.medium) {
+          debug('PERIODICAL HOST CALLBACK referer %o', row.data.referer, row.data.medium)
           let value = (row.data.referer) ? row.data.referer + ' - ' + row.data.medium : row.data.medium
           if (!referer_counter[row.metadata.timestamp]) referer_counter[row.metadata.timestamp] = {}
           if (!referer_counter[row.metadata.timestamp][value]) referer_counter[row.metadata.timestamp][value] = 0
