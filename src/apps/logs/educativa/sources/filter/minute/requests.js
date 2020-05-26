@@ -145,7 +145,7 @@ const ss = require('simple-statistics')
 const generic_callback = function (data, metadata, key, vm) {
   // debug('HOST CALLBACK data %s %o', key, data)
 
-  const END = vm.end()
+  const END = vm.end_minute()
   const TOP = vm.top
 
   if (/historical/.test(key) && data.logs_historical && Object.getLength(data.logs_historical) > 0) {
@@ -264,7 +264,7 @@ const host_once_component = {
     ) {
       // const END = 1586055600972 //= > test data
       // const END = end()
-      const END = vm.end()
+      const END = vm.end_minute()
 
       /**
       * production
@@ -347,7 +347,7 @@ const host_once_component = {
           //
           // filter += ')' // -> "this.r.row('metadata')('path').eq('logs.educativa').and("
 
-          debug('FILTER ARRAY %s', filter)
+          debug('FILTER ARRAY %o', filter)
 
           source = [{
             params: { id: _key },

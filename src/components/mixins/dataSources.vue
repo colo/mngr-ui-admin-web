@@ -360,7 +360,7 @@ export default {
     /**
     * @start pipelines
     **/
-    create_pipelines: function (next) {
+    create_pipelines: function (create_id, next) {
     },
     __process_input_data: function (payload) {
       debug('__process_input_data', payload)
@@ -568,31 +568,37 @@ export default {
 
       debug('suspend_pipelines', this.$options.pipelines)
     },
-    resume_pipelines: function () {
-      debug('resume_pipelines %s', this.pipeline_id)
+    resume_pipelines: function (resume_id) {
+      debug('resume_pipelines %s', resume_id, this.pipeline_id)
 
       Object.each(this.$options.pipelines, function (pipe, id) { // destroy old ones
-        if ((Array.isArray(this.pipeline_id) && this.pipeline_id.contains(id)) || id === this.pipeline_id) {
+        if (
+          ((Array.isArray(this.pipeline_id) && this.pipeline_id.contains(id)) || id === this.pipeline_id) &&
+          (!resume_id || resume_id === undefined || resume_id === id)
+        ) {
           pipe.fireEvent('onResume')
           pipe.fireEvent('onOnce')
           // pipe.fireEvent('onExit')
           // pipe.removeEvents()
           //
           // delete this.$options.pipelines[id]
+          debug('resumed_pipelines', id)
         }
       }.bind(this))
 
       debug('resume_pipelines', this.$options.pipelines)
     },
-    destroy_pipelines: function () {
-      debug('destroy_pipelines')
+    destroy_pipelines: function (destroy_id) {
+      debug('destroy_pipelines %s', destroy_id, this.pipeline_id)
 
       Object.each(this.$options.pipelines, function (pipe, id) { // destroy old ones
-        pipe.fireEvent('onSuspend')
-        pipe.fireEvent('onExit')
-        pipe.removeEvents()
+        if (!destroy_id || destroy_id === undefined || destroy_id === id) {
+          pipe.fireEvent('onSuspend')
+          pipe.fireEvent('onExit')
+          pipe.removeEvents()
 
-        delete this.$options.pipelines[id]
+          delete this.$options.pipelines[id]
+        }
       }.bind(this))
 
       debug('destroy_pipelines', this.$options.pipelines)

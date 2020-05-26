@@ -1,5 +1,6 @@
 <template>
-  <q-page :key="$route.path +'.'+ JSON.stringify($route.query)+'.page'">
+  <!-- <q-page :key="$route.path +'.'+ JSON.stringify($route.query)+'.page'"> -->
+  <q-page>
     <div class="q-pa-md">
       <div class="bg-primary text-white">
         <q-toolbar >
@@ -31,52 +32,61 @@
         narrow-indicator
       >
         <q-tab name="periodical" label="Now" />
-        <q-tab name="minute" label="Last Minute" />
-        <q-tab name="hour" label="Current Hour" />
-        <q-tab name="day" label="Today" />
+        <q-tab name="minute" label="Minute" />
+        <q-tab name="hour" label="Hourly" />
+        <q-tab name="day" label="Daily" />
       </q-tabs>
       <q-separator />
       <q-tab-panels v-model="range_tab">
         <!-- animated -->
         <q-tab-panel name="periodical" :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical'">
           <!-- <div class="text-h6">From: {{ format_time(periodical.range.start) }} - To: {{ format_time(periodical.range.end) }} / Updated on: {{ format_time(periodical.timestamp) }}</div> -->
+          <q-toolbar class="text-primary">
+            <!-- <q-btn flat round dense icon="menu" /> -->
+            <q-toolbar-title>
+              From: {{ format_time(periodical.range.start) }} - To: {{ format_time(periodical.range.end) }} / Updated on: {{ format_time(periodical.timestamp) }}
+            </q-toolbar-title>
+            <!-- <q-space class="text-primary"/> -->
+
+          </q-toolbar>
+
           <world-map :cities="periodical.world_map_cities"/>
 
           <bar-race
             :categoryY="'country'"
-            :values="periodical.country_counter"
+            :values="periodical.top_country_counter"
             :label="'Per COUNTRY count (last 5 secs)'"
-            :id="'country_counter'" :zoom="apply_zoom"
-            :key="$route.path +'.'+ JSON.stringify($route.query)+'.country_counter'"
+            :id="'top_country_counter'" :zoom="apply_zoom"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.top_country_counter'"
           />
 
           <bar-race
             :categoryY="'country'"
-            :values="periodical.country_counter"
+            :values="periodical.top_country_counter"
             :label="'Per COUNTRY count (sum)'"
-            :id="'country_counter_sum'"
+            :id="'top_country_counter_sum'"
             :zoom="apply_zoom"
             :sum="true"
-            :key="$route.path +'.'+ JSON.stringify($route.query)+'.country_counter_sum'"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.top_country_counter_sum'"
           />
 
           <bar-race
             :categoryY="'city'"
-            :values="periodical.city_counter"
+            :values="periodical.top_city_counter"
             :label="'Per CITY count (last 5 secs)'"
-            :id="'city_counter'"
+            :id="'top_city_counter'"
             :zoom="apply_zoom"
-            :key="$route.path +'.'+ JSON.stringify($route.query)+'.city_counter'"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.top_city_counter'"
           />
 
           <bar-race
             :categoryY="'city'"
-            :values="periodical.city_counter"
+            :values="periodical.top_city_counter"
             :label="'Per CITY count (sum)'"
-            :id="'city_counter_sum'"
+            :id="'top_city_counter_sum'"
             :zoom="apply_zoom"
             :sum="true"
-            :key="$route.path +'.'+ JSON.stringify($route.query)+'.city_counter_sum'"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.top_city_counter_sum'"
           />
 
           <!-- <div v-for="(val, prop) in minute" :key="'minute.'+prop">
@@ -109,7 +119,7 @@
 
           <hr>
 
-          <div v-for="(val, city) in periodical.city_counter" :key="'city.'+city">
+          <!-- <div v-for="(val, city) in periodical.city_counter" :key="'city.'+city">
             periodical.city_counter: {{city}} - {{val}} <br/>
           </div>
 
@@ -125,11 +135,11 @@
             periodical.continent_counter: {{continent}} - {{val}} <br/>
           </div>
 
-          <hr>
+          <hr> -->
 
-          <div v-for="(val, addr) in periodical.addr_counter" :key="'addr.'+addr">
+          <!-- <div v-for="(val, addr) in periodical.addr_counter" :key="'addr.'+addr">
             periodical.addr_counter: {{addr}} - {{val}} <br/>
-          </div>
+          </div> -->
 
           <hr>
 
@@ -182,15 +192,51 @@
         </q-tab-panel>
 
         <q-tab-panel name="minute" :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute'">
-          <div class="text-h6">From: {{ format_time(minute.range.start) }} - To: {{ format_time(minute.range.end) }} / Updated on: {{ format_time(minute.timestamp) }}</div>
+          <!-- <div class="text-h6">From: {{ format_time(minute.range.start) }} - To: {{ format_time(minute.range.end) }} / Updated on: {{ format_time(minute.timestamp) }}</div> -->
           <!-- <world-map :cities="minute.world_map_cities"/> -->
+          <q-toolbar class="text-primary">
+            <!-- <q-btn flat round dense icon="menu" /> -->
+            <q-toolbar-title>
+              From: {{ format_time(minute.range.start) }} - To: {{ format_time(minute.range.end) }} / Updated on: {{ format_time(minute.timestamp) }}
+            </q-toolbar-title>
+            <!-- <q-space class="text-primary"/> -->
+            <template>
+              <div class="q-pa-md">
+
+                <q-btn flat dense icon="access_time" />
+                <q-popup-proxy v-model="showMinute" ref="qMinuteProxy" transition-show="scale" transition-hide="scale">
+                    <q-time
+                      v-model="selected_minute"
+                      :options="disabled_minutes"
+                      now-btn
+                      />
+                      <!-- format24h -->
+                    <!-- @input="() => $refs.qDateProxy.hide()"  -->
+                  <!-- <q-calendar
+                    ref="calendar"
+                    v-model="selectedDate"
+                    view="month"
+                    locale="en-us"
+                    mini-mode
+                    :selected-start-end-dates="startEndDates"
+                    :day-class="classDay"
+                    @mousedown:day="onMouseDownDay"
+                    @mouseup:day="onMouseUpDay"
+                    @mousemove:day="onMouseMoveDay"
+                    :disabled-after="disabled_after()"
+                  /> -->
+                </q-popup-proxy>
+
+              </div>
+            </template>
+          </q-toolbar>
 
           <bar-race
             :categoryY="'country'"
-            :values="minute.country_counter"
+            :values="minute.top_country_counter"
             :label="'Minute Per COUNTRY count'"
-            :id="'minute.country_counter'" :zoom="apply_zoom"
-            :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute.country_counter'"
+            :id="'minute.top_country_counter'" :zoom="apply_zoom"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute.top_country_counter'"
           />
 
           <!-- <bar-race
@@ -205,11 +251,11 @@
 
           <bar-race
             :categoryY="'city'"
-            :values="minute.city_counter"
+            :values="minute.top_city_counter"
             :label="'Minute Per CITY count'"
-            :id="'minute.city_counter'"
+            :id="'minute.top_city_counter'"
             :zoom="apply_zoom"
-            :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute.city_counter'"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute.top_city_counter'"
           />
 
           <bar-race
@@ -218,20 +264,55 @@
             :label="'Minute Per CONTINENT count'"
             :id="'minute.continent_counter'"
             :zoom="apply_zoom"
-            :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute.continent'"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute.continent_counter'"
           />
         </q-tab-panel>
 
         <q-tab-panel name="hour" :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour'">
-          <div class="text-h6">From: {{ format_time(hour.range.start) }} - To: {{ format_time(hour.range.end) }} / Updated on: {{ format_time(hour.timestamp) }}</div>
+          <!-- <div class="text-h6">From: {{ format_time(hour.range.start) }} - To: {{ format_time(hour.range.end) }} / Updated on: {{ format_time(hour.timestamp) }}</div> -->
           <!-- <world-map :cities="hour.world_map_cities"/> -->
+          <q-toolbar class="text-primary">
+            <!-- <q-btn flat round dense icon="menu" /> -->
+            <q-toolbar-title>
+              From: {{ format_time(hour.range.start) }} - To: {{ format_time(hour.range.end) }} / Updated on: {{ format_time(hour.timestamp) }}
+            </q-toolbar-title>
+            <!-- <q-space class="text-primary"/> -->
+            <template>
+              <div class="q-pa-md">
 
+                <q-btn flat dense icon="access_time" />
+                <q-popup-proxy v-model="showHour" ref="qHourProxy" transition-show="scale" transition-hide="scale">
+                    <q-time
+                      v-model="selected_hour"
+                      :options="disabled_hours"
+                      now-btn
+                      />
+                      <!-- format24h -->
+                    <!-- @input="() => $refs.qDateProxy.hide()"  -->
+                  <!-- <q-calendar
+                    ref="calendar"
+                    v-model="selectedDate"
+                    view="month"
+                    locale="en-us"
+                    mini-mode
+                    :selected-start-end-dates="startEndDates"
+                    :day-class="classDay"
+                    @mousedown:day="onMouseDownDay"
+                    @mouseup:day="onMouseUpDay"
+                    @mousemove:day="onMouseMoveDay"
+                    :disabled-after="disabled_after()"
+                  /> -->
+                </q-popup-proxy>
+
+              </div>
+            </template>
+          </q-toolbar>
           <bar-race
             :categoryY="'country'"
-            :values="hour.country_counter"
+            :values="hour.top_country_counter"
             :label="'Hour Per COUNTRY count'"
-            :id="'hour.country_counter'" :zoom="apply_zoom"
-            :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour.country_counter'"
+            :id="'hour.top_country_counter'" :zoom="apply_zoom"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour.top_country_counter'"
           />
 
           <!-- <bar-race
@@ -246,11 +327,11 @@
 
           <bar-race
             :categoryY="'city'"
-            :values="hour.city_counter"
+            :values="hour.top_city_counter"
             :label="'Hour Per CITY count'"
-            :id="'hour.city_counter'"
+            :id="'hour.top_city_counter'"
             :zoom="apply_zoom"
-            :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour.city_counter'"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour.top_city_counter'"
           />
 
           <bar-race
@@ -259,20 +340,61 @@
             :label="'Hour Per CONTINENT count'"
             :id="'hour.continent_counter'"
             :zoom="apply_zoom"
-            :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour.continent'"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour.continent_counter'"
           />
         </q-tab-panel>
 
         <q-tab-panel name="day" :key="$route.path +'.'+ JSON.stringify($route.query)+'.day'">
-          <div class="text-h6">From: {{ format_time(day.range.start) }} - To: {{ format_time(day.range.end) }} / Updated on: {{ format_time(day.timestamp) }}</div>
+          <!-- <div class="text-h6">From: {{ format_time(day.range.start) }} - To: {{ format_time(day.range.end) }} / Updated on: {{ format_time(day.timestamp) }}</div> -->
           <!-- <world-map :cities="day.world_map_cities"/> -->
+          <q-toolbar class="text-primary">
+            <!-- <q-btn flat round dense icon="menu" /> -->
+            <q-toolbar-title>
+              From: {{ format_time(day.range.start) }} - To: {{ format_time(day.range.end) }} / Updated on: {{ format_time(day.timestamp) }}
+            </q-toolbar-title>
+            <!-- <q-space class="text-primary"/> -->
+            <template>
+              <div class="q-pa-md">
+                <!-- <q-btn name="calendar_roday" /> -->
+                  <!-- round -->
+                  <!-- <q-icon name="calendar_today" class="cursor-pointer q-ma-md"/> -->
+                  <!-- <q-input flat v-model="date" mask="date" :rules="['date']">
+                    <template v-slot:append>
+                      <q-icon name="event" class="cursor-pointer">
+                        <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                          <q-date v-model="date" @input="() => $refs.qDateProxy.hide()" :options="disabled_days" minimal/>
+                        </q-popup-proxy>
+                      </q-icon>
+                    </template>
+                  </q-input> -->
+                  <q-btn flat dense icon="calendar_today" />
+                  <q-popup-proxy v-model="showCalendar" ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                      <q-date v-model="selected_day" :options="disabled_days" minimal/>
+                      <!-- @input="() => $refs.qDateProxy.hide()"  -->
+                    <!-- <q-calendar
+                      ref="calendar"
+                      v-model="selectedDate"
+                      view="month"
+                      locale="en-us"
+                      mini-mode
+                      :selected-start-end-dates="startEndDates"
+                      :day-class="classDay"
+                      @mousedown:day="onMouseDownDay"
+                      @mouseup:day="onMouseUpDay"
+                      @mousemove:day="onMouseMoveDay"
+                      :disabled-after="disabled_after()"
+                    /> -->
+                  </q-popup-proxy>
 
+              </div>
+            </template>
+          </q-toolbar>
           <bar-race
             :categoryY="'country'"
-            :values="day.country_counter"
+            :values="day.top_country_counter"
             :label="'Day Per COUNTRY count'"
-            :id="'day.country_counter'" :zoom="apply_zoom"
-            :key="$route.path +'.'+ JSON.stringify($route.query)+'.day.country_counter'"
+            :id="'day.top_country_counter'" :zoom="apply_zoom"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.day.top_country_counter'"
           />
 
           <!-- <bar-race
@@ -287,11 +409,11 @@
 
           <bar-race
             :categoryY="'city'"
-            :values="day.city_counter"
+            :values="day.top_city_counter"
             :label="'Day Per CITY count'"
-            :id="'day.city_counter'"
+            :id="'day.top_city_counter'"
             :zoom="apply_zoom"
-            :key="$route.path +'.'+ JSON.stringify($route.query)+'.day.city_counter'"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.day.top_city_counter'"
           />
 
           <bar-race
@@ -300,7 +422,7 @@
             :label="'Day Per CONTINENT count'"
             :id="'day.continent_counter'"
             :zoom="apply_zoom"
-            :key="$route.path +'.'+ JSON.stringify($route.query)+'.day.continent'"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.day.top_continent'"
           />
         </q-tab-panel>
       </q-tab-panels>
@@ -402,7 +524,7 @@
 import * as Debug from 'debug'
 const debug = Debug('apps:logs:web:pages:filter')
 
-//
+import { date } from 'quasar'
 
 // let moment = require('moment')
 
@@ -430,6 +552,41 @@ import * as DaySources from '@apps/logs/web/sources/filter/day/index'
 // const MAX_FEED_DATA = 10
 import moment from 'moment'
 
+const roundMilliseconds = function (timestamp) {
+  let d = new Date(timestamp)
+  d.setMilliseconds(0)
+
+  return d.getTime()
+}
+
+const roundSeconds = function (timestamp) {
+  timestamp = roundMilliseconds(timestamp)
+  let d = new Date(timestamp)
+  d.setSeconds(0)
+
+  return d.getTime()
+}
+
+const roundMinutes = function (timestamp) {
+  timestamp = roundSeconds(timestamp)
+  let d = new Date(timestamp)
+  d.setMinutes(0)
+
+  return d.getTime()
+}
+const roundHours = function (timestamp) {
+  timestamp = roundMinutes(timestamp)
+  let d = new Date(timestamp)
+  d.setHours(0)
+
+  return d.getTime()
+}
+const SECOND = 1000
+const MINUTE = 60 * SECOND
+const HOUR = 60 * MINUTE
+const DAY = HOUR * 24
+const WEEK = DAY * 7
+
 export default {
   mixins: [DataSourcesMixin],
 
@@ -444,7 +601,25 @@ export default {
 
       range_tab: 'minute',
 
+      current_day: undefined,
+      current_hour: undefined,
+      current_minute: undefined,
+      top: 15,
+
+      /** calendar **/
+      selected_day: date.formatDate(Date.now(), 'YYYY/MM/DD'),
+      selected_hour: date.formatDate(Date.now(), 'HH') + ':00',
+      selected_minute: date.formatDate(Date.now(), 'HH:mm'),
+      // selectedDate: '',
+      // convertedDates: '',
+      showCalendar: false,
+      showHour: false,
+      showMinute: false,
+
       day: {
+        top_city_counter: {},
+        top_country_counter: {},
+
         per_domain: {},
         per_host: {},
         range: { start: 0, end: 0},
@@ -468,6 +643,9 @@ export default {
         // type_counter: {}
       },
       hour: {
+        top_city_counter: {},
+        top_country_counter: {},
+
         per_domain: {},
         per_host: {},
         range: { start: 0, end: 0},
@@ -491,6 +669,9 @@ export default {
         // type_counter: {}
       },
       minute: {
+        top_city_counter: {},
+        top_country_counter: {},
+
         per_domain: {},
         per_host: {},
         range: { start: 0, end: 0},
@@ -515,6 +696,11 @@ export default {
       },
 
       periodical: {
+        range: { start: 0, end: 0},
+
+        top_city_counter: {},
+        top_country_counter: {},
+
         logs: [],
 
         total_bytes_sent: 0,
@@ -659,21 +845,89 @@ export default {
   //   }
   // },
   watch: {
-    // 'periodical.logs': function (val) {
-    //   debug('periodical.logs %o', val)
-    // }
+    /** calendar **/
+    selected_day () {
+      debug('selected_day %s', new Date(moment(this.selected_day, 'YYYY/MM/DD').unix() * 1000))
+      if (roundHours(moment(this.selected_day, 'YYYY/MM/DD').unix() * 1000) === roundHours(Date.now())) {
+        this.current_day = undefined
+      } else {
+        this.current_day = (moment(this.selected_day, 'YYYY/MM/DD').unix() * 1000) + DAY
+      }
+      // this.$nextTick(function () {
+      this.destroy_pipelines('input.logs.educativa.filter.day')
+      this.create_pipelines('input.logs.educativa.filter.day')
+      this.resume_pipelines('input.logs.educativa.filter.day')
+      // }.bind(this))
 
-    // 'periodical.total_bytes_sent': {
-    //   handler: function(val){
-    //       periodical_total_bytes_sent
-    //   }
-    //   deep:true
-    // }
+      // this.convertedDates = `${start} - ${end}`
+      // debug('startEndDates', this.end)
+    },
+    selected_hour () {
+      debug('selected_hour %s', new Date(moment(this.selected_hour, 'hh:mm').unix() * 1000))
+      if (roundMinutes(moment(this.selected_hour, 'hh:mm').unix() * 1000) === roundMinutes(Date.now())) {
+        this.current_hour = undefined
+      } else {
+        this.current_hour = (moment(this.selected_hour, 'hh:mm').unix() * 1000) + HOUR
+      }
+      // this.$nextTick(function () {
+      this.destroy_pipelines('input.logs.web.filter.hour')
+      this.create_pipelines('input.logs.web.filter.hour')
+      this.resume_pipelines('input.logs.web.filter.hour')
+      // }.bind(this))
+
+      // this.convertedDates = `${start} - ${end}`
+      // debug('startEndDates', this.end)
+    },
+    selected_minute () {
+      debug('selected_minute %s', new Date(moment(this.selected_minute, 'hh:mm').unix() * 1000))
+      if (roundSeconds(moment(this.selected_minute, 'hh:mm').unix() * 1000) === roundSeconds(Date.now())) {
+        this.current_minute = undefined
+      } else {
+        this.current_minute = (moment(this.selected_minute, 'hh:mm').unix() * 1000) + MINUTE
+      }
+      // this.$nextTick(function () {
+      this.destroy_pipelines('input.logs.web.filter.minute')
+      this.create_pipelines('input.logs.web.filter.minute')
+      this.resume_pipelines('input.logs.web.filter.minute')
+      // }.bind(this))
+
+      // this.convertedDates = `${start} - ${end}`
+      // debug('startEndDates', this.end)
+    }
+    /** calendar **/
 
   },
   methods: {
+    end: function () {
+      // if (this.current_day === undefined) {
+      return Date.now()
+      // } else {
+      // return this.current_day
+      // }
+    },
+    end_minute: function () {
+      if (this.current_minute === undefined) {
+        return Date.now()
+      } else {
+        return this.current_minute
+      }
+    },
+    end_hour: function () {
+      if (this.current_hour === undefined) {
+        return Date.now()
+      } else {
+        return this.current_hour
+      }
+    },
+    end_day: function () {
+      if (this.current_day === undefined) {
+        return Date.now()
+      } else {
+        return this.current_day
+      }
+    },
     apply_zoom: function (data, categoryY, valueX) {
-      // const min_zoom = 0.01
+      const min_zoom = 0.5
       const max_zoom = 1
       /* const min_length = 8 */
       const max_length = 15
@@ -690,11 +944,34 @@ export default {
         //   }
         // }
 
-        let zoom = max_length / data.length
+        // let zoom = max_length / data.length
         // return (zoom > min_zoom) ? zoom : min_zoom
-        return zoom
+        return (max_length / data.length < min_zoom) ? min_zoom : max_length / data.length
       }
     },
+    // apply_zoom: function (data, categoryY, valueX) {
+    //   // const min_zoom = 0.01
+    //   const max_zoom = 1
+    //   /* const min_length = 8 */
+    //   const max_length = 15
+    //   let length = data.length
+    //   /* let zoom = 1 */
+    //
+    //   if (data.length <= max_length) {
+    //     return max_zoom
+    //   } else {
+    //     // let itemsWithNonZero = 0
+    //     // for (let i = 0; i < max_length; i++) {
+    //     //   if (data[i][valueX] > 0) {
+    //     //     itemsWithNonZero++
+    //     //   }
+    //     // }
+    //
+    //     let zoom = data.length / max_length
+    //     // return (zoom > min_zoom) ? zoom : min_zoom
+    //     return zoom
+    //   }
+    // },
     format_time: function (timestamp) {
       return moment(timestamp).format('dddd, MMMM Do YYYY, h:mm:ss a')
     },
@@ -704,32 +981,32 @@ export default {
     /**
     * @start pipelines
     **/
-    create_pipelines: function (next) {
+    create_pipelines: function (create_id, next) {
       debug('create_pipelines %o', this.$options.pipelines)
 
-      if (
-        this.$options.pipelines['input.logs.web.filter.periodical'] &&
-        this.$options.pipelines['input.logs.web.filter.periodical'].get_input_by_id('input.logs.web.filter.periodical')
-      ) {
-        // let requests = this.__components_sources_to_requests(this.components)
-        // if (requests.once) {
-        //   this.$options.pipelines['input.logs.web.filter'].get_input_by_id('input.os').conn_pollers[0].options.requests.once.combine(requests.once)
-        //   this.$options.pipelines['input.logs.web.filter'].get_input_by_id('input.os').conn_pollers[0].fireEvent('onOnceRequestsUpdated')
-        // }
-        //
-        // if (requests.periodical) {
-        //   this.$options.pipelines['input.logs.web.filter'].get_input_by_id('input.os').conn_pollers[0].options.requests.periodical.combine(requests.periodical)
-        //   this.$options.pipelines['input.logs.web.filter'].get_input_by_id('input.os').conn_pollers[0].fireEvent('onPeriodicalRequestsUpdated')
-        // }
-      } else {
-        const pipelines = [PeriodicalPipeline, MinutePipeline, HourPipeline, DayPipeline]
-        Array.each(pipelines, function (Pipeline) {
-          let template = Object.clone(Pipeline)
+      // if (
+      //   this.$options.pipelines['input.logs.web.filter.periodical'] &&
+      //   this.$options.pipelines['input.logs.web.filter.periodical'].get_input_by_id('input.logs.web.filter.periodical')
+      // ) {
+      //   // let requests = this.__components_sources_to_requests(this.components)
+      //   // if (requests.once) {
+      //   //   this.$options.pipelines['input.logs.web.filter'].get_input_by_id('input.os').conn_pollers[0].options.requests.once.combine(requests.once)
+      //   //   this.$options.pipelines['input.logs.web.filter'].get_input_by_id('input.os').conn_pollers[0].fireEvent('onOnceRequestsUpdated')
+      //   // }
+      //   //
+      //   // if (requests.periodical) {
+      //   //   this.$options.pipelines['input.logs.web.filter'].get_input_by_id('input.os').conn_pollers[0].options.requests.periodical.combine(requests.periodical)
+      //   //   this.$options.pipelines['input.logs.web.filter'].get_input_by_id('input.os').conn_pollers[0].fireEvent('onPeriodicalRequestsUpdated')
+      //   // }
+      // } else {
+      const pipelines = [PeriodicalPipeline, MinutePipeline, HourPipeline, DayPipeline]
+      Array.each(pipelines, function (Pipeline) {
+        let template = Object.clone(Pipeline)
 
-          debug('create_pipelines template %o', template)
+        debug('create_pipelines template %o', template)
 
-          let pipeline_id = template.input[0].poll.id
-
+        let pipeline_id = template.input[0].poll.id
+        if (!create_id || create_id === undefined || create_id === pipeline_id) {
           // template.input[0].poll.conn[0].requests = this.__components_sources_to_requests(this.components[pipeline_id], pipeline_id)
           Array.each(template.input[0].poll.conn, function (conn, index) {
             template.input[0].poll.conn[index].requests = this.__components_sources_to_requests(this.components[pipeline_id], pipeline_id)
@@ -753,17 +1030,52 @@ export default {
           // )
 
           this.$options.pipelines[pipeline_id] = pipe
-        }.bind(this))
+        }
+      }.bind(this))
 
-        debug('create_pipelines %o', this.$options.pipelines)
+      debug('create_pipelines %o', this.$options.pipelines)
 
-        if (next) { next() }
-      }
-    }
+      if (next) { next() }
+      // }
+    },
 
     /**
     * @end pipelines
     **/
+
+    /** calendar **/
+    disabled_minutes (hr, min, sec) {
+      debug('disabled_minutes ', hr, min, sec)
+      if (hr) {
+        if (min !== null) {
+          return min <= moment().format('mm')
+        }
+        return false
+      }
+
+      // if (sec !== null && sec % 10 !== 0) {
+      //   return false
+      // }
+      return true
+    },
+    disabled_hours (hr, min, sec) {
+      debug('disabled_hours ', hr, min, sec)
+      if (hr) {
+        if (min) {
+          return false
+        }
+        return hr <= moment().format('HH')
+      }
+
+      // if (sec !== null && sec % 10 !== 0) {
+      //   return false
+      // }
+      return true
+    },
+    disabled_days: function (date) {
+      return date <= moment().format('YYYY/MM/DD')
+      // && date <= '2019/02/15'
+    },
 
   }
 

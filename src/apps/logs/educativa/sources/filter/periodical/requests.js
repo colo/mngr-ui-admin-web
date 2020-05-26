@@ -2,7 +2,7 @@ import * as Debug from 'debug'
 const debug = Debug('apps:logs:educativa:sources:filter:minute:periodical')
 
 // import END from '../../../etc/range'
-const end = require('../../../../etc/end')
+// const end = require('../../../../etc/end')
 
 const roundMilliseconds = function (timestamp) {
   let d = new Date(timestamp)
@@ -151,7 +151,8 @@ const ss = require('simple-statistics')
 const generic_callback = function (data, metadata, key, vm) {
   // debug('HOST CALLBACK data %s %o', key, data)
 
-  const END = end()
+  const END = vm.end()
+  const TOP = vm.top
   // const END = 1586055600972 //= > test data
   // const END = Date.now() // production
 
@@ -293,9 +294,62 @@ const generic_callback = function (data, metadata, key, vm) {
       })
     })
 
+    let top_per_domain = {}
+    let _top_per_domain = []
+    let top_per_host = {}
+    let _top_per_host = []
+    Object.each(per_domain, function (data, domain) {
+      _top_per_domain.push(data.count)
+    })
+    Object.each(per_host, function (data, host) {
+      _top_per_host.push(data.count)
+    })
+
+    _top_per_domain = _top_per_domain.sort((a, b) => b - a)
+    _top_per_host = _top_per_host.sort((a, b) => b - a)
+
+    for (let i = 0; i < TOP; i++) {
+      let value = _top_per_domain[i]
+
+      Object.each(per_domain, function (data, domain) {
+        if (data.count === value) {
+          top_per_domain[domain] = data
+        }
+      })
+    }
+    for (let i = 0; i < TOP; i++) {
+      let value = _top_per_host[i]
+
+      Object.each(per_host, function (data, host) {
+        if (data.count === value) {
+          top_per_host[host] = data
+        }
+      })
+    }
+
+    let top_cgi_count = {}
+    let _top_cgi_count = []
+    Object.each(cgi_count, function (data, cgi) {
+      _top_cgi_count.push(data)
+    })
+
+    _top_cgi_count = _top_cgi_count.sort((a, b) => b - a)
+
+    for (let i = 0; i < TOP; i++) {
+      let value = _top_cgi_count[i]
+
+      Object.each(cgi_count, function (data, cgi) {
+        if (data === value) {
+          top_cgi_count[cgi] = data
+        }
+      })
+    }
+
     // debug('TOTAL %d', _data.length)
     // debug('TOTAL ERR %d', err_count)
-    debug('DURATION %o', duration_stats)
+    // debug('DURATION %o', duration_stats)
+
+    debug('PERIODICAL HOST CALLBACK data %s %o %o %o', key, top_per_domain, top_per_host, top_cgi_count)
 
     if (logs.length > 0) {
       // vm.logs = logs
@@ -304,9 +358,12 @@ const generic_callback = function (data, metadata, key, vm) {
     }
 
     vm.$set(vm.periodical, 'cgi_count', cgi_count)
+    vm.$set(vm.periodical, 'top_cgi_count', top_cgi_count)
     vm.$set(vm.periodical, 'duration_stats', duration_stats)
     vm.$set(vm.periodical, 'per_domain', per_domain)
     vm.$set(vm.periodical, 'per_host', per_host)
+    vm.$set(vm.periodical, 'top_per_domain', top_per_domain)
+    vm.$set(vm.periodical, 'top_per_host', top_per_host)
     vm.$set(vm.periodical, 'timestamp', timestamp)
     vm.$set(vm.periodical, 'range', range)
     // vm.$set(vm.periodical, 'timestamp', timestamp)
@@ -333,7 +390,7 @@ const host_once_component = {
       _key
     ) {
       // const END = 1586055600972 //= > test data
-      const END = end()
+      const END = vm.end()
 
       /**
       * production

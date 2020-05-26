@@ -145,8 +145,8 @@ const ss = require('simple-statistics')
 const generic_callback = function (data, metadata, key, vm) {
   // debug('HOST CALLBACK data %s %o', key, data)
 
-  // const END = end()
-  const END = vm.end()
+  // const END = end_day()
+  const END = vm.end_day()
   const TOP = vm.top
 
   if (/historical/.test(key) && data.logs_historical && Object.getLength(data.logs_historical) > 0) {
@@ -262,7 +262,7 @@ const host_once_component = {
     ) {
       // const END = 1586055600972 //= > test data
       // const END = end()
-      const END = vm.end()
+      const END = vm.end_day()
 
       /**
       * production
@@ -283,7 +283,7 @@ const host_once_component = {
         )
       })
 
-      debug('FILTER ARRAY %o', filter)
+      debug('FILTER ARRAY historical.day.once %o', filter)
 
       switch (_key) {
         // case 'periodical.once':

@@ -2,7 +2,7 @@ import * as Debug from 'debug'
 const debug = Debug('apps:logs:web:sources:filter:minute:requests')
 
 // import END from '../../../etc/range'
-const end = require('../../../../etc/end')
+// const end = require('../../../../etc/end')
 
 const roundMilliseconds = function (timestamp) {
   let d = new Date(timestamp)
@@ -145,7 +145,8 @@ const ss = require('simple-statistics')
 const generic_callback = function (data, metadata, key, vm) {
   // debug('HISTORICAL HOST CALLBACK data %s %o', key, data)
 
-  const END = end()
+  const END = vm.end_minute()
+  const TOP = vm.top
 
   if (/historical/.test(key) && data.logs_historical && Object.getLength(data.logs_historical) > 0) {
     data = JSON.parse(JSON.stringify(data))
@@ -232,14 +233,55 @@ const generic_callback = function (data, metadata, key, vm) {
       }
     })
 
-    // debug('HISTORICAL HOST CALLBACK data %s %o %o', key, per_domain, per_host)
+    let top_city_counter = {}
+    let _top_city_counter = []
+    Object.each(city_counter, function (data, city) {
+      _top_city_counter.push(data)
+    })
+
+    _top_city_counter = _top_city_counter.sort((a, b) => b - a)
+
+    for (let i = 0; i < TOP; i++) {
+      let value = _top_city_counter[i]
+
+      Object.each(city_counter, function (data, city) {
+        if (data === value) {
+          top_city_counter[city] = data
+        }
+      })
+    }
+
+    let top_country_counter = {}
+    let _top_country_counter = []
+    Object.each(country_counter, function (data, country) {
+      _top_country_counter.push(data)
+    })
+
+    _top_country_counter = _top_country_counter.sort((a, b) => b - a)
+
+    for (let i = 0; i < TOP; i++) {
+      let value = _top_country_counter[i]
+
+      Object.each(country_counter, function (data, country) {
+        if (data === value) {
+          top_country_counter[country] = data
+        }
+      })
+    }
+
+    debug('HISTORICAL HOST CALLBACK data %s %o %o', key, top_city_counter, top_country_counter)
+
     vm.$set(vm.minute, 'per_domain', per_domain)
     vm.$set(vm.minute, 'per_host', per_host)
     vm.$set(vm.minute, 'range', range)
     vm.$set(vm.minute, 'timestamp', timestamp)
     vm.$set(vm.minute, 'world_map_cities', world_map_city_counter)
+
     vm.$set(vm.minute, 'city_counter', city_counter)
     vm.$set(vm.minute, 'country_counter', country_counter)
+    vm.$set(vm.minute, 'top_city_counter', top_city_counter)
+    vm.$set(vm.minute, 'top_country_counter', top_country_counter)
+
     vm.$set(vm.minute, 'continent_counter', continent_counter)
 
     debug('HISTORICAL HOST CALLBACK data %s %o', key, city_counter, country_counter, continent_counter)
@@ -267,7 +309,7 @@ const host_once_component = {
       _key
     ) {
       // const END = 1586055600972 //= > test data
-      const END = end()
+      const END = vm.end()
 
       /**
       * production

@@ -184,7 +184,7 @@ const generic_callback = function (data, metadata, key, vm) {
 
     if (!_data.data) _data.data = {}
 
-    // debug('PERIODICAL HOST CALLBACK _data %o', _data)
+    debug('PERIODICAL HOST CALLBACK _data %o', _data)
 
     let range = {start: undefined, end: undefined}
     // let per_host_range = {start: undefined, end: undefined}
@@ -192,168 +192,42 @@ const generic_callback = function (data, metadata, key, vm) {
     let smallest_start = roundSeconds(timestamp - (5 * SECOND))
     const START = roundSeconds(timestamp - (5 * SECOND))
 
+    Array.each(_data, function (row) {
+      let start = row.metadata.timestamp
+      let end = row.metadata.timestamp
+      if (start >= smallest_start) { // discard any document that is previous to our smallest_start timestamp
+      }
+    })
+
     /**
     * logs
     **/
     let logs = []
-    let current_bytes_sent = 0
-    let smallest_start_index = 0
-    let _tmp_periodical_world_map_city_counter = {}
-
-    // Array.each(_data[0].data.referer, function (row, index) {
-    //   // debug('REFERER %o', row.value)
-    //   let value = (row.value.referer) ? row.value.referer + ' - ' + row.value.medium : row.value.medium
-    //   if (!referer_counter[row.timestamp]) referer_counter[row.timestamp] = {}
-    //   if (!referer_counter[row.timestamp][value]) referer_counter[row.timestamp][value] = 0
-    //   referer_counter[row.timestamp][value] += 1
-    // })
-
-    Array.each(_data, function (row, index) {
-      let start = row.metadata.timestamp
-      let end = row.metadata.timestamp
-      if (start >= smallest_start) { // discard any document that is previous to our smallest_start timestamp
-        if (range.start === undefined || range.start > start) { range.start = start }
-
-        if (range.end === undefined || range.end < end) { range.end = end }
-        logs.push(Object.merge(Object.clone(row.metadata), { log: row.data.log }))
-
-        if (!hits[row.metadata.timestamp]) hits[row.metadata.timestamp] = 0
-        hits[row.metadata.timestamp] += 1
-
-        if (row.data.body_bytes_sent) {
-          if (smallest_start_index === 0) {
-            current_bytes_sent = row.data.body_bytes_sent
-          }
-
-          if (!total_bytes_sent[row.metadata.timestamp]) total_bytes_sent[row.metadata.timestamp] = 0
-          total_bytes_sent[row.metadata.timestamp] += row.data.body_bytes_sent
-        }
-
-        if (row.data.status) {
-          if (!status_counter[row.metadata.timestamp]) status_counter[row.metadata.timestamp] = {}
-          if (!status_counter[row.metadata.timestamp][row.data.status]) status_counter[row.metadata.timestamp][row.data.status] = 0
-          status_counter[row.metadata.timestamp][row.data.status] += 1
-        }
-
-        if (row.data.remote_addr) {
-          if (!addr_counter[row.metadata.timestamp]) addr_counter[row.metadata.timestamp] = {}
-          if (!addr_counter[row.metadata.timestamp][row.value]) addr_counter[row.metadata.timestamp][row.data.remote_addr] = 0
-          addr_counter[row.metadata.timestamp][row.data.remote_addr] += 1
-        }
-
-        if (row.data.remote_user) {
-          if (!user_counter[row.metadata.timestamp]) user_counter[row.metadata.timestamp] = {}
-          if (!user_counter[row.metadata.timestamp][row.value]) user_counter[row.metadata.timestamp][row.data.remote_user] = 0
-          user_counter[row.metadata.timestamp][row.data.remote_user] += 1
-        }
-        if (row.data.pathname) {
-          let value = (static_types.test(row.data.pathname)) ? 'static' : 'dynamic'
-          if (!type_counter[row.metadata.timestamp]) type_counter[row.metadata.timestamp] = {}
-          if (!type_counter[row.metadata.timestamp][value]) type_counter[row.metadata.timestamp][value] = 0
-          type_counter[row.metadata.timestamp][value] += 1
-        }
-
-        if (row.data.referer || row.value.medium) {
-          debug('PERIODICAL HOST CALLBACK _data %o', row.data.referer, row.data.medium)
-          let value = (row.data.referer) ? row.data.referer + ' - ' + row.data.medium : row.data.medium
-          if (!referer_counter[row.metadata.timestamp]) referer_counter[row.metadata.timestamp] = {}
-          if (!referer_counter[row.metadata.timestamp][value]) referer_counter[row.metadata.timestamp][value] = 0
-          referer_counter[row.metadata.timestamp][value] += 1
-        }
-
-        /** user_agent **/
-        if (row.data.user_agent) {
-          // debug('OS %s', row.value.os.family)
-
-          let os = row.data.user_agent.os.family
-
-          user_agent_os_family_counter[row.metadata.timestamp] = os
-
-          os = (row.data.user_agent.os.major) ? os + ' ' + row.data.user_agent.os.major : os
-          // os = (row.data.user_agent.os.minor) ? os + '.' + row.data.user_agent.os.minor : os
-          user_agent_os_counter[row.metadata.timestamp] = os
-
-          let engine = row.data.user_agent.engine.family
-          engine = (row.data.user_agent.engine.major) ? engine + ' ' + row.data.user_agent.engine.major : engine
-          engine = (row.data.user_agent.engine.minor) ? engine + '.' + row.data.user_agent.engine.minor : engine
-          engine = (row.data.user_agent.engine.patch) ? engine + '.' + row.data.user_agent.engine.patch : engine
-
-          user_agent_engine_counter[row.metadata.timestamp] = engine
-
-          let browser = row.data.user_agent.ua.family
-          browser = (row.data.user_agent.ua.major) ? browser + ' ' + row.data.user_agent.ua.major : browser
-          browser = (row.data.user_agent.ua.minor) ? browser + '.' + row.data.user_agent.ua.minor : browser
-          browser = (row.data.user_agent.ua.patch) ? browser + '.' + row.data.user_agent.ua.patch : browser
-          browser = (row.data.user_agent.ua.type) ? browser + ' ' + row.data.user_agent.ua.type : browser
-
-          user_agent_browser_counter[row.metadata.timestamp] = browser
-
-          // let device = row.data.user_agent.device.family
-          // device = (row.data.user_agent.device.brand) ? device + ' ' + row.data.user_agent.device.brand : device
-          // device = (row.data.user_agent.device.model) ? device + '.' + row.data.user_agent.device.model : device
-          // device = (row.data.user_agent.device.type) ? device + '.' + row.data.user_agent.device.type : device
-
-          let device = (row.data.user_agent.device.brand) ? row.data.user_agent.device.brand : row.data.user_agent.device.family
-          device = (row.data.user_agent.device.model) ? device + ' ' + row.data.user_agent.device.model : device
-          device = (row.data.user_agent.device.type) ? device + ' - ' + row.data.user_agent.device.type : device
-
-          user_agent_device_counter[row.metadata.timestamp] = device
-        }
-
-        /** geoip **/
-        if (row.data.geoip) {
-          let country = (row.data.geoip.country) ? (row.data.geoip.country.names) ? (row.data.geoip.country.names.en) ? row.data.geoip.country.names.en : row.data.geoip.country.names.es : undefined : undefined
-          let continent = (row.data.geoip.continent) ? (row.data.geoip.continent.names) ? (row.data.geoip.continent.names.en) ? row.data.geoip.continent.names.en : row.data.geoip.continent.names.es : undefined : undefined
-          let city = (row.data.geoip.city && country) ? (row.data.geoip.city.names) ? (row.data.geoip.city.names.en) ? row.data.geoip.city.names.en + ' - ' + country : row.data.geoip.city.names.es + ' - ' + country : undefined : undefined
-
-          let world_map_city = (row.data.geoip.location && row.data.geoip.location.latitude && row.data.geoip.location.longitude) ? row.data.geoip.location + ':' + row.data.geoip.location.latitude : undefined
-          let world_map_city_name = (row.data.geoip.city) ? (row.data.geoip.city.names) ? (row.data.geoip.city.names.en) ? row.data.geoip.city.names.en + ' - ' + country : row.data.geoip.city.names.es + ' - ' + country : undefined : undefined
-
-          if (city && !city_counter[row.metadata.timestamp]) city_counter[row.metadata.timestamp] = {}
-          if (country && !country_counter[row.metadata.timestamp]) country_counter[row.metadata.timestamp] = {}
-          if (continent && !continent_counter[row.metadata.timestamp]) continent_counter[row.metadata.timestamp] = {}
-
-          if (world_map_city && world_map_city_name && !world_map_city_counter[row.metadata.timestamp]) world_map_city_counter[row.metadata.timestamp] = {}
-
-          if (city && country && !city_counter[row.metadata.timestamp][city]) city_counter[row.metadata.timestamp][city] = 0
-          if (country && !country_counter[row.metadata.timestamp][country]) country_counter[row.metadata.timestamp][country] = 0
-          if (continent && !continent_counter[row.metadata.timestamp][continent]) continent_counter[row.metadata.timestamp][continent] = 0
-
-          if (world_map_city && world_map_city_name && !world_map_city_counter[row.metadata.timestamp][world_map_city]) world_map_city_counter[row.metadata.timestamp][world_map_city] = { name: world_map_city_name, count: 0, latitude: row.data.geoip.location.latitude, longitude: row.data.geoip.location.longitude }
-
-          if (city) { city_counter[row.metadata.timestamp][city] += 1 }
-          if (country) country_counter[row.metadata.timestamp][country] += 1
-          if (continent) continent_counter[row.metadata.timestamp][continent] += 1
-
-          if (world_map_city && world_map_city_name) world_map_city_counter[row.metadata.timestamp][world_map_city].count += 1
-        }
-
-        smallest_start_index++
-      }
+    let log_template = _data[0].metadata
+    Array.each(_data[0].data.log, function (row) {
+      logs.push(Object.merge(Object.clone(log_template), { log: row.value, timestamp: row.timestamp }))
     })
-
-    debug('PERIODICAL HOST CALLBACK data %s %o', key, logs)
 
     /**
     * bytes & hits
     **/
-    // let current_bytes_sent = 0
-    // Array.each(_data[0].data.body_bytes_sent, function (row, index) {
-    //   if (index === 0) {
-    //     current_bytes_sent = row.value
-    //   }
-    //
-    //   if (!hits[row.timestamp]) hits[row.timestamp] = 0
-    //   hits[row.timestamp] += 1
-    //
-    //   if (!total_bytes_sent[row.timestamp]) total_bytes_sent[row.timestamp] = 0
-    //   total_bytes_sent[row.timestamp] += row.value
-    // })
+    let current_bytes_sent = 0
+    Array.each(_data[0].data.body_bytes_sent, function (row, index) {
+      if (index === 0) {
+        current_bytes_sent = row.value
+      }
+
+      if (!hits[row.timestamp]) hits[row.timestamp] = 0
+      hits[row.timestamp] += 1
+
+      if (!total_bytes_sent[row.timestamp]) total_bytes_sent[row.timestamp] = 0
+      total_bytes_sent[row.timestamp] += row.value
+    })
 
     let periodical_total_bytes_sent = 0
     let periodical_hits = 0
     Object.each(total_bytes_sent, function (val, ts) {
-      if (ts < smallest_start) {
+      if (ts < START) {
         delete total_bytes_sent[ts]
         delete hits[ts]
       } else {
@@ -366,15 +240,15 @@ const generic_callback = function (data, metadata, key, vm) {
     /**
     * status
     **/
-    // Array.each(_data[0].data.status, function (row, index) {
-    //   if (!status_counter[row.timestamp]) status_counter[row.timestamp] = {}
-    //   if (!status_counter[row.timestamp][row.value]) status_counter[row.timestamp][row.value] = 0
-    //   status_counter[row.timestamp][row.value] += 1
-    // })
+    Array.each(_data[0].data.status, function (row, index) {
+      if (!status_counter[row.timestamp]) status_counter[row.timestamp] = {}
+      if (!status_counter[row.timestamp][row.value]) status_counter[row.timestamp][row.value] = 0
+      status_counter[row.timestamp][row.value] += 1
+    })
 
     let periodical_status_counter = {}
     Object.each(status_counter, function (val, ts) {
-      if (ts < smallest_start) {
+      if (ts < START) {
         delete status_counter[ts]
       } else {
         Object.each(val, function (data, status) {
@@ -387,40 +261,40 @@ const generic_callback = function (data, metadata, key, vm) {
     /**
     * city - country - continent
     **/
-    // let _tmp_periodical_world_map_city_counter = {}
-    // Array.each(_data[0].data.geoip, function (row, index) {
-    //   let country = (row.value.country) ? (row.value.country.names) ? (row.value.country.names.en) ? row.value.country.names.en : row.value.country.names.es : undefined : undefined
-    //   let continent = (row.value.continent) ? (row.value.continent.names) ? (row.value.continent.names.en) ? row.value.continent.names.en : row.value.continent.names.es : undefined : undefined
-    //   let city = (row.value.city && country) ? (row.value.city.names) ? (row.value.city.names.en) ? row.value.city.names.en + ' - ' + country : row.value.city.names.es + ' - ' + country : undefined : undefined
-    //
-    //   let world_map_city = (row.value.location && row.value.location.latitude && row.value.location.longitude) ? row.value.location + ':' + row.value.location.latitude : undefined
-    //   let world_map_city_name = (row.value.city) ? (row.value.city.names) ? (row.value.city.names.en) ? row.value.city.names.en + ' - ' + country : row.value.city.names.es + ' - ' + country : undefined : undefined
-    //
-    //   if (city && !city_counter[row.timestamp]) city_counter[row.timestamp] = {}
-    //   if (country && !country_counter[row.timestamp]) country_counter[row.timestamp] = {}
-    //   if (continent && !continent_counter[row.timestamp]) continent_counter[row.timestamp] = {}
-    //
-    //   if (world_map_city && world_map_city_name && !world_map_city_counter[row.timestamp]) world_map_city_counter[row.timestamp] = {}
-    //
-    //   if (city && country && !city_counter[row.timestamp][city]) city_counter[row.timestamp][city] = 0
-    //   if (country && !country_counter[row.timestamp][country]) country_counter[row.timestamp][country] = 0
-    //   if (continent && !continent_counter[row.timestamp][continent]) continent_counter[row.timestamp][continent] = 0
-    //
-    //   if (world_map_city && world_map_city_name && !world_map_city_counter[row.timestamp][world_map_city]) world_map_city_counter[row.timestamp][world_map_city] = { name: world_map_city_name, count: 0, latitude: row.value.location.latitude, longitude: row.value.location.longitude }
-    //
-    //   if (city) { city_counter[row.timestamp][city] += 1 }
-    //   if (country) country_counter[row.timestamp][country] += 1
-    //   if (continent) continent_counter[row.timestamp][continent] += 1
-    //
-    //   if (world_map_city && world_map_city_name) world_map_city_counter[row.timestamp][world_map_city].count += 1
-    // })
+    let _tmp_periodical_world_map_city_counter = {}
+    Array.each(_data[0].data.geoip, function (row, index) {
+      let country = (row.value.country) ? (row.value.country.names) ? (row.value.country.names.en) ? row.value.country.names.en : row.value.country.names.es : undefined : undefined
+      let continent = (row.value.continent) ? (row.value.continent.names) ? (row.value.continent.names.en) ? row.value.continent.names.en : row.value.continent.names.es : undefined : undefined
+      let city = (row.value.city && country) ? (row.value.city.names) ? (row.value.city.names.en) ? row.value.city.names.en + ' - ' + country : row.value.city.names.es + ' - ' + country : undefined : undefined
+
+      let world_map_city = (row.value.location && row.value.location.latitude && row.value.location.longitude) ? row.value.location + ':' + row.value.location.latitude : undefined
+      let world_map_city_name = (row.value.city) ? (row.value.city.names) ? (row.value.city.names.en) ? row.value.city.names.en + ' - ' + country : row.value.city.names.es + ' - ' + country : undefined : undefined
+
+      if (city && !city_counter[row.timestamp]) city_counter[row.timestamp] = {}
+      if (country && !country_counter[row.timestamp]) country_counter[row.timestamp] = {}
+      if (continent && !continent_counter[row.timestamp]) continent_counter[row.timestamp] = {}
+
+      if (world_map_city && world_map_city_name && !world_map_city_counter[row.timestamp]) world_map_city_counter[row.timestamp] = {}
+
+      if (city && country && !city_counter[row.timestamp][city]) city_counter[row.timestamp][city] = 0
+      if (country && !country_counter[row.timestamp][country]) country_counter[row.timestamp][country] = 0
+      if (continent && !continent_counter[row.timestamp][continent]) continent_counter[row.timestamp][continent] = 0
+
+      if (world_map_city && world_map_city_name && !world_map_city_counter[row.timestamp][world_map_city]) world_map_city_counter[row.timestamp][world_map_city] = { name: world_map_city_name, count: 0, latitude: row.value.location.latitude, longitude: row.value.location.longitude }
+
+      if (city) { city_counter[row.timestamp][city] += 1 }
+      if (country) country_counter[row.timestamp][country] += 1
+      if (continent) continent_counter[row.timestamp][continent] += 1
+
+      if (world_map_city && world_map_city_name) world_map_city_counter[row.timestamp][world_map_city].count += 1
+    })
 
     let periodical_city_counter = {}
     let periodical_country_counter = {}
     let periodical_continent_counter = {}
 
     Object.each(city_counter, function (val, ts) {
-      if (ts < smallest_start) {
+      if (ts < START) {
         delete city_counter[ts]
         delete country_counter[ts]
         delete continent_counter[ts]
@@ -471,15 +345,15 @@ const generic_callback = function (data, metadata, key, vm) {
     /**
     * address (IP)
     **/
-    // Array.each(_data[0].data.remote_addr, function (row, index) {
-    //   if (!addr_counter[row.timestamp]) addr_counter[row.timestamp] = {}
-    //   if (!addr_counter[row.timestamp][row.value]) addr_counter[row.timestamp][row.value] = 0
-    //   addr_counter[row.timestamp][row.value] += 1
-    // })
+    Array.each(_data[0].data.remote_addr, function (row, index) {
+      if (!addr_counter[row.timestamp]) addr_counter[row.timestamp] = {}
+      if (!addr_counter[row.timestamp][row.value]) addr_counter[row.timestamp][row.value] = 0
+      addr_counter[row.timestamp][row.value] += 1
+    })
 
     let periodical_addr_counter = {}
     Object.each(addr_counter, function (val, ts) {
-      if (ts < smallest_start) {
+      if (ts < START) {
         delete addr_counter[ts]
       } else {
         Object.each(val, function (data, addr) {
@@ -492,15 +366,15 @@ const generic_callback = function (data, metadata, key, vm) {
     /**
     * user
     **/
-    // Array.each(_data[0].data.remote_user, function (row, index) {
-    //   if (!user_counter[row.timestamp]) user_counter[row.timestamp] = {}
-    //   if (!user_counter[row.timestamp][row.value]) user_counter[row.timestamp][row.value] = 0
-    //   user_counter[row.timestamp][row.value] += 1
-    // })
+    Array.each(_data[0].data.remote_user, function (row, index) {
+      if (!user_counter[row.timestamp]) user_counter[row.timestamp] = {}
+      if (!user_counter[row.timestamp][row.value]) user_counter[row.timestamp][row.value] = 0
+      user_counter[row.timestamp][row.value] += 1
+    })
 
     let periodical_user_counter = {}
     Object.each(user_counter, function (val, ts) {
-      if (ts < smallest_start) {
+      if (ts < START) {
         delete user_counter[ts]
       } else {
         Object.each(val, function (data, user) {
@@ -513,17 +387,17 @@ const generic_callback = function (data, metadata, key, vm) {
     /**
     * Static & Dynamic types
     **/
-    // Array.each(_data[0].data.pathname, function (row, index) {
-    //   let value = (static_types.test(row.value)) ? 'static' : 'dynamic'
-    //   // debug('TYPE %o', row.value, type)
-    //   if (!type_counter[row.timestamp]) type_counter[row.timestamp] = {}
-    //   if (!type_counter[row.timestamp][value]) type_counter[row.timestamp][value] = 0
-    //   type_counter[row.timestamp][value] += 1
-    // })
+    Array.each(_data[0].data.pathname, function (row, index) {
+      let value = (static_types.test(row.value)) ? 'static' : 'dynamic'
+      // debug('TYPE %o', row.value, type)
+      if (!type_counter[row.timestamp]) type_counter[row.timestamp] = {}
+      if (!type_counter[row.timestamp][value]) type_counter[row.timestamp][value] = 0
+      type_counter[row.timestamp][value] += 1
+    })
 
     let periodical_type_counter = {}
     Object.each(type_counter, function (val, ts) {
-      if (ts < smallest_start) {
+      if (ts < START) {
         delete type_counter[ts]
       } else {
         Object.each(val, function (data, type) {
@@ -536,17 +410,17 @@ const generic_callback = function (data, metadata, key, vm) {
     /**
     * referer
     **/
-    // Array.each(_data[0].data.referer, function (row, index) {
-    //   // debug('REFERER %o', row.value)
-    //   let value = (row.value.referer) ? row.value.referer + ' - ' + row.value.medium : row.value.medium
-    //   if (!referer_counter[row.timestamp]) referer_counter[row.timestamp] = {}
-    //   if (!referer_counter[row.timestamp][value]) referer_counter[row.timestamp][value] = 0
-    //   referer_counter[row.timestamp][value] += 1
-    // })
+    Array.each(_data[0].data.referer, function (row, index) {
+      // debug('REFERER %o', row.value)
+      let value = (row.value.referer) ? row.value.referer + ' - ' + row.value.medium : row.value.medium
+      if (!referer_counter[row.timestamp]) referer_counter[row.timestamp] = {}
+      if (!referer_counter[row.timestamp][value]) referer_counter[row.timestamp][value] = 0
+      referer_counter[row.timestamp][value] += 1
+    })
 
     let periodical_referer_counter = {}
     Object.each(referer_counter, function (val, ts) {
-      if (ts < smallest_start) {
+      if (ts < START) {
         delete referer_counter[ts]
       } else {
         Object.each(val, function (data, referer) {
@@ -559,43 +433,43 @@ const generic_callback = function (data, metadata, key, vm) {
     /**
     * User Agent
     **/
-    // Array.each(_data[0].data.user_agent, function (row, index) {
-    //   // debug('OS %s', row.value.os.family)
-    //
-    //   let os = row.value.os.family
-    //
-    //   user_agent_os_family_counter[row.timestamp] = os
-    //
-    //   os = (row.value.os.major) ? os + ' ' + row.value.os.major : os
-    //   // os = (row.value.os.minor) ? os + '.' + row.value.os.minor : os
-    //   user_agent_os_counter[row.timestamp] = os
-    //
-    //   let engine = row.value.engine.family
-    //   engine = (row.value.engine.major) ? engine + ' ' + row.value.engine.major : engine
-    //   engine = (row.value.engine.minor) ? engine + '.' + row.value.engine.minor : engine
-    //   engine = (row.value.engine.patch) ? engine + '.' + row.value.engine.patch : engine
-    //
-    //   user_agent_engine_counter[row.timestamp] = engine
-    //
-    //   let browser = row.value.ua.family
-    //   browser = (row.value.ua.major) ? browser + ' ' + row.value.ua.major : browser
-    //   browser = (row.value.ua.minor) ? browser + '.' + row.value.ua.minor : browser
-    //   browser = (row.value.ua.patch) ? browser + '.' + row.value.ua.patch : browser
-    //   browser = (row.value.ua.type) ? browser + ' ' + row.value.ua.type : browser
-    //
-    //   user_agent_browser_counter[row.timestamp] = browser
-    //
-    //   // let device = row.value.device.family
-    //   // device = (row.value.device.brand) ? device + ' ' + row.value.device.brand : device
-    //   // device = (row.value.device.model) ? device + '.' + row.value.device.model : device
-    //   // device = (row.value.device.type) ? device + '.' + row.value.device.type : device
-    //
-    //   let device = (row.value.device.brand) ? row.value.device.brand : row.value.device.family
-    //   device = (row.value.device.model) ? device + ' ' + row.value.device.model : device
-    //   device = (row.value.device.type) ? device + ' - ' + row.value.device.type : device
-    //
-    //   user_agent_device_counter[row.timestamp] = device
-    // })
+    Array.each(_data[0].data.user_agent, function (row, index) {
+      // debug('OS %s', row.value.os.family)
+
+      let os = row.value.os.family
+
+      user_agent_os_family_counter[row.timestamp] = os
+
+      os = (row.value.os.major) ? os + ' ' + row.value.os.major : os
+      // os = (row.value.os.minor) ? os + '.' + row.value.os.minor : os
+      user_agent_os_counter[row.timestamp] = os
+
+      let engine = row.value.engine.family
+      engine = (row.value.engine.major) ? engine + ' ' + row.value.engine.major : engine
+      engine = (row.value.engine.minor) ? engine + '.' + row.value.engine.minor : engine
+      engine = (row.value.engine.patch) ? engine + '.' + row.value.engine.patch : engine
+
+      user_agent_engine_counter[row.timestamp] = engine
+
+      let browser = row.value.ua.family
+      browser = (row.value.ua.major) ? browser + ' ' + row.value.ua.major : browser
+      browser = (row.value.ua.minor) ? browser + '.' + row.value.ua.minor : browser
+      browser = (row.value.ua.patch) ? browser + '.' + row.value.ua.patch : browser
+      browser = (row.value.ua.type) ? browser + ' ' + row.value.ua.type : browser
+
+      user_agent_browser_counter[row.timestamp] = browser
+
+      // let device = row.value.device.family
+      // device = (row.value.device.brand) ? device + ' ' + row.value.device.brand : device
+      // device = (row.value.device.model) ? device + '.' + row.value.device.model : device
+      // device = (row.value.device.type) ? device + '.' + row.value.device.type : device
+
+      let device = (row.value.device.brand) ? row.value.device.brand : row.value.device.family
+      device = (row.value.device.model) ? device + ' ' + row.value.device.model : device
+      device = (row.value.device.type) ? device + ' - ' + row.value.device.type : device
+
+      user_agent_device_counter[row.timestamp] = device
+    })
 
     let periodical_user_agent_os_counter = {}
     let periodical_user_agent_os_family_counter = {}
@@ -604,7 +478,7 @@ const generic_callback = function (data, metadata, key, vm) {
     let periodical_user_agent_device_counter = {}
 
     Object.each(user_agent_os_counter, function (val, ts) {
-      if (ts < smallest_start) {
+      if (ts < START) {
         delete user_agent_os_counter[ts]
         delete user_agent_os_family_counter[ts]
       } else {
@@ -671,7 +545,7 @@ const generic_callback = function (data, metadata, key, vm) {
       })
     }
 
-    // debug('PERIODICAL HOST CALLBACK data %s %o %o', key, top_city_counter, top_country_counter)
+    debug('PERIODICAL HOST CALLBACK data %s %o %o', key, top_city_counter, top_country_counter)
     vm.$set(vm.periodical, 'timestamp', timestamp)
     vm.$set(vm.periodical, 'range', range)
 
@@ -792,7 +666,7 @@ const host_once_component = {
             query: {
               'from': 'logs',
               // 'register': 'changes',
-              // 'format': 'stat',
+              'format': 'stat',
               'index': false,
               /**
               * right now needed to match OUTPUT 'id' with this query (need to @fix)
