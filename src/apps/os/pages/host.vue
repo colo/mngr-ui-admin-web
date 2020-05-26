@@ -1,23 +1,130 @@
 <template>
-  <div>
-    <template v-for="(category) in plugins_categories">
-      <!-- {{category}} -->
-      <q-card :key="category">
-        <a :id="category" :key="category+'.anchor'"/>
-        <q-card-section>
-          <div class="text-h3">{{category}}</div>
-        </q-card-section>
+  <div class="q-pa-md">
+    <q-tabs
+      v-model="range_tab"
+      dense
+      class="text-grey"
+      active-color="primary"
+      indicator-color="primary"
+      align="justify"
+      narrow-indicator
+    >
+      <q-tab name="periodical" label="Now" />
+      <q-tab name="minute" label="Minute" />
+      <q-tab name="hour" label="Hourly" />
+      <q-tab name="day" label="Daily" />
+    </q-tabs>
+    <q-separator />
+    <q-tab-panels v-model="range_tab">
+      <!-- animated -->
+      <q-tab-panel name="periodical" :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical'">
+        <!-- <div class="text-h6">From: {{ format_time(periodical.range.start) }} - To: {{ format_time(periodical.range.end) }} / Updated on: {{ format_time(periodical.timestamp) }}</div> -->
+        <q-toolbar class="text-primary">
+          <!-- <q-btn flat round dense icon="menu" /> -->
+          <q-toolbar-title>
+            From: {{ format_time(periodical.range.start) }} - To: {{ format_time(periodical.range.end) }} / Updated on: {{ format_time(periodical.timestamp) }}
+          </q-toolbar-title>
+          <!-- <q-space class="text-primary"/> -->
 
-        <q-card-section>
-          <template v-for="(name) in plugins">
-            <!-- {{name}} -->
-            <os-plugin-dygraph v-if="name.indexOf(category) > -1" :ref="name" :id="'os.'+name" :name="name"  :key="name+'.plugin'"/>
+        </q-toolbar>
+        <template v-for="(category) in periodical.plugins_categories">
+          <!-- {{category}} -->
+          <q-card :key="category">
+            <a :id="category" :key="category+'.anchor'"/>
+            <q-card-section>
+              <div class="text-h3">{{category}}</div>
+            </q-card-section>
+
+            <q-card-section>
+              <template v-for="(name) in periodical.plugins">
+                <!-- {{name}} -->
+                <os-plugin-dygraph
+                  v-if="name.indexOf(category) > -1"
+                  :ref="name+'.periodical'"
+                  :id="'os.'+name"
+                  :name="name"
+                  :key="name+'.periodical.plugin'"
+                />
+              </template>
+            </q-card-section>
+
+            <!-- <q-separator dark /> -->
+          </q-card>
+        </template>
+      </q-tab-panel>
+
+      <q-tab-panel name="minute" :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute'">
+        <!-- <div class="text-h6">From: {{ format_time(minute.range.start) }} - To: {{ format_time(minute.range.end) }} / Updated on: {{ format_time(minute.timestamp) }}</div> -->
+        <q-toolbar class="text-primary">
+          <!-- <q-btn flat round dense icon="menu" /> -->
+          <q-toolbar-title>
+            From: {{ format_time(minute.range.start) }} - To: {{ format_time(minute.range.end) }} / Updated on: {{ format_time(minute.timestamp) }}
+          </q-toolbar-title>
+          <!-- <q-space class="text-primary"/> -->
+          <template>
+            <div class="q-pa-md">
+              <q-btn flat dense icon="access_time" />
+              <q-popup-proxy v-model="showMinute" ref="qMinuteProxy" transition-show="scale" transition-hide="scale">
+                  <q-time
+                    v-model="selected_minute"
+                    :options="disabled_minutes"
+                    now-btn
+                    />
+              </q-popup-proxy>
+
+            </div>
           </template>
-        </q-card-section>
+        </q-toolbar>
+        <!-- contennt -->
+      </q-tab-panel>
 
-        <!-- <q-separator dark /> -->
-      </q-card>
-    </template>
+      <q-tab-panel name="hour" :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour'">
+        <!-- <div class="text-h6">From: {{ format_time(hour.range.start) }} - To: {{ format_time(hour.range.end) }} / Updated on: {{ format_time(hour.timestamp) }}</div> -->
+        <q-toolbar class="text-primary">
+          <!-- <q-btn flat round dense icon="menu" /> -->
+          <q-toolbar-title>
+            From: {{ format_time(hour.range.start) }} - To: {{ format_time(hour.range.end) }} / Updated on: {{ format_time(hour.timestamp) }}
+          </q-toolbar-title>
+          <!-- <q-space class="text-primary"/> -->
+          <template>
+            <div class="q-pa-md">
+
+              <q-btn flat dense icon="access_time" />
+              <q-popup-proxy v-model="showHour" ref="qHourProxy" transition-show="scale" transition-hide="scale">
+                  <q-time
+                    v-model="selected_hour"
+                    :options="disabled_hours"
+                    now-btn
+                    />
+              </q-popup-proxy>
+
+            </div>
+          </template>
+        </q-toolbar>
+        <!-- contennt -->
+      </q-tab-panel>
+
+      <q-tab-panel name="day" :key="$route.path +'.'+ JSON.stringify($route.query)+'.day'">
+        <q-toolbar class="text-primary">
+        <!-- <q-btn flat round dense icon="menu" /> -->
+        <q-toolbar-title>
+          From: {{ format_time(day.range.start) }} - To: {{ format_time(day.range.end) }} / Updated on: {{ format_time(day.timestamp) }}
+        </q-toolbar-title>
+        <!-- <q-space class="text-primary"/> -->
+        <template>
+          <div class="q-pa-md">
+            <q-btn flat dense icon="calendar_today" />
+            <q-popup-proxy v-model="showCalendar" ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                <q-date v-model="selected_day" :options="disabled_days" minimal/>
+            </q-popup-proxy>
+
+          </div>
+        </template>
+      </q-toolbar>
+      <!-- contennt -->
+      </q-tab-panel>
+    </q-tab-panels>
+
   </div>
 </template>
 
@@ -25,20 +132,68 @@
 import * as Debug from 'debug'
 const debug = Debug('apps:os:pages:host')
 
-//
-
-// let moment = require('moment')
+import { date } from 'quasar'
 
 import OsPluginDygraph from '@apps/os/components/pluginDygraph'
 
 import DataSourcesMixin from '@components/mixins/dataSources'
 
 import JSPipeline from 'js-pipeline'
-import Pipeline from '@apps/os/pipelines/host'
+// import Pipeline from '@apps/os/pipelines/host'
 
-import { requests, store } from '../sources/host/index'
+// import { requests, store } from '../sources/host/periodical/index'
+import PeriodicalPipeline from '@apps/os/pipelines/host/periodical'
+import MinutePipeline from '@apps/os/pipelines/host/minute'
+// import HourPipeline from '@apps/os/pipelines/host/hour'
+// import DayPipeline from '@apps/os/pipelines/host/day'
 
-// const MAX_FEED_DATA = 10
+import * as PeriodicalSources from '@apps/os/sources/host/periodical/index'
+import * as MinuteSources from '@apps/os/sources/host/minute/index'
+// import * as HourSources from '@apps/os/sources/host/hour/index'
+// import * as DaySources from '@apps/os/sources/host/day/index'
+
+import moment from 'moment'
+
+// import QCalendar from '@quasar/quasar-ui-qcalendar'
+
+// function leftClick (e) {
+//   return e.button === 0
+// }
+
+const roundMilliseconds = function (timestamp) {
+  let d = new Date(timestamp)
+  d.setMilliseconds(0)
+
+  return d.getTime()
+}
+
+const roundSeconds = function (timestamp) {
+  timestamp = roundMilliseconds(timestamp)
+  let d = new Date(timestamp)
+  d.setSeconds(0)
+
+  return d.getTime()
+}
+
+const roundMinutes = function (timestamp) {
+  timestamp = roundSeconds(timestamp)
+  let d = new Date(timestamp)
+  d.setMinutes(0)
+
+  return d.getTime()
+}
+const roundHours = function (timestamp) {
+  timestamp = roundMinutes(timestamp)
+  let d = new Date(timestamp)
+  d.setHours(0)
+
+  return d.getTime()
+}
+const SECOND = 1000
+const MINUTE = 60 * SECOND
+const HOUR = 60 * MINUTE
+const DAY = HOUR * 24
+const WEEK = DAY * 7
 
 export default {
   mixins: [DataSourcesMixin],
@@ -52,97 +207,306 @@ export default {
       id: 'os.host',
       path: 'all',
 
-      // os: [],
+      day: {
+        plugins: [],
+        // plugins_config: {},
+        plugins_categories: [],
+        range: { start: 0, end: 0},
+        timestamp: 0,
+      },
+      hour: {
+        plugins: [],
+        // plugins_config: {},
+        plugins_categories: [],
+        range: { start: 0, end: 0},
+        timestamp: 0,
+      },
+      minute: {
+        plugins: [],
+        // plugins_config: {},
+        plugins_categories: [],
+        range: { start: 0, end: 0},
+        timestamp: 0,
+      },
+
+      periodical: {
+        plugins: [],
+        // plugins_config: {},
+        plugins_categories: [],
+        range: { start: 0, end: 0},
+        timestamp: 0,
+      },
+
       store: false,
-      pipeline_id: 'input.os.host',
+      // pipeline_id: 'input.os.host',
+      pipeline_id: [
+        'input.os.host.periodical',
+        'input.os.host.minute',
+        // 'input.os.host.hour',
+        // 'input.os.host.day'
+      ],
 
-      plugins: [],
-      // plugins_config: {},
-      plugins_categories: [],
+      range_tab: 'periodical',
 
+      current_day: undefined,
+      current_hour: undefined,
+      current_minute: undefined,
+      top: 15,
+
+      /** calendar **/
+      selected_day: date.formatDate(Date.now(), 'YYYY/MM/DD'),
+      selected_hour: date.formatDate(Date.now(), 'HH') + ':00',
+      selected_minute: date.formatDate(Date.now(), 'HH:mm'),
+      // selectedDate: '',
+      // convertedDates: '',
+      showCalendar: false,
+      showHour: false,
+      showMinute: false,
+      // anchorTimestamp: '',
+      // otherTimestamp: '',
+      // mouseDown: false,
+      // mobile: false,
+      /** calendar **/
+
+      // components: {
+      //   range: {
+      //     // source: {
+      //     //   requests: {
+      //     //     once: [],
+      //     //     periodical: []
+      //     //   }
+      //     // }
+      //     source: {
+      //       requests: requests
+      //
+      //       // store: store
+      //     }
+      //   }
+      //
+      // }
       components: {
-        range: {
-          // source: {
-          //   requests: {
-          //     once: [],
-          //     periodical: []
-          //   }
-          // }
-          source: {
-            requests: requests
-
-            // store: store
+        'input.os.host.periodical': {
+          range: {
+            source: {
+              requests: PeriodicalSources.requests
+              // store: store
+            }
           }
-        }
+        },
+        'input.os.host.minute': {
+          range: {
+            source: {
+              requests: MinuteSources.requests
+              // store: store
+            }
+          }
+        },
+        // 'input.os.host.hour': {
+        //   range: {
+        //     source: {
+        //       requests: HourSources.requests
+        //       // store: store
+        //     }
+        //   }
+        // },
+        // 'input.os.host.day': {
+        //   range: {
+        //     source: {
+        //       requests: DaySources.requests
+        //       // store: store
+        //     }
+        //   }
+        // }
 
       }
     }
   },
 
   watch: {
-    // 'plugins_config': function (val) {
-    //   debug('watch plugins_config %o', val.graph)
-    // }
+    selected_day () {
+      debug('selected_day %s', new Date(moment(this.selected_day, 'YYYY/MM/DD').unix() * 1000))
+      if (roundHours(moment(this.selected_day, 'YYYY/MM/DD').unix() * 1000) === roundHours(Date.now())) {
+        this.current_day = undefined
+      } else {
+        this.current_day = (moment(this.selected_day, 'YYYY/MM/DD').unix() * 1000) + DAY
+      }
+      // this.$nextTick(function () {
+      this.destroy_pipelines('input.os.host.day')
+      this.create_pipelines('input.os.host.day')
+      this.resume_pipelines('input.os.host.day')
+      // }.bind(this))
+
+      // this.convertedDates = `${start} - ${end}`
+      // debug('startEndDates', this.end)
+    },
+    selected_hour () {
+      debug('selected_hour %s', new Date(moment(this.selected_hour, 'hh:mm').unix() * 1000))
+      if (roundMinutes(moment(this.selected_hour, 'hh:mm').unix() * 1000) === roundMinutes(Date.now())) {
+        this.current_hour = undefined
+      } else {
+        this.current_hour = (moment(this.selected_hour, 'hh:mm').unix() * 1000) + HOUR
+      }
+      // this.$nextTick(function () {
+      this.destroy_pipelines('input.os.host.hour')
+      this.create_pipelines('input.os.host.hour')
+      this.resume_pipelines('input.os.host.hour')
+      // }.bind(this))
+
+      // this.convertedDates = `${start} - ${end}`
+      // debug('startEndDates', this.end)
+    },
+    selected_minute () {
+      debug('selected_minute %s', new Date(moment(this.selected_minute, 'hh:mm').unix() * 1000))
+      if (roundSeconds(moment(this.selected_minute, 'hh:mm').unix() * 1000) === roundSeconds(Date.now())) {
+        this.current_minute = undefined
+      } else {
+        this.current_minute = (moment(this.selected_minute, 'hh:mm').unix() * 1000) + MINUTE
+      }
+      // this.$nextTick(function () {
+      this.destroy_pipelines('input.os.host.minute')
+      this.create_pipelines('input.os.host.minute')
+      this.resume_pipelines('input.os.host.minute')
+      // }.bind(this))
+
+      // this.convertedDates = `${start} - ${end}`
+      // debug('startEndDates', this.end)
+    }
+    /** calendar **/
   },
   methods: {
 
     /**
     * @start pipelines
     **/
-    create_pipelines: function (next) {
+    create_pipelines: function (create_id, next) {
       debug('create_pipelines %o', this.$options.pipelines)
 
-      if (this.$options.pipelines['input.os.host'] && this.$options.pipelines['input.os.host'].get_input_by_id('input.os')) {
-        // let requests = this.__components_sources_to_requests(this.components)
-        // if (requests.once) {
-        //   this.$options.pipelines['input.os.host'].get_input_by_id('input.os').conn_pollers[0].options.requests.once.combine(requests.once)
-        //   this.$options.pipelines['input.os.host'].get_input_by_id('input.os').conn_pollers[0].fireEvent('onOnceRequestsUpdated')
-        // }
-        //
-        // if (requests.periodical) {
-        //   this.$options.pipelines['input.os.host'].get_input_by_id('input.os').conn_pollers[0].options.requests.periodical.combine(requests.periodical)
-        //   this.$options.pipelines['input.os.host'].get_input_by_id('input.os').conn_pollers[0].fireEvent('onPeriodicalRequestsUpdated')
-        // }
-      } else {
+      // if (
+      //   this.$options.pipelines['input.os.host.periodical'] &&
+      //   this.$options.pipelines['input.os.host.periodical'].get_input_by_id('input.os.host.periodical')
+      // ) {
+      //   // let requests = this.__components_sources_to_requests(this.components)
+      //   // if (requests.once) {
+      //   //   this.$options.pipelines['input.os.host'].get_input_by_id('input.os').conn_pollers[0].options.requests.once.combine(requests.once)
+      //   //   this.$options.pipelines['input.os.host'].get_input_by_id('input.os').conn_pollers[0].fireEvent('onOnceRequestsUpdated')
+      //   // }
+      //   //
+      //   // if (requests.periodical) {
+      //   //   this.$options.pipelines['input.os.host'].get_input_by_id('input.os').conn_pollers[0].options.requests.periodical.combine(requests.periodical)
+      //   //   this.$options.pipelines['input.os.host'].get_input_by_id('input.os').conn_pollers[0].fireEvent('onPeriodicalRequestsUpdated')
+      //   // }
+      // } else {
+      const pipelines = [PeriodicalPipeline, MinutePipeline] //, HourPipeline, DayPipeline
+      Array.each(pipelines, function (Pipeline) {
         let template = Object.clone(Pipeline)
 
+        debug('create_pipelines template %o', template)
+
         let pipeline_id = template.input[0].poll.id
-        // let pipeline_id = 'input.os.host'
+        if (!create_id || create_id === undefined || create_id === pipeline_id) {
+          // template.input[0].poll.conn[0].requests = this.__components_sources_to_requests(this.components[pipeline_id], pipeline_id)
+          Array.each(template.input[0].poll.conn, function (conn, index) {
+            template.input[0].poll.conn[index].requests = this.__components_sources_to_requests(this.components[pipeline_id], pipeline_id)
+          }.bind(this))
 
-        // template.input[0].poll.conn[0].requests = this.__components_sources_to_requests(this.components)
-        Array.each(template.input[0].poll.conn, function (conn, index) {
-          template.input[0].poll.conn[index].requests = this.__components_sources_to_requests(this.components)
-        }.bind(this))
+          let pipe = new JSPipeline(template)
 
-        let pipe = new JSPipeline(template)
+          this.$options.__pipelines_cfg[pipeline_id] = {
+            ids: [],
+            connected: [],
+            suspended: pipe.inputs.every(function (input) { return input.options.suspended }, this)
+          }
 
-        this.$options.__pipelines_cfg[pipeline_id] = {
-          ids: [],
-          connected: [],
-          suspended: pipe.inputs.every(function (input) { return input.options.suspended }, this)
+          // this.__after_connect_inputs(
+          //   pipe,
+          //   this.$options.__pipelines_cfg[pipeline_id],
+          //   this.__resume_pipeline.pass([pipe, this.$options.__pipelines_cfg[pipeline_id], this.id, function () {
+          //     debug('__resume_pipeline CALLBACK')
+          //     pipe.fireEvent('onOnce')
+          //   }], this)
+          // )
+
+          this.$options.pipelines[pipeline_id] = pipe
         }
+      }.bind(this))
 
-        // this.__after_connect_inputs(
-        //   pipe,
-        //   this.$options.__pipelines_cfg[pipeline_id],
-        //   this.__resume_pipeline.pass([pipe, this.$options.__pipelines_cfg[pipeline_id], this.id, function () {
-        //     debug('__resume_pipeline CALLBACK')
-        //     pipe.fireEvent('onOnce')
-        //   }], this)
-        // )
+      debug('create_pipelines %o', this.$options.pipelines)
 
-        this.$options.pipelines[pipeline_id] = pipe
-
-        debug('create_pipelines %o', this.$options.pipelines)
-
-        if (next) { next() }
-      }
-    }
+      if (next) { next() }
+      // }
+    },
 
     /**
     * @end pipelines
     **/
+    end: function () {
+      // if (this.current_day === undefined) {
+      return Date.now()
+      // } else {
+      // return this.current_day
+      // }
+    },
+    end_minute: function () {
+      if (this.current_minute === undefined) {
+        return Date.now()
+      } else {
+        return this.current_minute
+      }
+    },
+    end_hour: function () {
+      if (this.current_hour === undefined) {
+        return Date.now()
+      } else {
+        return this.current_hour
+      }
+    },
+    end_day: function () {
+      if (this.current_day === undefined) {
+        return Date.now()
+      } else {
+        return this.current_day
+      }
+    },
+    format_time: function (timestamp) {
+      return moment(timestamp).format('dddd, MMMM Do YYYY, h:mm:ss a')
+    },
+    /** calendar **/
+    // disabled_hours: function (date) {
+    //   return date <= moment().format('HH')
+    //   // && date <= '2019/02/15'
+    // },
+    disabled_minutes (hr, min, sec) {
+      debug('disabled_minutes ', hr, min, sec)
+      if (hr) {
+        if (min !== null) {
+          return min <= moment().format('mm')
+        }
+        return false
+      }
 
+      // if (sec !== null && sec % 10 !== 0) {
+      //   return false
+      // }
+      return true
+    },
+    disabled_hours (hr, min, sec) {
+      debug('disabled_hours ', hr, min, sec)
+      if (hr) {
+        if (min) {
+          return false
+        }
+        return hr <= moment().format('HH')
+      }
+
+      // if (sec !== null && sec % 10 !== 0) {
+      //   return false
+      // }
+      return true
+    },
+    disabled_days: function (date) {
+      return date <= moment().format('YYYY/MM/DD')
+      // && date <= '2019/02/15'
+    },
   },
   computed: {
     'host': function () {

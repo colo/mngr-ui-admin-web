@@ -1,5 +1,5 @@
 import * as Debug from 'debug'
-const debug = Debug('apps:os:sources:category_store')
+const debug = Debug('apps:os:sources:host:minute:store')
 
 // const nginx_os_enabled = {
 //   params: {
@@ -9,7 +9,7 @@ const debug = Debug('apps:os:sources:category_store')
 //       'index': false,
 //       'q': [
 //         'data',
-//         { 'metadata': ['category', 'timestamp', 'path'] }// timestamp give us last update
+//         { 'metadata': ['host', 'timestamp', 'path'] }// timestamp give us last update
 //       ]
 //       // 'filter': [ { 'metadata': { 'path': 'os.nginx.enabled' } } ]
 //     }

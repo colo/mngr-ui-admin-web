@@ -3,7 +3,7 @@
 // import InputIOApp from '@libs/input/poller/io.app'
 import { EventBus } from '@libs/eventbus'
 
-import InputIO from './input/io'
+import InputIO from '../input/io'
 
 // import DefaultConn from '@etc/default.io'
 
@@ -11,20 +11,20 @@ import InputIO from './input/io'
 // let app_io = new App(DefaultConn)
 
 import * as Debug from 'debug'
-const debug = Debug('apps:os:pipelines:category')
+const debug = Debug('apps:os:pipelines:host:minute')
 
 let qs = require('qs')
 
 let buffer = []
 let buffer_expire = 0
-let expire_buffer_timeout = 5000 // one second
+let expire_buffer_timeout = 1000 // one second
 
 import IO from '@etc/os.io'
 
 let ios = []
 Array.each(IO(), function (io, index) {
   ios.push({
-    id: 'input.os.category' + index,
+    id: 'input.os.host.minute' + index,
     module: InputIO,
     index: index
   },)
@@ -35,14 +35,14 @@ export default {
     {
       poll: {
         suspended: true,
-        id: 'input.os.category',
+        id: 'input.os.host.minute',
         conn: ios,
         // conn: [
         //
         //   Object.merge(
         //     // Object.clone(DefaultConn),
         //     {
-        //       id: 'input.os.category',
+        //       id: 'input.logs.web.filter.minute',
         //       module: InputIO
         //
         //     }
@@ -52,7 +52,8 @@ export default {
         connect_retry_count: -1,
         connect_retry_periodical: 1000,
         requests: {
-          periodical: 500
+          // periodical: 5000
+          periodical: 60000 // devel
         }
       }
     }
@@ -66,10 +67,11 @@ export default {
       } else {
         doc.id = doc.metadata.input + '?' + qs.stringify(doc.metadata.opts.query)
       }
+
       next(doc, opts, next, pipeline)
     },
     // function (doc, opts, next, pipeline) {
-    //   debug('MERGE %o %o', doc, buffer, pipeline.get_input_by_id('input.os.category').conn_pollers)
+    //   debug('MERGE %o %o', doc, buffer, pipeline.get_input_by_id('input.os.host.minute').conn_pollers)
     //
     //   let timeout
     //
@@ -92,7 +94,7 @@ export default {
     //     })
     //     buffer = []
     //     // buffer_expire = Date.now() + expire_buffer_timeout
-    //     // clearTimeout(timeout)
+    //     clearTimeout(timeout)
     //     next(merged_doc, opts, next, pipeline)
     //   }
     //
@@ -118,11 +120,11 @@ export default {
     //
     //   // if (buffer.length === 0) { buffer_expire = Date.now() + expire_buffer_timeout } // start counting expire time on first doc
     //
-    //   if (buffer.length === Object.getLength(pipeline.get_input_by_id('input.os.category').conn_pollers)) { // || buffer_expire < Date.now()
+    //   if (buffer.length === pipeline.get_input_by_id('input.os.host.minute').conn_pollers) { // || buffer_expire < Date.now()
     //     _merge()
     //   } else {
     //     buffer.push(doc)
-    //     // if (buffer.length === 1) { timeout = setTimeout(_merge, expire_buffer_timeout) }
+    //     if (buffer.length === 1) { timeout = setTimeout(_merge, expire_buffer_timeout) }
     //   }
     // }
   ],
@@ -130,15 +132,15 @@ export default {
     // function (payload) {
     //   debug('OUTPUT', payload)
     //
-    //   if (!payload.err) { EventBus.$emit('input.os.category.' + payload.metadata.input, payload) }
+    //   if (!payload.err) { EventBus.$emit('input.os.host.minute.' + payload.metadata.input, payload) }
     //
     //   // if (!payload.err) { EventBus.$emit('log', payload) }
     // }
     function (payload) {
-      if (!payload.err && /^input\.os\.category\[.*\]$/.test(payload.id)) {
-        payload.id = payload.id.replace('input.os.category[', '').slice(0, -1)
+      if (!payload.err && /^input\.os\.host\.minute\[.*\]$/.test(payload.id)) {
+        payload.id = payload.id.replace('input.os.host.minute[', '').slice(0, -1)
         debug('OUTPUT', payload)
-        EventBus.$emit('input.os.category.' + payload.metadata.input, payload)
+        EventBus.$emit('input.os.host.minute.' + payload.metadata.input, payload)
       }
 
       // if (!payload.err) { EventBus.$emit('log', payload) }

@@ -33,7 +33,7 @@ import DataSourcesMixin from '@components/mixins/dataSources'
 import JSPipeline from 'js-pipeline'
 import Pipeline from '@apps/os/pipelines/category'
 
-import { requests, store } from '@apps/os/sources/category/index'
+import { requests, store } from '@apps/os/sources/category/periodical/index'
 
 // const MAX_FEED_DATA = 10
 
