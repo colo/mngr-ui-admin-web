@@ -75,7 +75,40 @@
             </div>
           </template>
         </q-toolbar>
-        <!-- contennt -->
+        <template v-for="(category) in minute.plugins_categories">
+          <!-- {{category}} -->
+          <q-card :key="category">
+            <a :id="category" :key="category+'.anchor'"/>
+            <q-card-section>
+              <div class="text-h3">{{category}}</div>
+            </q-card-section>
+
+            <q-card-section>
+              <template v-for="(name) in minute.plugins">
+                <!-- {{name}} -->
+                <os-plugin-dygraph
+                  v-if="name.indexOf(category) > -1"
+                  :ref="name+'.minute'"
+                  :id="'os.'+name+'.minute'"
+                  :name="name"
+                  :key="name+'.minute.plugin'"
+                  :stat="{
+                    data: [],
+                    length: 3600,
+                    range: undefined,
+                  }"
+                  :dygraph="{
+                    skip: 1,
+                    interval: 1,
+                  }"
+                  :interval="60"
+                />
+              </template>
+            </q-card-section>
+
+            <!-- <q-separator dark /> -->
+          </q-card>
+        </template>
       </q-tab-panel>
 
       <q-tab-panel name="hour" :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour'">
@@ -202,12 +235,23 @@ export default {
 
   name: 'OSHost',
 
+  periodical: {
+    plugins_data: {},
+    length: 360
+  },
+
+  minute: {
+    plugins_data: {},
+    length: 3600
+  },
+
   data () {
     return {
       id: 'os.host',
       path: 'all',
 
       day: {
+        plugins_data: {},
         plugins: [],
         // plugins_config: {},
         plugins_categories: [],
@@ -215,6 +259,7 @@ export default {
         timestamp: 0,
       },
       hour: {
+        plugins_data: {},
         plugins: [],
         // plugins_config: {},
         plugins_categories: [],
@@ -222,6 +267,7 @@ export default {
         timestamp: 0,
       },
       minute: {
+        plugins_data: {},
         plugins: [],
         // plugins_config: {},
         plugins_categories: [],
@@ -230,6 +276,7 @@ export default {
       },
 
       periodical: {
+        plugins_data: {},
         plugins: [],
         // plugins_config: {},
         plugins_categories: [],
@@ -246,7 +293,7 @@ export default {
         // 'input.os.host.day'
       ],
 
-      range_tab: 'periodical',
+      range_tab: 'minute',
 
       current_day: undefined,
       current_hour: undefined,
@@ -323,6 +370,67 @@ export default {
   },
 
   watch: {
+    // 'periodical.plugins_data': {
+    //   deep: true,
+    //   inmediate: true,
+    //   handler: function (data) {
+    //     debug('periodical.plugins_data %o', data)
+    //     Object.each(data, function (value, plugin) {
+    //       if (this.$refs[plugin + '.periodical'] && this.$refs[plugin + '.periodical'][0] && !this.$refs[plugin + '.periodical'][0].$options.plugin_data) {
+    //         this.$refs[plugin + '.periodical'][0].$options.plugin_data = { periodical: undefined, minute: undefined }
+    //       }
+    //       if (!this.$options.periodical.plugins_data[plugin]) {
+    //         this.$options.periodical.plugins_data[plugin] = Object.clone(value)
+    //       } else {
+    //       // this.$options.periodical.plugins_data[plugin].push(Object.clone(value))
+    //         Object.each(value.periodical, function (val, prop) {
+    //           // this.$options.periodical.plugins_data[plugin].periodical[prop].append(val)
+    //           let val_not_found = []
+    //           Array.each(this.$options.periodical.plugins_data[plugin].periodical[prop], function (row) {
+    //             // debug('periodical.plugins_data %d', row[0], val[0][0])
+    //
+    //             Array.each(val, function (val_row, val_row_index) {
+    //               if (row[0] !== val_row[0] && !val_not_found.contains(val_row_index)) { // timestamp exist
+    //                 val_not_found.push(val_row_index)
+    //               } else if (row[0] === val_row[0] && val_not_found.contains(val_row_index)) {
+    //                 val_not_found = val_not_found.erase(val_row_index)
+    //               }
+    //             })
+    //           })
+    //
+    //           // debug('periodical.plugins_data to add %o', val_not_found)
+    //           Array.each(val_not_found, function (index) {
+    //             this.$options.periodical.plugins_data[plugin].periodical[prop].push(val[index])
+    //           }.bind(this))
+    //           // if (found === false) {
+    //           //   this.$options.periodical.plugins_data[plugin].periodical[prop].push(val)
+    //           // }
+    //           this.$options.periodical.plugins_data[plugin].periodical[prop].sort(function (b, a) { return (a[0] > b[0]) ? 1 : ((b[0] > a[0]) ? -1 : 0) })
+    //           // this.$options.periodical.plugins_data[plugin].periodical[prop] = this.$options.periodical.plugins_data[plugin].periodical[prop].slice(0, 360)
+    //         }.bind(this))
+    //       }
+    //       if (this.$refs[plugin + '.periodical'] && this.$refs[plugin + '.periodical'][0]) {
+    //         // debug('periodical.plugins_data %o', this.$options.periodical.plugins_data[plugin].periodical)
+    //         // this.$options.periodical.plugins_data[plugin] = this.$options.periodical.plugins_data[plugin].slice(0, 360)
+    //         //
+    //         // if (this.$options.periodical.plugins_data[plugin] && this.$options.periodical.plugins_data[plugin].length > 0) {
+    //         //   debug('periodical.plugins_data from BUFFER %o', this.$options.periodical.plugins_data[plugin])
+    //         //   Array.each(this.$options.periodical.plugins_data[plugin], function (value) {
+    //         //     this.$refs[plugin + '.periodical'][0].set_data(Object.clone(value))
+    //         //   }.bind(this))
+    //         //
+    //         //   // this.$options.periodical.plugins_data[plugin] = []
+    //         // }
+    //         // this.$refs[plugin + '.periodical'][0].set_data(this.$options.periodical.plugins_data[plugin])
+    //         this.$refs[plugin + '.periodical'][0].set_data(Object.clone(this.$options.periodical.plugins_data[plugin]))
+    //       } else { // buffer data until plugin available
+    //       //   debug('periodical.plugins_data BUFFER %o', data)
+    //
+    //       }
+    //     }.bind(this))
+    //   }
+    //
+    // },
     selected_day () {
       debug('selected_day %s', new Date(moment(this.selected_day, 'YYYY/MM/DD').unix() * 1000))
       if (roundHours(moment(this.selected_day, 'YYYY/MM/DD').unix() * 1000) === roundHours(Date.now())) {
@@ -374,7 +482,63 @@ export default {
     /** calendar **/
   },
   methods: {
+    set_plugin_data: function (plugin, data, type) {
+      // debug('set_plugin_data %s %o %s', plugin, data, type)
+      // Object.each(data, function (value, plugin) {
+      if (this.$refs[plugin + '.' + type] && this.$refs[plugin + '.' + type][0] && !this.$refs[plugin + '.' + type][0].$options.plugin_data) {
+        this.$refs[plugin + '.' + type][0].$options.plugin_data = { periodical: undefined, minute: undefined }
+      }
+      if (!this.$options[type].plugins_data[plugin]) {
+        this.$options[type].plugins_data[plugin] = { periodical: Object.clone(data) }
+      } else {
+        // this.$options[type].plugins_data[plugin].push(Object.clone(value))
+        Object.each(data, function (val, prop) {
+          // this.$options[type].plugins_data[plugin].periodical[prop].append(val)
+          let val_not_found = []
+          Array.each(this.$options[type].plugins_data[plugin].periodical[prop], function (row) {
+            // debug('periodical.plugins_data %d', row[0], val[0][0])
 
+            Array.each(val, function (val_row, val_row_index) {
+              if (row[0] !== val_row[0] && !val_not_found.contains(val_row_index)) { // timestamp exist
+                val_not_found.push(val_row_index)
+              } else if (row[0] === val_row[0] && val_not_found.contains(val_row_index)) {
+                val_not_found = val_not_found.erase(val_row_index)
+              }
+            })
+          })
+
+          // debug('periodical.plugins_data to add %o', val_not_found)
+          Array.each(val_not_found, function (index) {
+            this.$options[type].plugins_data[plugin].periodical[prop].push(val[index])
+          }.bind(this))
+          // if (found === false) {
+          //   this.$options[type].plugins_data[plugin].periodical[prop].push(val)
+          // }
+          this.$options[type].plugins_data[plugin].periodical[prop].sort(function (b, a) { return (a[0] > b[0]) ? 1 : ((b[0] > a[0]) ? -1 : 0) })
+          this.$options[type].plugins_data[plugin].periodical[prop] = this.$options[type].plugins_data[plugin].periodical[prop].slice(0, this.$options[type].length)
+          this.$options[type].plugins_data[plugin].periodical[prop].sort(function (a, b) { return (a[0] > b[0]) ? 1 : ((b[0] > a[0]) ? -1 : 0) })
+        }.bind(this))
+      }
+      if (this.$refs[plugin + '.' + type] && this.$refs[plugin + '.' + type][0]) {
+        debug('set_plugin_data %s %o %s', plugin, this.$options[type].plugins_data[plugin].periodical, type)
+        // this.$options[type].plugins_data[plugin] = this.$options[type].plugins_data[plugin].slice(0, 360)
+        //
+        // if (this.$options[type].plugins_data[plugin] && this.$options[type].plugins_data[plugin].length > 0) {
+        //   debug('periodical.plugins_data from BUFFER %o', this.$options[type].plugins_data[plugin])
+        //   Array.each(this.$options[type].plugins_data[plugin], function (value) {
+        //     this.$refs[plugin + '.' + type][0].set_data(Object.clone(value))
+        //   }.bind(this))
+        //
+        //   // this.$options[type].plugins_data[plugin] = []
+        // }
+        // this.$refs[plugin + '.' + type][0].set_data(this.$options[type].plugins_data[plugin])
+        this.$refs[plugin + '.' + type][0].set_data(Object.clone(this.$options[type].plugins_data[plugin]))
+      } else { // buffer data until plugin available
+        //   debug('periodical.plugins_data BUFFER %o', data)
+
+      }
+      // }.bind(this))
+    },
     /**
     * @start pipelines
     **/
@@ -382,7 +546,7 @@ export default {
       debug('create_pipelines %o', this.$options.pipelines)
 
       // if (
-      //   this.$options.pipelines['input.os.host.periodical'] &&
+      //   this.$options.pipelines['input.o.periodicals.host.periodical'] data&
       //   this.$options.pipelines['input.os.host.periodical'].get_input_by_id('input.os.host.periodical')
       // ) {
       //   // let requests = this.__components_sources_to_requests(this.components)
@@ -509,6 +673,9 @@ export default {
     },
   },
   computed: {
+    'periodical_plugins_data': function () {
+      return this.periodical.plugins_data
+    },
     'host': function () {
       return (this.$route && this.$route.params && this.$route.params.host) ? this.$route.params.host : undefined
     }

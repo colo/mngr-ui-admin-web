@@ -176,10 +176,6 @@ export default {
     interval: {
       type: Number,
       default: 0
-    },
-    dygraph: {
-      type: Object,
-      default: function () { return {} }
     }
     // config: {
     //   type: Object,
@@ -233,32 +229,32 @@ export default {
   },
   created: function () {
     debug('lifecycle created', this.id)
-    let id = this.id
-    id = id.replace('.minute', '')
-    if (/cpus/.test(id)) {
+    let id
+    if (/cpus/.test(this.id)) {
       id = 'os.cpus'
-    } else if (/os\.blockdevices\..*\.time/.test(id)) {
+    } else if (/os\.blockdevices\..*\.time/.test(this.id)) {
       id = 'os.blockdevices.time'
-    } else if (/os\.blockdevices\..*\.sectors/.test(id)) {
+    } else if (/os\.blockdevices\..*\.sectors/.test(this.id)) {
       id = 'os.blockdevices.sectors'
-    } else if (/os\.blockdevices\..*\.requests/.test(id)) {
+    } else if (/os\.blockdevices\..*\.requests/.test(this.id)) {
       id = 'os.blockdevices.requests'
-    } else if (/os\.mounts\..*\.blocks$/.test(id)) {
+    } else if (/os\.mounts\..*\.blocks$/.test(this.id)) {
       id = 'os.mounts.blocks'
-    } else if (/networkInterfaces.*\.bytes/.test(id)) {
+    } else if (/networkInterfaces.*\.bytes/.test(this.id)) {
       id = 'os.networkInterfaces.bytes'
-    } else if (/networkInterfaces.*\.packets/.test(id)) {
+    } else if (/networkInterfaces.*\.packets/.test(this.id)) {
       id = 'os.networkInterfaces.packets'
-    } else if (/os\.rethinkdb\.server\.clients/.test(id)) {
+    } else if (/os\.rethinkdb\.server\.clients/.test(this.id)) {
       id = 'os.rethinkdb.server.clients'
-    } else if (/os\.rethinkdb/.test(id)) {
+    } else if (/os\.rethinkdb/.test(this.id)) {
       id = 'os.rethinkdb'
+    } else {
+      id = this.id
     }
-    // else {
-    //   id = this.id
-    // }
 
     id = id.replace(/(.*\.)(os\..*)/, '$2') // remove anything pre 'os.'
+
+    debug('ID %s', id)
 
     switch (id) {
       case 'os.loadavg':
@@ -319,16 +315,8 @@ export default {
         this.$options.dygraph_chart = dygraph_line_chart
     }
 
-    Object.each(this.dygraph, function (value, prop) {
-      this.$options.dygraph_chart[prop] = value
-    }.bind(this))
-
     if (!this.$options.dygraph_chart.interval || isNaN(this.$options.dygraph_chart.interval)) { this.$options.dygraph_chart.interval = 1 }
     let interval = (this.interval === 0) ? this.$options.dygraph_chart.interval : this.interval
-
-    // this.$options.dygraph_chart.interval = interval
-    debug('ID %s', this.id, id, this.stat.length, interval)
-
     this.$set(this.stat, 'length', this.stat.length / interval)
 
     if (this.$options.dygraph_chart.options && this.$options.dygraph_chart.options.labels && this.$options.dygraph_chart.options.labels.length > 1) {
@@ -421,9 +409,8 @@ export default {
         // let length
 
         Object.each(this.$options.plugin_data.periodical, function (periodical, key) {
-          let interval = (this.interval === 0) ? this.$options.dygraph_chart.interval : this.interval
-
-          this.$options.plugin_data.periodical[key] = this.$options.plugin_data.periodical[key].slice(0, this.stat.length * interval)
+          // length = periodical.length
+          this.$options.plugin_data.periodical[key] = this.$options.plugin_data.periodical[key].slice(0, this.stat.length)
           // this.$options.plugin_data.periodical[key].splice(
           //   (splice * -1) + 1,
           //   length - splice
@@ -455,6 +442,7 @@ export default {
       }
     },
     __process_data: function (val) {
+      debug('__process_data %o', this.id, val)
       // if (this.config && Object.getLength(this.config) > 0) {
       val = JSON.parse(JSON.stringify(val))
 
@@ -822,7 +810,8 @@ export default {
 
         // this.processed_data = processed_data
 
-        debug('__process_data %s %o', this.id, this.chart.options)
+        // debug('__process_data %s %o', this.id, this.chart.options)
+        debug('__process_data %s %o', this.id, processed_data)
         this.$nextTick(function () {
           // debug('__process_data %s %o', this.id, processed_data)
           if (processed_data.length > 0) {
@@ -890,12 +879,9 @@ export default {
       return ''
     }
   },
-  // mounted: function () {
-  //   debug('mounted', this.id)
-  // },
-  // destroyed () {
-  //   debug('destroyed', this.id)
-  // },
+  mounted: function () {
+    debug('mounted')
+  }
 
 }
 </script>

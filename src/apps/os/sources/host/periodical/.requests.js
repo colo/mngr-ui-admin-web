@@ -64,37 +64,33 @@ const generic_callback = function (data, metadata, key, vm) {
       if (plugin && Object.getLength(plugin) > 0) {
         // if (!vm.periodical.plugins[name]) vm.periodical.$set(vm.periodical.plugins, name, { periodical: undefined, minute: undefined })
         if (!vm.periodical.plugins.contains(name)) vm.periodical.plugins.push(name)
-        // if (!vm.periodical.plugins_data[name]) vm.periodical.plugins_data[name] = { periodical: undefined }
 
-        // vm.$nextTick(function () {
-        // if (vm.$refs[name + '.periodical'] && vm.$refs[name + '.periodical'][0]) { // if data already exists
-        // if (!vm.$refs[name + '.periodical'][0].$options.plugin_data) vm.$refs[name + '.periodical'][0].$options.plugin_data = { periodical: undefined, minute: undefined }
+        vm.$nextTick(function () {
+          if (vm.$refs[name + '.periodical'] && vm.$refs[name + '.periodical'][0]) { // if data already exists
+            if (!vm.$refs[name + '.periodical'][0].$options.plugin_data) vm.$refs[name + '.periodical'][0].$options.plugin_data = { periodical: undefined, minute: undefined }
 
-        let _plugin = {}
+            let _plugin = {}
 
-        Object.keys(plugin)
-          .sort()// sort keys alphabetically
-          .forEach(function (prop, i) {
-            // console.log(v, data[v]);
-            let data = plugin[prop]
-            if (Array.isArray(data) && data.length > 0) { // on 'register' data may be empty
-              _plugin[prop] = Array.clone(data)
-              _plugin[prop].sort(function (a, b) { return (a[0] < b[0]) ? 1 : ((a[0] > b[0]) ? -1 : 0) })
+            Object.keys(plugin)
+              .sort()// sort keys alphabetically
+              .forEach(function (prop, i) {
+              // console.log(v, data[v]);
+                let data = plugin[prop]
+                if (Array.isArray(data) && data.length > 0) { // on 'register' data may be empty
+                  _plugin[prop] = Array.clone(data)
+                  _plugin[prop].sort(function (a, b) { return (a[0] < b[0]) ? 1 : ((a[0] > b[0]) ? -1 : 0) })
+                }
+              })
+
+            // debug('PERIODICAL HOST CALLBACK no prev data %s %o %o', name, _plugin)
+            // }
+
+            if (Object.getLength(_plugin) > 0) {
+              // debug('PERIODICAL HOST CALLBACK %s %o', name, _plugin)
+              vm.$refs[name + '.periodical'][0].set_data({ periodical: _plugin })
             }
-          })
-
-        // debug('PERIODICAL HOST CALLBACK no prev data %s %o %o', name, _plugin)
-        // }
-
-        if (Object.getLength(_plugin) > 0) {
-          // debug('set_plugin_data PERIODICAL HOST CALLBACK %s %o', name, _plugin)
-          // vm.$refs[name + '.periodical'][0].set_data({ periodical: _plugin })
-          // vm.periodical.plugins_data[name] = { periodical: _plugin }
-          // vm.$set(vm.periodical.plugins_data, name, { periodical: _plugin })
-          vm.set_plugin_data(name, _plugin, 'periodical')
-        }
-        // }
-        // })
+          }
+        })
       }
     })
 
