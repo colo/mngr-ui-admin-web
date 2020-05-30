@@ -8,6 +8,8 @@ export default {
   __unwatcher: undefined,
   visible: false,
 
+  buffered_data: [],
+
   props: {
     EventBus: {
       type: [Object],

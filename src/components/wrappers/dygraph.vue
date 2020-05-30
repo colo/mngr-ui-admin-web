@@ -266,7 +266,19 @@ export default {
       }
     },
     get_data: function (data) {
-      data = data || Array.clone(this.chart_data)
+      debug('get_data', this.id, data, this.chart_data, this.$options.buffered_data)
+      if (this.$options.buffered_data && Array.isArray(this.$options.buffered_data) && this.$options.buffered_data.length > 0 && this.$options.buffered_data[0][0]) {
+        if (data && Array.isArray(data) && data.length > 0 && data[0][0]) {
+          data = this.$options.buffered_data.append(data)
+        } else {
+          data = this.$options.buffered_data
+        }
+      }
+
+      data = (data && Array.isArray(data) && data.length > 0 && data[0][0])
+        ? data
+        : Array.clone(this.chart_data)
+
       data = JSON.parse(JSON.stringify(data))
 
       data.sort(function (a, b) { return (a[0] > b[0]) ? 1 : ((b[0] > a[0]) ? -1 : 0) })
@@ -276,9 +288,9 @@ export default {
         // data.push(row)
       })
 
-      return data
+      return Array.clone(data)
     },
-    update (data) {
+    update: function (data) {
       data = this.get_data(data)
       debug('update', this.id, this.ready, data, this.$options.chart_options.labels)
       // let options = (this.ready === true && this.$options.graph.numRows() > 1) ? { 'dateWindow': this.$options.graph.xAxisExtremes() } : {}
@@ -307,6 +319,16 @@ export default {
           Object.merge(Object.clone(this.$options.chart_options), { 'dateWindow': [start, end] }),
           false
         )
+
+        this.$options.buffered_data = []
+
+        return true
+      } else {
+        // this.$options.buffered_data.append(data)
+        setTimeout(function () {
+          this.update(data)
+        }.bind(this), 1000)
+        return false
       }
     },
     updateOptions (data, options, block_redraw) {

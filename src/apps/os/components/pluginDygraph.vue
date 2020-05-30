@@ -804,7 +804,7 @@ export default {
           this.chart.style = 'width:100%; height:' + height + 'px;'
         }
 
-        debug('processed_data_min_value %s', this.id, processed_data_min_value, processed_data_max_value)
+        // debug('processed_data_min_value %s', this.id, processed_data_min_value, processed_data_max_value)
 
         if (this.chart.options.valueRange === null && this.chart.options.logscale === 'y' && this.$options.__config_set === false) {
           this.$set(this.chart.options, 'valueRange', [processed_data_min_value, processed_data_max_value])
@@ -822,15 +822,16 @@ export default {
 
         // this.processed_data = processed_data
 
-        debug('__process_data %s %o', this.id, this.chart.options)
-        this.$nextTick(function () {
-          // debug('__process_data %s %o', this.id, processed_data)
-          if (processed_data.length > 0) {
-            this.$refs[this.id].update_stat_data([processed_data])
-            this.show = true
-            // this.$refs[this.id].visibilityChanged(true)
-          }
-        }.bind(this))
+        // debug('__process_data %s %o', this.id, this.chart.options)
+        // this.$nextTick(function () {
+        debug('__process_data %s %o', this.id, processed_data)
+
+        if (processed_data.length > 0) {
+          this.$refs[this.id].update_stat_data([processed_data])
+          this.show = true
+          // this.$refs[this.id].visibilityChanged(true)
+        }
+        // }.bind(this))
 
         this.$options.__config_set = true
 

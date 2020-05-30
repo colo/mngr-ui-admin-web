@@ -293,7 +293,7 @@ export default {
         // 'input.os.host.day'
       ],
 
-      range_tab: 'minute',
+      range_tab: 'periodical',
 
       current_day: undefined,
       current_hour: undefined,
@@ -482,15 +482,16 @@ export default {
     /** calendar **/
   },
   methods: {
-    set_plugin_data: function (plugin, data, type) {
-      // debug('set_plugin_data %s %o %s', plugin, data, type)
+    set_plugin_data: function (plugin, data, type, refresh) {
+      if (type === 'minute') { debug('set_plugin_data %s %o %s', plugin, data, type) }
+
       // Object.each(data, function (value, plugin) {
       if (this.$refs[plugin + '.' + type] && this.$refs[plugin + '.' + type][0] && !this.$refs[plugin + '.' + type][0].$options.plugin_data) {
         this.$refs[plugin + '.' + type][0].$options.plugin_data = { periodical: undefined, minute: undefined }
       }
       if (!this.$options[type].plugins_data[plugin]) {
         this.$options[type].plugins_data[plugin] = { periodical: Object.clone(data) }
-      } else {
+      } else if (refresh !== true) {
         // this.$options[type].plugins_data[plugin].push(Object.clone(value))
         Object.each(data, function (val, prop) {
           // this.$options[type].plugins_data[plugin].periodical[prop].append(val)
@@ -519,8 +520,11 @@ export default {
           this.$options[type].plugins_data[plugin].periodical[prop].sort(function (a, b) { return (a[0] > b[0]) ? 1 : ((b[0] > a[0]) ? -1 : 0) })
         }.bind(this))
       }
+
       if (this.$refs[plugin + '.' + type] && this.$refs[plugin + '.' + type][0]) {
-        debug('set_plugin_data %s %o %s', plugin, this.$options[type].plugins_data[plugin].periodical, type)
+        if (type === 'minute') {
+          debug('set_plugin_data TO PLUGIN %s %o %s', plugin, this.$options[type].plugins_data[plugin].periodical, type)
+        }
         // this.$options[type].plugins_data[plugin] = this.$options[type].plugins_data[plugin].slice(0, 360)
         //
         // if (this.$options[type].plugins_data[plugin] && this.$options[type].plugins_data[plugin].length > 0) {
@@ -535,7 +539,9 @@ export default {
         this.$refs[plugin + '.' + type][0].set_data(Object.clone(this.$options[type].plugins_data[plugin]))
       } else { // buffer data until plugin available
         //   debug('periodical.plugins_data BUFFER %o', data)
-
+        setTimeout(function () {
+          this.set_plugin_data(plugin, Object.clone(this.$options[type].plugins_data[plugin].periodical), type, true)
+        }.bind(this), 5000)
       }
       // }.bind(this))
     },

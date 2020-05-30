@@ -541,26 +541,28 @@ export default {
       // this.$set(this, 'stat_data', __stat_data)
 
       if (this.no_buffer === false) {
-        if (this.$options.__range_init === false) {
-          // this.$options.__buffer_data.push(JSON.parse(JSON.stringify(data)))
-          this.$options.__buffer_data = this.$options.__buffer_data.append(JSON.parse(JSON.stringify(data)))
+        // if (this.$options.__range_init === false) {
+        //   // this.$options.__buffer_data.push(JSON.parse(JSON.stringify(data)))
+        //   this.$options.__buffer_data = this.$options.__buffer_data.append(JSON.parse(JSON.stringify(data)))
+        //
+        //   if (this.$options.__buffer_data.length > 10) { this.$options.__range_init = true }
+        // } else {
+        // this.$options.__buffer_data.push(JSON.parse(JSON.stringify(data)))
+        this.$options.__range_init = true
 
-          if (this.$options.__buffer_data.length > 10) { this.$options.__range_init = true }
-        } else {
-          // this.$options.__buffer_data.push(JSON.parse(JSON.stringify(data)))
-          this.$options.__buffer_data = this.$options.__buffer_data.append(JSON.parse(JSON.stringify(data)))
+        this.$options.__buffer_data = this.$options.__buffer_data.append(JSON.parse(JSON.stringify(data)))
 
-          Array.each(Array.clone(this.$options.__buffer_data), function (val) {
-            let found = false
-            Array.each(this.$options.stat_data, function (stat) {
-              if (stat.timestamp === val.timestamp) { found = true }
-            })
+        Array.each(Array.clone(this.$options.__buffer_data), function (val) {
+          let found = false
+          Array.each(this.$options.stat_data, function (stat) {
+            if (stat.timestamp === val.timestamp) { found = true }
+          })
 
-            if (found === false) { this.$options.stat_data.push(val) }
-          }.bind(this))
+          if (found === false) { this.$options.stat_data.push(val) }
+        }.bind(this))
 
-          this.$options.__buffer_data = []
-        }
+        this.$options.__buffer_data = []
+        // }
       } else { // no_buffer
         this.$options.stat_data = data
         this.$options.__range_init = true

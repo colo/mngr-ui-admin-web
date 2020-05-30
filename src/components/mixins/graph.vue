@@ -334,13 +334,14 @@ export default {
           )
 
       ) {
-        debug('updating %s - always %o - inmediate %o - focus %o - visible %o - interval %o',
+        debug('updating %s - always %o - inmediate %o - focus %o - visible %o - interval %o - data %o',
           this.id,
           this.always_update,
           inmediate,
           this.$options.focus,
           this.$options.visible,
-          this.chart.interval
+          this.chart.interval,
+          this.$options.tabular.data
         )
 
         /**
@@ -351,28 +352,33 @@ export default {
           this.$options.tabular.data = this.chart.watch.transform(this.$options.tabular.data, this, this.chart)
         }
 
-        if (this.$refs[name] && typeof this.$refs[name].update === 'function' && this.$options.tabular.data.length > 0) {
-          if (inmediate === true) {
-            this.$refs[name].update(this.$options.tabular.data)
-          } else {
-            frameDebounce(this.$refs[name].update(this.$options.tabular.data))
+        if (this.$refs[name]) {
+          let clean_data = true
+
+          if (this.$refs[name] && typeof this.$refs[name].update === 'function' && this.$options.tabular.data.length > 0) {
+            if (inmediate === true) {
+              clean_data = this.$refs[name].update(Array.clone(this.$options.tabular.data))
+            } else {
+              frameDebounce(this.$refs[name].update(Array.clone(this.$options.tabular.data)))
+            }
+          } else if (this.reactive === true) {
+            if (inmediate === true) {
+              this.$set(this, 'tabular', Array.clone(this.$options.tabular.data))
+            } else {
+              frameDebounce(this.$set(this, 'tabular', Array.clone(this.$options.tabular.data)))
+            }
           }
-        } else if (this.reactive === true) {
+          // debug('graph update_chart_stat updating %s %o %d %d', name, this.$refs, this.tabular.data.length, this.$options.tabular.data.length)
+
+          if (clean_data === true) { this.$options.tabular.data = [[]] }
+
           if (inmediate === true) {
-            this.$set(this, 'tabular', this.$options.tabular)
+            this.$options.tabular.lastupdate = 0
           } else {
-            frameDebounce(this.$set(this, 'tabular', this.$options.tabular))
+            this.$options.tabular.lastupdate = Date.now()
           }
         }
-        // debug('graph update_chart_stat updating %s %o %d %d', name, this.$refs, this.tabular.data.length, this.$options.tabular.data.length)
 
-        this.$options.tabular.data = [[]]
-
-        if (inmediate === true) {
-          this.$options.tabular.lastupdate = 0
-        } else {
-          this.$options.tabular.lastupdate = Date.now()
-        }
         // //console.log('graph.vue update', this.id, this.chart.interval, new Date(this.$options.tabular.lastupdate), inmediate)
       }
 
@@ -382,7 +388,7 @@ export default {
     * UI related
     **/
     visibilityChanged (isVisible, entry) {
-      debug('visibilityChanged', this.id, isVisible, entry)
+      // debug('visibilityChanged', this.id, isVisible, entry)
       //   // this.$options.visible = isVisible
       //   if(
       //     isVisible == false
@@ -404,7 +410,7 @@ export default {
       **/
       let __visible = this.$options.visible
       this.$options.visible = isVisible
-      if ((!__visible || __visible === false) && isVisible === true) {
+      if ((!__visible || __visible === false) && isVisible === true && this.$options.tabular.data.length > 0 && this.$options.tabular.data[0][0]) {
         this.update_chart_stat(this.id, this.$options.tabular.data, true)
       }
     }
