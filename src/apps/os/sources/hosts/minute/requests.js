@@ -1,8 +1,41 @@
 import * as Debug from 'debug'
-const debug = Debug('apps:os:sources:hosts_requests')
+const debug = Debug('apps:os:sources:hosts:minute:requests')
+
+const roundMilliseconds = function (timestamp) {
+  let d = new Date(timestamp)
+  d.setMilliseconds(0)
+
+  return d.getTime()
+}
+
+const roundSeconds = function (timestamp) {
+  timestamp = roundMilliseconds(timestamp)
+  let d = new Date(timestamp)
+  d.setSeconds(0)
+
+  return d.getTime()
+}
+
+const roundMinutes = function (timestamp) {
+  timestamp = roundSeconds(timestamp)
+  let d = new Date(timestamp)
+  d.setMinutes(0)
+
+  return d.getTime()
+}
+const roundHours = function (timestamp) {
+  timestamp = roundMinutes(timestamp)
+  let d = new Date(timestamp)
+  d.setHours(0)
+
+  return d.getTime()
+}
 
 const SECOND = 1000
 const MINUTE = 60 * SECOND
+const HOUR = 60 * MINUTE
+const DAY = HOUR * 24
+const WEEK = DAY * 7
 
 const os_hosts_paths = {
   params: function (_key, vm) {
@@ -22,14 +55,20 @@ const os_hosts_paths = {
     ) {
       source = [{
         params: { id: _key },
-        range: 'posix ' + (Date.now() - (15 * SECOND)) + '-' + Date.now() + '/*',
+        // range: 'posix ' + (Date.now() - (15 * SECOND)) + '-' + Date.now() + '/*',
+        range: 'posix ' + (Date.now() - (2 * DAY)) + '-' + Date.now() + '/*',
         path: 'all',
         query: {
-          'from': 'os',
+          'from': 'os_historical',
           'index': 'host',
           'q': [
             // { 'config': 'graph' },
-            { 'metadata': ['host', 'path', 'tag'] } // 'path' ain't needed for first view (categories)
+            // { 'metadata': ['host', 'path', 'tag'] } // 'path' ain't needed for first view (categories)
+            { 'metadata': ['host', 'path'] } // 'path' ain't needed for first view (categories)
+          ],
+          'filter': [
+            { 'metadata': { 'type': 'day' } },
+            "r.row('metadata')('path').ne('os.procs')"
           ],
           'aggregation': 'distinct'
         }
@@ -57,8 +96,8 @@ const os_hosts_paths = {
     let _hosts_paths = {}
     let _paths = []
 
-    if (data && data.os && data.os.length > 0) {
-      Array.each(data.os, function (host_group) {
+    if (data && data.os_historical && data.os_historical.length > 0) {
+      Array.each(data.os_historical, function (host_group) {
         Array.each(host_group, function (plugin) {
           let host = plugin.metadata.host
           // debug('All callback', plugin)
@@ -95,7 +134,7 @@ const once = [
 ]
 
 const periodical = [
-  os_hosts_paths
+  os_hosts_paths,
 ]
 
 const requests = {
@@ -103,5 +142,5 @@ const requests = {
   once: once
 }
 
-export { periodical, once, os_hosts_paths }
+export { periodical, once }
 export default requests

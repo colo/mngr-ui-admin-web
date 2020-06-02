@@ -20,8 +20,8 @@ export default {
       default: () => ('')
     },
     chart: {
-      type: [Object]
-      // default: () => ({})
+      type: [Object],
+      default: () => ({})
     },
     chart_data: {
       type: [Array],

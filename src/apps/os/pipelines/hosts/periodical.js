@@ -3,7 +3,7 @@
 // import InputIOApp from '@libs/input/poller/io.app'
 import { EventBus } from '@libs/eventbus'
 
-import InputIO from './input/io'
+import InputIO from '../input/io'
 
 // import DefaultConn from '@etc/default.io'
 
@@ -11,7 +11,7 @@ import InputIO from './input/io'
 // let app_io = new App(DefaultConn)
 
 import * as Debug from 'debug'
-const debug = Debug('apps:os:pipelines:hosts')
+const debug = Debug('apps:os:pipelines:hosts:periodical')
 
 let qs = require('qs')
 
@@ -24,7 +24,7 @@ import IO from '@etc/os.io'
 let ios = []
 Array.each(IO(), function (io, index) {
   ios.push({
-    id: 'input.os.hosts.' + index,
+    id: 'input.os.hosts.periodical.' + index,
     module: InputIO,
     index: index
   },)
@@ -34,12 +34,12 @@ export default {
     {
       poll: {
         suspended: true,
-        id: 'input.os.hosts',
+        id: 'input.os.hosts.periodical',
         conn: ios,
         connect_retry_count: -1,
         connect_retry_periodical: 1000,
         requests: {
-          periodical: 10000
+          periodical: 1000
         }
       }
     }
@@ -57,7 +57,7 @@ export default {
       next(doc, opts, next, pipeline)
     },
     function (doc, opts, next, pipeline) {
-      debug('MERGE %o %o', doc, buffer, pipeline.get_input_by_id('input.os.hosts').conn_pollers)
+      debug('MERGE %o %o', doc, buffer, pipeline.get_input_by_id('input.os.hosts.periodical').conn_pollers)
 
       let timeout
 
@@ -110,9 +110,9 @@ export default {
       }
 
       // if (buffer.length === 0) { buffer_expire = Date.now() + expire_buffer_timeout } // start counting expire time on first doc
-      if (buffer.length < Object.getLength(pipeline.get_input_by_id('input.os.hosts').conn_pollers)) { buffer.push(Object.clone(doc)) }
+      if (buffer.length < Object.getLength(pipeline.get_input_by_id('input.os.hosts.periodical').conn_pollers)) { buffer.push(Object.clone(doc)) }
 
-      if (buffer.length >= Object.getLength(pipeline.get_input_by_id('input.os.hosts').conn_pollers)) { // || buffer_expire < Date.now()
+      if (buffer.length >= Object.getLength(pipeline.get_input_by_id('input.os.hosts.periodical').conn_pollers)) { // || buffer_expire < Date.now()
         _merge()
       }
       // else {
@@ -123,10 +123,10 @@ export default {
   ],
   output: [
     function (payload) {
-      if (!payload.err && /^input\.os\.hosts\[.*\]$/.test(payload.id)) {
-        payload.id = payload.id.replace('input.os.hosts[', '').slice(0, -1)
+      if (!payload.err && /^input\.os\.hosts\.periodical\[.*\]$/.test(payload.id)) {
+        payload.id = payload.id.replace('input.os.hosts.periodical[', '').slice(0, -1)
         debug('OUTPUT', payload)
-        EventBus.$emit('input.os.hosts.' + payload.metadata.input, payload)
+        EventBus.$emit('input.os.hosts.periodical.' + payload.metadata.input, payload)
       }
 
       // if (!payload.err) { EventBus.$emit('log', payload) }

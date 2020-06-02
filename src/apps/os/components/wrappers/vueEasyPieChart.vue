@@ -1,171 +1,196 @@
 <template>
-  <q-card>
-    <q-card-section>
-      <q-btn
-        flat
-        :to="{
-          name: 'os_host',
-          params: { host: host },
-        }"
-      >
-        {{host}}
-      </q-btn>
+<div
+  class="netdata-container-easypiechart"
+  style="margin-right: 10px; width: 100%;"
+>
+  <div
+  :class="chart.class"
+  :style="chart.style"
+  >
+  <span class="easyPieChartLabel" style="font-size: 20px; top: 63px;">{{chart.params.value}}</span>
+  <span class="easyPieChartTitle" style="font-size: 11px; line-height: 11px; top: 37px;">{{params.title}}</span>
+  <span class="easyPieChartUnits" style="font-size: 10px; top: 97px;">{{params.unit}}</span>
+    <vue-easy-pie-chart
+      v-bind="Object.merge(params, chart.params)"
+      :id="id"
+      :ref="id"
+    />
 
-      <template v-if="Object.getLength(host_data) > 0">
-        <div class="q-pa-md netdata-chart-row"  :style="'height: 200px'">
-          <!-- ; width: 100%  -->
+  </div>
+  {{chart.params.value}}
+</div>
+<!-- <div
+  class="netdata-container-easypiechart"
+  style="margin-right: 10px; width: 9%;"
+  data-netdata="system.ram"
+  data-dimensions="used|buffers|active|wired"
+  data-append-options="percentage"
+  data-chart-library="easypiechart"
+  data-title="Used RAM"
+  data-units="%"
+  data-easypiechart-max-value="100"
+  data-width="9%"
+  data-after="-540"
+  data-points="540"
+  data-colors="#66AA00"
+  role="application">
 
-          <div class="row" :style="'width: 100%'">
-            <div class="col">
-
-            </div>
-            <div class="col-3">
-              <v-gauge-wrapper
-                :id="host+'.cpu'"
-                :chart="{
-                  class: 'netdata-chart netdata-gauge-chart',
-                  params:{
-                    height: '180px',
-                    title: 'CPU',
-                    minValue: 0,
-                    maxValue: 100,
-                    value: host_data['os.cpus.percentage'] || 0,
-                  }
-                }"
-              />
-            </div>
-            <template v-for="(used, mount) in host_data['os.mounts.used']">
-              <div class="col" :key="host+'.'+mount+'.used'">
-                <vue-easy-pie-chart-wrapper
-                  :id="host+'.'+mount+'.used'"
-                  :chart="{
-                    class: 'netdata-chart netdata-easypiechart-chart',
-                    params:{
-                      'bar-color': '#0000FF',
-                      'size': 150,
-                      'percent': used || 0,
-                      title: 'Used: '+ mount,
-                      /* unit: 'kilobits/s', */
-                    }
-                  }"
-                />
-              </div>
-            </template>
-
-            <!-- <div class="col">
-              <vue-easy-pie-chart-wrapper
-                :id="host+'.net.out'"
-                :chart="{
-                  class: 'netdata-chart netdata-easypiechart-chart',
-                  params:{
-                    'bar-color': '#FF0000',
-                    'size': 150,
-                    'percent': host_data['os.networkInterfaces.out'] || 0,
-                    title: 'Net Outbound',
-                    unit: 'kilobits/s',
-                  }
-                }"
-              />
-            </div> -->
-            <div class="col">
-              <vue-easy-pie-chart-wrapper
-                :id="host+'.ram'"
-                :chart="{
-                  class: 'netdata-chart netdata-easypiechart-chart',
-                  params:{
-                    'bar-color': '#66AA00',
-                    'size': 120,
-                    'percent': host_data['os.memory.percentage'] || 0,
-                    title: 'Used RAM',
-                    unit: '%',
-                    /**minValue: 0,
-                    maxValue: 100,
-                    unit: '%',
-                    value: host_data['os.cpus.percentage'] || 0,
-                    height: '200px',
-                    width: '334px' */
-                  }
-                }"
-              />
-            </div>
-          </div>
-
-        </div>
-      </template>
-    </q-card-section>
-
-    <q-card-section>
-
-      <!-- <div class="netdata-chart-row"  >
-      </div> -->
-    </q-card-section>
-
-    <q-separator dark />
-
-    <q-card-actions>
-      <q-btn
-        v-for="category in categories"
-        :key="host+'.'+category"
-        flat
-        :to="{
-          name: 'os_host',
-          params: { host: host },
-          hash: '#'+category
-        }"
-      >{{category}}</q-btn>
-    </q-card-actions>
-  </q-card>
-
+<div class="netdata-chart netdata-easypiechart-chart">   -->
 </template>
 
 <script>
-// @ is an alias to /src
-// import HelloWorld from '@/components/HelloWorld.vue'
 
 import * as Debug from 'debug'
-const debug = Debug('apps:os:components:hostCard')
+const debug = Debug('components:wrappers:vueEasyPieChart')
 
-// import JSPipeline from 'js-pipeline'
-// import Pipeline from '@apps/os/pipelines/index'
+import VueEasyPieChart from 'vue-easy-pie-chart'
+import 'vue-easy-pie-chart/dist/vue-easy-pie-chart.css'
 
-// import DataSourcesMixin from '@components/mixins/dataSources'
-
-// import { requests, store } from './sources/index'
-
-import vGaugeWrapper from './wrappers/vGauge'
-import vueEasyPieChartWrapper from './wrappers/vueEasyPieChart'
+import chartMixin from '@mixins/chart.vue'
 
 export default {
-  // mixins: [DataSourcesMixin],
-  // extends: DataSourcesMixin,
-  components: { vGaugeWrapper, vueEasyPieChartWrapper },
+  mixins: [chartMixin],
 
-  name: 'osHostCard',
+  name: 'vue-easy-pie-chart-wrapper',
 
-  // pipelines: {},
-  // __pipelines_cfg: {},
-  // unwatch_store: undefined,
+  components: {
+    VueEasyPieChart
+  },
+
+  // chart: null,
+  freezed: false,
 
   props: {
-    host: {
-      type: String,
-      default: ''
-    },
-    host_data: {
-      type: Object,
-      default: () => ({})
-    },
-    categories: {
-      type: Array,
-      default: function () { return [] }
-    }
+    // params: {
+    //   type: Object,
+    //   default: () => ({})
+    // }
+    // donut: {
+    //   type: Boolean,
+    //   default: false
+    // },
+    // height: {
+    //   type: String,
+    //   default: '200px'
+    // },
+    // width: {
+    //   type: String,
+    //   default: '200px'
+    // },
+    // unit: {
+    //   type: String,
+    //   default: '%'
+    // },
+    // initialValue: {
+    //   type: Number,
+    //   default: 0
+    // },
+    // minValue: {
+    //   type: Number,
+    //   default: 0
+    // },
+    // maxValue: {
+    //   type: Number,
+    //   default: 100
+    // },
+    // decimalPlace: {
+    //   type: Number,
+    //   default: 0
+    // },
+    // top: {
+    //   type: Boolean,
+    //   default: false
+    // },
+    // gaugeValueClass: {
+    //   type: String,
+    //   default: 'gaugeChart'
+    // },
+    // animationSpeed: {
+    //   type: Number,
+    //   default: 10
+    // },
+    // value: {
+    //   type: Number,
+    //   default: 0
+    // },
+    // title: {
+    //   type: String,
+    //   default: ''
+    // },
+  //   EventBus: {
+  //     type: [Object],
+  //     default: () => ({})
+  //   },
+  //   id: {
+  //     type: [String],
+  //     default: () => ('')
+  //   },
+  //   options: {
+  //     type: [Object],
+  //     default: () => ({})
+  //   },
+  //
+  //   stat: {
+  //     type: [Object],
+  //     default: () => ({})
+  //   },
+  //
+  //   freezed: {
+  //     type: [Boolean],
+  //     default: () => (false)
+  //   },
+  //   visible: {
+  //     type: [Boolean],
+  //     default: () => (true)
+  //   },
   },
+
   data () {
     return {
+      ready: true,
+
+      params: {
+        'scale-length': 5,
+        'line-cap': 'round',
+        'line-width': 7,
+        'track-width': undefined,
+        'size': 150,
+        'rotate': 0,
+        // 'animate': {duration: 500, enabled: true},
+        'animate': 500,
+        'easing': undefined,
+        'track-color': '#f0f0f0', // easypiechart_track
+        'scale-color': '#dfe0e0', // easypiechart_scale
+      },
 
     }
-  }
+  },
+  watch: {
+    visible: function (val) {
+      this.container_class_helper = (val === false) ? 'invisible' : ''
+      // console.log('class visible', val, this.container_class_helper)
+    }
+  },
 
+  created () {
+    let params = Object.merge(this.params, this.chart.params)
+    let line = Math.floor(params.size / 22)
+    if (line < 3) {
+      line = 2
+    }
+
+    this.$set(this.params, 'line-width', line)
+  },
+
+  methods: {
+    update () {
+      // console.log('qknob update')
+      // this.value = this.get_data().getLast()[1]
+      // console.log('update', this.$refs[this.id].)
+      // this.$refs[this.id].$data.chart.options['value'] = this.stat.data.getLast()[1]
+    },
+
+  }
 }
 </script>
 

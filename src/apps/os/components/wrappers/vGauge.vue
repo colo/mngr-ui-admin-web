@@ -1,171 +1,230 @@
 <template>
-  <q-card>
-    <q-card-section>
-      <q-btn
-        flat
-        :to="{
-          name: 'os_host',
-          params: { host: host },
-        }"
-      >
-        {{host}}
-      </q-btn>
+  <div
+    class="netdata-container-gauge"
+    style="margin-right: 10px; width: 100%;"
+  >
+    <div
+      :class="chart.class"
+      :style="chart.style"
+    >
+      <!-- linear-gauge | radial-gauge -->
+      <v-gauge
+        :ref="id"
+        :id="id"
+        :options="Object.merge(options, chart.options)"
+        v-bind="Object.merge(params, chart.params)"
+      />
 
-      <template v-if="Object.getLength(host_data) > 0">
-        <div class="q-pa-md netdata-chart-row"  :style="'height: 200px'">
-          <!-- ; width: 100%  -->
+    <span class="gaugeChartLabel" style="font-size: 40px; top: 50px;">{{chart.params.value}}</span>
+    <span class="gaugeChartTitle" style="font-size: 19px; line-height: 19px; top: 0px;">{{params.title}}</span>
+    <!-- <span class="gaugeChartUnits" style="font-size: 17px;">{{params.unit}}</span> -->
+    <!-- <span class="gaugeChartMin" style="font-size: 30px;">{{params.minValue}}</span> -->
+    <!-- <span class="gaugeChartMax" style="font-size: 30px;">{{params.maxValue}}</span> -->
+  </div>
 
-          <div class="row" :style="'width: 100%'">
-            <div class="col">
-
-            </div>
-            <div class="col-3">
-              <v-gauge-wrapper
-                :id="host+'.cpu'"
-                :chart="{
-                  class: 'netdata-chart netdata-gauge-chart',
-                  params:{
-                    height: '180px',
-                    title: 'CPU',
-                    minValue: 0,
-                    maxValue: 100,
-                    value: host_data['os.cpus.percentage'] || 0,
-                  }
-                }"
-              />
-            </div>
-            <template v-for="(used, mount) in host_data['os.mounts.used']">
-              <div class="col" :key="host+'.'+mount+'.used'">
-                <vue-easy-pie-chart-wrapper
-                  :id="host+'.'+mount+'.used'"
-                  :chart="{
-                    class: 'netdata-chart netdata-easypiechart-chart',
-                    params:{
-                      'bar-color': '#0000FF',
-                      'size': 150,
-                      'percent': used || 0,
-                      title: 'Used: '+ mount,
-                      /* unit: 'kilobits/s', */
-                    }
-                  }"
-                />
-              </div>
-            </template>
-
-            <!-- <div class="col">
-              <vue-easy-pie-chart-wrapper
-                :id="host+'.net.out'"
-                :chart="{
-                  class: 'netdata-chart netdata-easypiechart-chart',
-                  params:{
-                    'bar-color': '#FF0000',
-                    'size': 150,
-                    'percent': host_data['os.networkInterfaces.out'] || 0,
-                    title: 'Net Outbound',
-                    unit: 'kilobits/s',
-                  }
-                }"
-              />
-            </div> -->
-            <div class="col">
-              <vue-easy-pie-chart-wrapper
-                :id="host+'.ram'"
-                :chart="{
-                  class: 'netdata-chart netdata-easypiechart-chart',
-                  params:{
-                    'bar-color': '#66AA00',
-                    'size': 120,
-                    'percent': host_data['os.memory.percentage'] || 0,
-                    title: 'Used RAM',
-                    unit: '%',
-                    /**minValue: 0,
-                    maxValue: 100,
-                    unit: '%',
-                    value: host_data['os.cpus.percentage'] || 0,
-                    height: '200px',
-                    width: '334px' */
-                  }
-                }"
-              />
-            </div>
-          </div>
-
-        </div>
-      </template>
-    </q-card-section>
-
-    <q-card-section>
-
-      <!-- <div class="netdata-chart-row"  >
-      </div> -->
-    </q-card-section>
-
-    <q-separator dark />
-
-    <q-card-actions>
-      <q-btn
-        v-for="category in categories"
-        :key="host+'.'+category"
-        flat
-        :to="{
-          name: 'os_host',
-          params: { host: host },
-          hash: '#'+category
-        }"
-      >{{category}}</q-btn>
-    </q-card-actions>
-  </q-card>
-
+</div>
 </template>
 
 <script>
-// @ is an alias to /src
-// import HelloWorld from '@/components/HelloWorld.vue'
 
 import * as Debug from 'debug'
-const debug = Debug('apps:os:components:hostCard')
 
-// import JSPipeline from 'js-pipeline'
-// import Pipeline from '@apps/os/pipelines/index'
+const debug = Debug('components:wrappers:vGauge')
 
-// import DataSourcesMixin from '@components/mixins/dataSources'
+import VGauge from 'vgauge'
 
-// import { requests, store } from './sources/index'
+import chartMixin from '@mixins/chart.vue'
 
-import vGaugeWrapper from './wrappers/vGauge'
-import vueEasyPieChartWrapper from './wrappers/vueEasyPieChart'
+import netDataColors from '@libs/netdata/colors'
 
 export default {
-  // mixins: [DataSourcesMixin],
-  // extends: DataSourcesMixin,
-  components: { vGaugeWrapper, vueEasyPieChartWrapper },
+  mixins: [chartMixin],
+  name: 'v-gauge-wrapper',
 
-  name: 'osHostCard',
+  components: { VGauge },
 
-  // pipelines: {},
-  // __pipelines_cfg: {},
-  // unwatch_store: undefined,
+  // chart: null,
+  freezed: false,
 
   props: {
-    host: {
-      type: String,
-      default: ''
-    },
-    host_data: {
-      type: Object,
-      default: () => ({})
-    },
-    categories: {
-      type: Array,
-      default: function () { return [] }
-    }
+    // params: {
+    //   type: Object,
+    //   default: () => ({})
+    // }
+    // donut: {
+    //   type: Boolean,
+    //   default: false
+    // },
+    // height: {
+    //   type: String,
+    //   default: '200px'
+    // },
+    // width: {
+    //   type: String,
+    //   default: '200px'
+    // },
+    // unit: {
+    //   type: String,
+    //   default: '%'
+    // },
+    // initialValue: {
+    //   type: Number,
+    //   default: 0
+    // },
+    // minValue: {
+    //   type: Number,
+    //   default: 0
+    // },
+    // maxValue: {
+    //   type: Number,
+    //   default: 100
+    // },
+    // decimalPlace: {
+    //   type: Number,
+    //   default: 0
+    // },
+    // top: {
+    //   type: Boolean,
+    //   default: false
+    // },
+    // gaugeValueClass: {
+    //   type: String,
+    //   default: 'gaugeChart'
+    // },
+    // animationSpeed: {
+    //   type: Number,
+    //   default: 10
+    // },
+    // value: {
+    //   type: Number,
+    //   default: 0
+    // },
+    // title: {
+    //   type: String,
+    //   default: ''
+    // },
+  //   EventBus: {
+  //     type: [Object],
+  //     default: () => ({})
+  //   },
+  //   id: {
+  //     type: [String],
+  //     default: () => ('')
+  //   },
+  //   options: {
+  //     type: [Object],
+  //     default: () => ({})
+  //   },
+  //
+  //   stat: {
+  //     type: [Object],
+  //     default: () => ({})
+  //   },
+  //
+  //   freezed: {
+  //     type: [Boolean],
+  //     default: () => (false)
+  //   },
+  //   visible: {
+  //     type: [Boolean],
+  //     default: () => (true)
+  //   },
   },
+
+  lum_d: 0.05,
+  startColor: '00FF00',
+  stopColor: 'FF0000',
+
   data () {
     return {
+      ready: true,
+
+      params: {
+        gaugeValueClass: 'gaugeChart',
+        height: '200px',
+        width: '334px',
+        unit: '%',
+        minValue: 0.0,
+        maxValue: 100,
+      },
+
+      options: {
+        // barWidth: 20,
+        // barShadow: 1,
+        // borderShadowWidth: 0,
+        // borderInnerWidth: 0,
+        // borderOuterWidth: 0,
+        // borderMiddleWidth: 0,
+        // highlights: false,
+        // valueBoxStroke: 0,
+        // colorValueBoxShadow: 0,
+        // valueBoxBorderRadius: 0,
+        // valueTextShadow: 0,
+        // colorValueBoxBackground: 'transparent',
+
+        endAngle: 120,
+        needle: true,
+
+        lines: 12, // The number of lines to draw
+        angle: 0.14, // The span of the gauge arc
+        lineWidth: 0.57, // The line thickness
+        radiusScale: 1.0, // Relative radius
+        pointer: {
+          length: 0.85, // 0.9 The radius of the inner circle
+          strokeWidth: 0.045, // The rotation offset
+          color: '#C0C0C0', // Fill color (gauge_pointer)
+        },
+        limitMax: true, // If false, the max value of the gauge will be updated if value surpass max
+        limitMin: true, // If true, the min value of the gauge will be fixed unless you set it manually
+        /* generateGradient: (generateGradient === true), // gmosx: */
+        gradientType: 0,
+        highDpiSupport: true, // High resolution support
+        colorStart: this.$options.startColor, // Colors
+        colorStop: this.$options.stopColor, // just experiment with them
+        strokeColor: '#F0F0F0', // to see which ones work best for you (gauge_stroke)
+        generateGradient: true, // gmosx:
+        colors: '#994499',
+        // after: -540,
+        // points: 540,
+        percentColors: [
+          [0.0, netDataColors.colorLuminance(this.$options.startColor, (this.$options.lum_d * 10) - (this.$options.lum_d * 0))],
+          [0.1, netDataColors.colorLuminance(this.$options.startColor, (this.$options.lum_d * 10) - (this.$options.lum_d * 1))],
+          [0.2, netDataColors.colorLuminance(this.$options.startColor, (this.$options.lum_d * 10) - (this.$options.lum_d * 2))],
+          [0.3, netDataColors.colorLuminance(this.$options.startColor, (this.$options.lum_d * 10) - (this.$options.lum_d * 3))],
+          [0.4, netDataColors.colorLuminance(this.$options.startColor, (this.$options.lum_d * 10) - (this.$options.lum_d * 4))],
+          [0.5, netDataColors.colorLuminance(this.$options.startColor, (this.$options.lum_d * 10) - (this.$options.lum_d * 5))],
+          [0.6, netDataColors.colorLuminance(this.$options.startColor, (this.$options.lum_d * 10) - (this.$options.lum_d * 6))],
+          [0.7, netDataColors.colorLuminance(this.$options.startColor, (this.$options.lum_d * 10) - (this.$options.lum_d * 7))],
+          [0.8, netDataColors.colorLuminance(this.$options.startColor, (this.$options.lum_d * 10) - (this.$options.lum_d * 8))],
+          [0.9, netDataColors.colorLuminance(this.$options.startColor, (this.$options.lum_d * 10) - (this.$options.lum_d * 9))],
+          [1.0, netDataColors.colorLuminance(this.$options.startColor, 0.0)]
+        ]
+      }
 
     }
-  }
+  },
+  watch: {
+    visible: function (val) {
+      this.container_class_helper = (val === false) ? 'invisible' : ''
+      // console.log('class visible', val, this.container_class_helper)
+    }
+  },
 
+  created () {
+    // this.chart = this
+    // this.options = Object.merge(this.options, this.chart.options)
+    // this.params = Object.merge(this.params, this.chart.params)
+  },
+
+  methods: {
+    update () {
+      // console.log('qknob update')
+      this.value = this.get_data().getLast()[1]
+      // console.log('update', this.$refs[this.id].)
+      // this.$refs[this.id].$data.chart.options['value'] = this.stat.data.getLast()[1]
+    },
+
+  }
 }
 </script>
 
