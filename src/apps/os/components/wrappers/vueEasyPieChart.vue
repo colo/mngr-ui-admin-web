@@ -14,6 +14,7 @@
       v-bind="Object.merge(params, chart.params)"
       :id="id"
       :ref="id"
+      v-on:step="step"
     />
 
   </div>
@@ -183,6 +184,10 @@ export default {
   },
 
   methods: {
+    // https://github.com/rendro/easy-pie-chart/issues/116
+    step: function (from, to, percent) {
+      debug('step', from, to, percent, this.chart.params.max)
+    },
     update () {
       // console.log('qknob update')
       // this.value = this.get_data().getLast()[1]

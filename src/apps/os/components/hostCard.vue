@@ -17,7 +17,20 @@
 
           <div class="row" :style="'width: 100%'">
             <div class="col">
-
+              <vue-easy-pie-chart-wrapper
+                :id="host+'.net.in'"
+                :chart="{
+                  class: 'netdata-chart netdata-easypiechart-chart',
+                  params:{
+                    'bar-color': '#FF0000',
+                    'size': 150,
+                    'percent': host_data['os.networkInterfaces.in'] || 0,
+                    'max': host_data['os.networkInterfaces.max.in'] || 0,
+                    title: 'Net Inbound',
+                    /* unit: 'kilobits/s', */
+                  }
+                }"
+              />
             </div>
             <div class="col-3">
               <v-gauge-wrapper

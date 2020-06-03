@@ -37,8 +37,8 @@ const HOUR = 60 * MINUTE
 const DAY = HOUR * 24
 const WEEK = DAY * 7
 
-// let max_networkInterfaces_in = 0
-// let max_networkInterfaces_out = 0
+let max_networkInterfaces = {}
+// let max_networkInterfaces_out = {}
 
 const hosts_range_component = {
   params: function (_key, vm) {
@@ -101,7 +101,7 @@ const hosts_range_component = {
     return { key, source }
   },
   callback: function (data, metadata, key, vm) {
-    debug('PERIODICAL HOSTS CALLBACK data %s %o', key, data)
+    // debug('PERIODICAL HOSTS CALLBACK data %s %o', key, data)
 
     if (/periodical/.test(key) && (data.os || Object.getLength(data) > 0)) {
       let _data
@@ -126,6 +126,8 @@ const hosts_range_component = {
       Object.each(_hosts_data, function (data, host) {
         if (!hosts_data[host]) hosts_data[host] = {}
 
+        if (!max_networkInterfaces[host]) max_networkInterfaces[host] = {in: 0, out: 0}
+
         Object.each(data, function (values, path) {
           if (!hosts_data[host][path]) hosts_data[host][path] = {}
 
@@ -144,30 +146,39 @@ const hosts_range_component = {
             if (path === 'os.cpus') {
               let total = hosts_data[host][path].cores * 10000
               let used = total - hosts_data[host][path].idle
-              let percentage = ((used * 100) / total).toFixed(2) * 1
+              let percentage = ((used * 100) / total).toFixed(1) * 1
               if (percentage >= 0) {
                 hosts_data[host][path + '.percentage'] = percentage
               }
-            }
-            // else if (/^os\.networkInterfaces\.eth.*\.bytes$/.test(path)) {
-            //   // debug('PERIODICAL HOSTS CALLBACK networkInterfaces %s %o', key, hosts_data[host][path])
-            //   if (!hosts_data[host]['os.networkInterfaces.in']) hosts_data[host]['os.networkInterfaces.in'] = 0
-            //   if (!hosts_data[host]['os.networkInterfaces.out']) hosts_data[host]['os.networkInterfaces.out'] = 0
-            //
-            //   // total_networkInterfaces_in += hosts_data[host][path].recived * 1
-            //   // total_networkInterfaces_out += hosts_data[host][path].transmited * 1
-            //
-            //   // if (/^os\.networkInterfaces\.eth.*$/.test(path)) { // real ethX
-            //   hosts_data[host]['os.networkInterfaces.in'] += hosts_data[host][path].recived * 1
-            //   hosts_data[host]['os.networkInterfaces.out'] += hosts_data[host][path].transmited * 1
+            } else if (
+              /^os\.networkInterfaces\.eth.*\.bytes$/.test(path) ||
+              /^os\.networkInterfaces\.eno.*\.bytes$/.test(path) ||
+              /^os\.networkInterfaces\.enp.*\.bytes$/.test(path)
+            ) {
+              if (!hosts_data[host]['os.networkInterfaces.in']) hosts_data[host]['os.networkInterfaces.in'] = 0
+              if (!hosts_data[host]['os.networkInterfaces.out']) hosts_data[host]['os.networkInterfaces.out'] = 0
+
+              if (!hosts_data[host]['os.networkInterfaces.max.in']) hosts_data[host]['os.networkInterfaces.max.in'] = 0
+              if (!hosts_data[host]['os.networkInterfaces.max.out']) hosts_data[host]['os.networkInterfaces.max.out'] = 0
+
+              // // if (!max_networkInterfaces_out[host]) max_networkInterfaces_out[host] = 0
+              //
+              // max_networkInterfaces[host].in += hosts_data[host][path].recived * 1
+              // max_networkInterfaces[host].out += hosts_data[host][path].transmited * 1
+
+              // debug('PERIODICAL HOSTS CALLBACK networkInterfaces %s %o', key, hosts_data[host][path])
+
+              //   // if (/^os\.networkInterfaces\.eth.*$/.test(path)) { // real ethX
+              hosts_data[host]['os.networkInterfaces.in'] += hosts_data[host][path].recived * 1
+              hosts_data[host]['os.networkInterfaces.out'] += hosts_data[host][path].transmited * 1
             //   // }
-            // }
+            }
           } else {
             hosts_data[host][path] = values[0]// most recent value
             if (path === 'os.memory') {
               let total = hosts_data[host][path].totalmem
               let used = total - hosts_data[host][path].freemem
-              let percentage = ((used * 100) / total).toFixed(2) * 1
+              let percentage = ((used * 100) / total).toFixed(1) * 1
               if (percentage >= 0) {
                 hosts_data[host][path + '.percentage'] = percentage
               }
@@ -180,21 +191,19 @@ const hosts_range_component = {
         })
       })
 
-      // Object.each(hosts_data, function (host_data, host) {
-      //   Object.each(host_data, function (path_data, path) {
-      //     if (path === 'os.networkInterfaces.in') {
-      //       if(hosts_data[host]['os.networkInterfaces.in'] > max_networkInterfaces_in){
-      //         max_networkInterfaces_in = hosts_data[host]['os.networkInterfaces.in']
-      //         hosts_data[host]['os.networkInterfaces.in'] = 100
-      //       }
-      //       hosts_data[host]['os.networkInterfaces.in'] = ((hosts_data[host]['os.networkInterfaces.in'] * 100) / total_networkInterfaces_in).toFixed(2) * 1 // bytes to kilobits
-      //     } else if (path === 'os.networkInterfaces.out') {
-      //       hosts_data[host]['os.networkInterfaces.out'] = ((hosts_data[host]['os.networkInterfaces.out'] * 100) / total_networkInterfaces_out).toFixed(2) * 1 // bytes to kilobits
-      //     }
-      //   })
-      // })
+      Object.each(hosts_data, function (host_data, host) {
+        // Object.each(host_data, function (path_data, path) {
+        hosts_data[host]['os.networkInterfaces.max.in'] = (hosts_data[host]['os.networkInterfaces.in'] > max_networkInterfaces[host].in) ? hosts_data[host]['os.networkInterfaces.in'] : max_networkInterfaces[host].in
+        hosts_data[host]['os.networkInterfaces.max.out'] = (hosts_data[host]['os.networkInterfaces.out'] > max_networkInterfaces[host].out) ? hosts_data[host]['os.networkInterfaces.out'] : max_networkInterfaces[host].out
 
-      debug('PERIODICAL HOSTS CALLBACK data %s %o', key, hosts_data) //, max_networkInterfaces_in, max_networkInterfaces_out
+        max_networkInterfaces[host] = {
+          in: hosts_data[host]['os.networkInterfaces.max.in'],
+          out: hosts_data[host]['os.networkInterfaces.max.out']
+        }
+        // })
+      })
+
+      debug('PERIODICAL HOSTS CALLBACK data %s %o %o', key, hosts_data) //, max_networkInterfaces_in, max_networkInterfaces_out
       vm.hosts_data = hosts_data
     }
   }
