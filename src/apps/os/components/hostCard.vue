@@ -18,16 +18,58 @@
           <div class="row" :style="'width: 100%'">
             <div class="col">
               <vue-easy-pie-chart-wrapper
+                :id="host+'.loadavg'"
+                :chart="{
+                  class: 'netdata-chart netdata-easypiechart-chart',
+                  params:{
+                    'bar-color': '#66AA00',
+                    'size': 130,
+                    /* 'percent': host_data['os.loadavg']['1_min'] || 0, */
+                    'percent': (100 * host_data['os.loadavg']['1_min']  / host_data['os.loadavg.max']) || 0,
+                    'value': host_data['os.loadavg']['1_min'],
+                    'max': host_data['os.loadavg.max'] || 0,
+                    'title': 'Load',
+                    unit: '1min avg',
+                    /**minValue: 0,
+                    maxValue: 100,
+                    unit: '%',
+                    value: host_data['os.cpus.percentage'] || 0,
+                    height: '200px',
+                    width: '334px' */
+                  }
+                }"
+              />
+            </div>
+            <div class="col">
+              <vue-easy-pie-chart-wrapper
+                :id="host+'.net.out'"
+                :chart="{
+                  class: 'netdata-chart netdata-easypiechart-chart',
+                  params:{
+                    'bar-color': '#3366CC',
+                    'size': 150,
+                    'percent': (100 * host_data['os.networkInterfaces.out'] / host_data['os.networkInterfaces.max.out']) || 0,
+                    'value': host_data['os.networkInterfaces.out'] / 125,
+                    'max': host_data['os.networkInterfaces.max.out'] || 0,
+                    title: 'Net Outbound',
+                    unit: 'kilobits/s',
+                  }
+                }"
+              />
+            </div>
+            <div class="col">
+              <vue-easy-pie-chart-wrapper
                 :id="host+'.net.in'"
                 :chart="{
                   class: 'netdata-chart netdata-easypiechart-chart',
                   params:{
-                    'bar-color': '#FF0000',
+                    'bar-color': '#DC3912',
                     'size': 150,
-                    'percent': host_data['os.networkInterfaces.in'] || 0,
+                    'percent': (100 * host_data['os.networkInterfaces.in'] / host_data['os.networkInterfaces.max.in']) || 0,
+                    'value': host_data['os.networkInterfaces.in'] / 125,
                     'max': host_data['os.networkInterfaces.max.in'] || 0,
-                    title: 'Net Inbound',
-                    /* unit: 'kilobits/s', */
+                    'title': 'Net Inbound',
+                    'unit': 'kilobits/s'//'kilobits/s',
                   }
                 }"
               />
@@ -54,10 +96,10 @@
                   :chart="{
                     class: 'netdata-chart netdata-easypiechart-chart',
                     params:{
-                      'bar-color': '#0000FF',
+                      'bar-color': '#AD69AD',
                       'size': 150,
                       'percent': used || 0,
-                      title: 'Used: '+ mount,
+                      'title': 'Used: '+ mount,
                       /* unit: 'kilobits/s', */
                     }
                   }"
@@ -65,21 +107,6 @@
               </div>
             </template>
 
-            <!-- <div class="col">
-              <vue-easy-pie-chart-wrapper
-                :id="host+'.net.out'"
-                :chart="{
-                  class: 'netdata-chart netdata-easypiechart-chart',
-                  params:{
-                    'bar-color': '#FF0000',
-                    'size': 150,
-                    'percent': host_data['os.networkInterfaces.out'] || 0,
-                    title: 'Net Outbound',
-                    unit: 'kilobits/s',
-                  }
-                }"
-              />
-            </div> -->
             <div class="col">
               <vue-easy-pie-chart-wrapper
                 :id="host+'.ram'"
@@ -87,10 +114,10 @@
                   class: 'netdata-chart netdata-easypiechart-chart',
                   params:{
                     'bar-color': '#66AA00',
-                    'size': 120,
+                    'size': 130,
                     'percent': host_data['os.memory.percentage'] || 0,
-                    title: 'Used RAM',
-                    unit: '%',
+                    'title': 'Used RAM',
+                    /* unit: '%', */
                     /**minValue: 0,
                     maxValue: 100,
                     unit: '%',

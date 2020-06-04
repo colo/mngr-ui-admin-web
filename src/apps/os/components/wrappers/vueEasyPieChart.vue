@@ -3,12 +3,14 @@
   class="netdata-container-easypiechart"
   style="margin-right: 10px; width: 100%;"
 >
+<!-- {{chart.params.value}} -->
+
   <div
   :class="chart.class"
   :style="chart.style"
   >
-  <span class="easyPieChartLabel" style="font-size: 20px; top: 63px;">{{chart.params.value}}</span>
   <span class="easyPieChartTitle" style="font-size: 11px; line-height: 11px; top: 37px;">{{params.title}}</span>
+  <span class="easyPieChartLabel" style="font-size: 20px; top: 63px;">{{format_value( chart.params.value || chart.params.percent )}}</span>
   <span class="easyPieChartUnits" style="font-size: 10px; top: 97px;">{{params.unit}}</span>
     <vue-easy-pie-chart
       v-bind="Object.merge(params, chart.params)"
@@ -18,7 +20,7 @@
     />
 
   </div>
-  {{chart.params.value}}
+
 </div>
 <!-- <div
   class="netdata-container-easypiechart"
@@ -151,6 +153,7 @@ export default {
       ready: true,
 
       params: {
+        'unit': '%',
         'scale-length': 5,
         'line-cap': 'round',
         'line-width': 7,
@@ -184,9 +187,24 @@ export default {
   },
 
   methods: {
+    format_value: function (percent) {
+      return Number(percent).toFixed(1)
+    },
     // https://github.com/rendro/easy-pie-chart/issues/116
     step: function (from, to, percent) {
-      debug('step', from, to, percent, this.chart.params.max)
+      // if (this.chart.params.max) {
+      //   percent = (percent < this.chart.params.max) ? (percent * 100 / this.chart.params.max) : 100
+      //
+      //   // document.getElementById(this.id).setAttribute('percent', percent)
+      // }
+      // else if (this.params !== '%') {
+      //   document.getElementById(this.id).getElementsByClassName('inner-text')[0].innerText = Number(percent).toFixed(1)
+      //   document.getElementById(this.id).getElementsByClassName('inner-text')[0].innerHTML = Number(percent).toFixed(1)
+      // }
+      document.getElementById(this.id).getElementsByClassName('inner-text')[0].innerText = ''
+      document.getElementById(this.id).getElementsByClassName('inner-text')[0].innerHTML = ''
+
+      // debug('step', from, to, percent, this.chart.params.max, document.getElementById(this.id))
     },
     update () {
       // console.log('qknob update')

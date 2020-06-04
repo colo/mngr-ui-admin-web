@@ -38,6 +38,8 @@ const DAY = HOUR * 24
 const WEEK = DAY * 7
 
 let max_networkInterfaces = {}
+let max_loadavg = {}
+
 // let max_networkInterfaces_out = {}
 
 const hosts_range_component = {
@@ -127,6 +129,7 @@ const hosts_range_component = {
         if (!hosts_data[host]) hosts_data[host] = {}
 
         if (!max_networkInterfaces[host]) max_networkInterfaces[host] = {in: 0, out: 0}
+        if (!max_loadavg[host]) max_loadavg[host] = 0
 
         Object.each(data, function (values, path) {
           if (!hosts_data[host][path]) hosts_data[host][path] = {}
@@ -183,6 +186,10 @@ const hosts_range_component = {
                 hosts_data[host][path + '.percentage'] = percentage
               }
             }
+
+            if (path === 'os.loadavg') {
+              if (!hosts_data[host]['os.loadavg.max']) hosts_data[host]['os.loadavg.max'] = 0
+            }
           }
 
           // Array.each(values, function(val, index){
@@ -200,6 +207,10 @@ const hosts_range_component = {
           in: hosts_data[host]['os.networkInterfaces.max.in'],
           out: hosts_data[host]['os.networkInterfaces.max.out']
         }
+
+        hosts_data[host]['os.loadavg.max'] = (hosts_data[host]['os.loadavg']['1_min'] > max_loadavg[host]) ? hosts_data[host]['os.loadavg']['1_min'] : max_loadavg[host]
+
+        max_loadavg[host] = hosts_data[host]['os.loadavg.max']
         // })
       })
 
