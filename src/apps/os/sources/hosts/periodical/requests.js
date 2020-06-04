@@ -156,7 +156,8 @@ const hosts_range_component = {
             } else if (
               /^os\.networkInterfaces\.eth.*\.bytes$/.test(path) ||
               /^os\.networkInterfaces\.eno.*\.bytes$/.test(path) ||
-              /^os\.networkInterfaces\.enp.*\.bytes$/.test(path)
+              /^os\.networkInterfaces\.enp.*\.bytes$/.test(path) ||
+              /^os\.networkInterfaces\.vlan.*\.bytes$/.test(path)
             ) {
               if (!hosts_data[host]['os.networkInterfaces.in']) hosts_data[host]['os.networkInterfaces.in'] = 0
               if (!hosts_data[host]['os.networkInterfaces.out']) hosts_data[host]['os.networkInterfaces.out'] = 0
