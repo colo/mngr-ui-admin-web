@@ -19,6 +19,15 @@
           <!-- <q-btn flat round dense icon="gamepad"/> -->
         </q-toolbar>
       </div>
+      <template v-if="hosts_data['_ALL_']">
+        <os-host-card
+          :key="'_ALL_'"
+          v-if="!host || host_name === host"
+          :host="'_ALL_'"
+          :host_data="hosts_data['_ALL_']"
+        />
+        <!-- :categories="host_paths" -->
+      </template>
 
       <template v-for="(host_paths, host_name) in hosts_paths">
         <os-host-card
