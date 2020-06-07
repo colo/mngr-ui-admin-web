@@ -36,10 +36,17 @@ const HOUR = 60 * MINUTE
 const DAY = HOUR * 24
 const WEEK = DAY * 7
 
+let init = false
+
 const generic_callback = function (data, metadata, key, vm) {
   // debug('PERIODICAL HOST CALLBACK data %s %o', key, data)
 
-  if (/periodical/.test(key) && (data.os || Object.getLength(data) > 0)) {
+  if (/periodical/.test(key) && metadata.opts && metadata.opts.params && metadata.opts.params.init === true) {
+    debug('PERIODICAL HOST CALLBACK data %s %o', key, data)
+    init = true
+  }
+
+  if (/periodical/.test(key) && (data.os || Object.getLength(data) > 0)) { // && init === true
     let _data
     if (data.os) _data = data.os // comes from 'Range'
     else _data = data // comes from 'register'
@@ -91,6 +98,10 @@ const generic_callback = function (data, metadata, key, vm) {
           // vm.$refs[name + '.periodical'][0].set_data({ periodical: _plugin })
           // vm.periodical.plugins_data[name] = { periodical: _plugin }
           // vm.$set(vm.periodical.plugins_data, name, { periodical: _plugin })
+          // if (metadata.opts && metadata.opts.params && metadata.opts.params.init === true) {
+          //   vm.set_plugin_data(name, _plugin, 'periodical')
+          // }
+
           vm.set_plugin_data(name, _plugin, 'periodical')
         }
         // }
@@ -228,7 +239,7 @@ const host_once_component = {
       switch (_key) {
         case 'periodical.once':
           source = [{
-            params: { id: _key },
+            params: { id: _key, init: true },
             path: 'all',
             range: 'posix ' + roundMilliseconds(Date.now() - (6 * MINUTE)) + '-' + roundMilliseconds(Date.now()) + '/*',
             // range: 'posix ' + (Date.now() - MINUTE) + '-' + Date.now() + '/*',

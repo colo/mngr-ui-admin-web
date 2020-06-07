@@ -56,7 +56,7 @@ const os_hosts_paths = {
       source = [{
         params: { id: _key },
         // range: 'posix ' + (Date.now() - (15 * SECOND)) + '-' + Date.now() + '/*',
-        range: 'posix ' + (Date.now() - (2 * DAY)) + '-' + Date.now() + '/*',
+        range: 'posix ' + (Date.now() - (5 * MINUTE)) + '-' + Date.now() + '/*',
         path: 'all',
         query: {
           'from': 'os_historical',
@@ -67,7 +67,7 @@ const os_hosts_paths = {
             { 'metadata': ['host', 'path'] } // 'path' ain't needed for first view (categories)
           ],
           'filter': [
-            { 'metadata': { 'type': 'day' } },
+            { 'metadata': { 'type': 'minute' } },
             "r.row('metadata')('path').ne('os.procs')"
           ],
           'aggregation': 'distinct'

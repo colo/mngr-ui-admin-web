@@ -42,6 +42,7 @@ export default {
 
   name: 'dygraph-wrapper',
 
+  buffered_data: {},
   chart_options: {},
   __unwatch_options: undefined,
   __unwatch_smooth: undefined,
@@ -66,6 +67,8 @@ export default {
     }
   },
   created () {
+    if (!this.$options.buffered_data[this.id]) { this.$options.buffered_data[this.id] = [] }
+
     let self = this
     if (self.EventBus && typeof (self.EventBus.$on) === 'function') {
       self.EventBus.$on('highlightCallback', params => {
@@ -207,18 +210,19 @@ export default {
       if (this.$options.chart_options.labels && document.getElementById(this.id)) {
         if (this.$options.chart_options.labelsDiv) { this.$options.chart_options.labelsDiv = this.id + '-' + this.$options.chart_options.labelsDiv }
 
-        let data = []
-        if (this.chart_data[0] && this.chart_data[0].length === 0) {
-          let row = []
-          Array.each(this.$options.chart_options.labels, function (label) {
-            row.push(0)
-          })
-          data.push(row)
-        } else {
-          data = this.get_data()
-          // data.sort(function(a,b) {return (a[0] > b[0]) ? 1 : ((b[0] > a[0]) ? -1 : 0);} )
-          // data = []
-        }
+        // let data = []
+        // if (this.chart_data[0] && this.chart_data[0].length === 0) {
+        //   let row = []
+        //   Array.each(this.$options.chart_options.labels, function (label) {
+        //     row.push(0)
+        //   })
+        //   data.push(row)
+        // } else {
+        //   data = this.get_data()
+        //   // data.sort(function(a,b) {return (a[0] > b[0]) ? 1 : ((b[0] > a[0]) ? -1 : 0);} )
+        //   // data = []
+        // }
+        let data = this.get_data()
 
         // Array.each(this.chart_data, function(row){
         //   row[0] = new Date(row[0])
@@ -266,27 +270,39 @@ export default {
       }
     },
     get_data: function (data) {
-      debug('get_data', this.id, data, this.chart_data, this.$options.buffered_data)
-      if (this.$options.buffered_data && Array.isArray(this.$options.buffered_data) && this.$options.buffered_data.length > 0 && this.$options.buffered_data[0][0]) {
+      let self = this
+      debug('get_data', this.id, data, this.chart_data, this.$options.buffered_data[this.id])
+      if (this.$options.buffered_data[this.id] && Array.isArray(this.$options.buffered_data[this.id]) && this.$options.buffered_data[this.id].length > 0 && this.$options.buffered_data[this.id][0][0]) {
         if (data && Array.isArray(data) && data.length > 0 && data[0][0]) {
-          data = this.$options.buffered_data.append(data)
+          data = this.$options.buffered_data[this.id].append(data)
         } else {
-          data = this.$options.buffered_data
+          data = this.$options.buffered_data[this.id]
         }
+      } else if (this.chart_data[0] && this.chart_data[0].length === 0 && (!data || data.length === 0)) {
+        let row = []
+        data = []
+        Array.each(self.$options.chart_options.labels, function (label) {
+          row.push(0)
+        })
+        data.push(row)
+      } else if (!data || data.length === 0) {
+        data = JSON.parse(JSON.stringify(this.chart_data))
+        // data.sort(function(a,b) {return (a[0] > b[0]) ? 1 : ((b[0] > a[0]) ? -1 : 0);} )
+        // data = []
       }
 
-      data = (data && Array.isArray(data) && data.length > 0 && data[0][0])
-        ? data
-        : Array.clone(this.chart_data)
+      // data = (data && Array.isArray(data) && data.length > 0 && data[0][0])
+      //   ? data
+      //   : Array.clone(this.chart_data)
 
       data = JSON.parse(JSON.stringify(data))
 
-      data.sort(function (a, b) { return (a[0] > b[0]) ? 1 : ((b[0] > a[0]) ? -1 : 0) })
-
-      Array.each(data, function (row) {
-        if (row) { row[0] = new Date(row[0]) }
-        // data.push(row)
-      })
+      // data.sort(function (a, b) { return (a[0] > b[0]) ? 1 : ((b[0] > a[0]) ? -1 : 0) })
+      //
+      // Array.each(data, function (row) {
+      //   if (row) { row[0] = new Date(row[0]) }
+      //   // data.push(row)
+      // })
 
       return Array.clone(data)
     },
@@ -312,7 +328,14 @@ export default {
           start = end - (this.chart_data_length * 1000)
         }
 
-        debug('update start - end', this.chart_data_length, start, end)
+        debug('update start - end %s %d %s %s %o', this.id, this.chart_data_length, new Date(start), new Date(end), data)
+
+        data.sort(function (a, b) { return (a[0] > b[0]) ? 1 : ((b[0] > a[0]) ? -1 : 0) })
+
+        Array.each(data, function (row) {
+          if (row) { row[0] = new Date(row[0]) }
+          // data.push(row)
+        })
 
         this.updateOptions(
           data,
@@ -320,11 +343,11 @@ export default {
           false
         )
 
-        this.$options.buffered_data = []
+        this.$options.buffered_data[this.id] = []
 
         return true
       } else {
-        // this.$options.buffered_data.append(data)
+        // this.$options.buffered_data[this.id].append(data)
         setTimeout(function () {
           this.update(data)
         }.bind(this), 1000)
@@ -380,7 +403,7 @@ export default {
         // );
         let selection = (this.chart.skip && this.chart.skip > 0) ? this.chart.skip : 1
 
-        debug('updateOptions selection', data.length, selection)
+        debug('updateOptions selection', this.id, data.length, selection)
 
         this.$options.graph.setSelection(this.$options.graph.numRows() - selection, {}, false)
       }

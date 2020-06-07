@@ -328,7 +328,7 @@ export default {
             (
               !this.chart.interval ||
               // (Date.now() - ((this.chart.interval * 1000) - 200) >= this.$options.tabular.lastupdate) ||
-              (Date.now() - (this.chart.interval * 999) >= this.$options.tabular.lastupdate) ||
+              (Date.now() - (this.chart.interval * 500) >= this.$options.tabular.lastupdate) ||
               this.$options.tabular.lastupdate === 0
             )
           )
@@ -348,24 +348,27 @@ export default {
         * used to be in components/chart
         * @todo : reimplement all logic that was defined about 'match' & 'watch' etc...
         **/
+        let update_data = []
         if (this.chart.watch && this.chart.watch.transform) {
-          this.$options.tabular.data = this.chart.watch.transform(this.$options.tabular.data, this, this.chart)
+          update_data = this.chart.watch.transform(Array.clone(this.$options.tabular.data), this, this.chart)
+        } else {
+          update_data = Array.clone(this.$options.tabular.data)
         }
 
         if (this.$refs[name]) {
           let clean_data = true
 
-          if (this.$refs[name] && typeof this.$refs[name].update === 'function' && this.$options.tabular.data.length > 0) {
+          if (this.$refs[name] && typeof this.$refs[name].update === 'function' && update_data.length > 0) {
             if (inmediate === true) {
-              clean_data = this.$refs[name].update(Array.clone(this.$options.tabular.data))
+              clean_data = this.$refs[name].update(update_data)
             } else {
-              frameDebounce(this.$refs[name].update(Array.clone(this.$options.tabular.data)))
+              frameDebounce(this.$refs[name].update(update_data))
             }
           } else if (this.reactive === true) {
             if (inmediate === true) {
-              this.$set(this, 'tabular', Array.clone(this.$options.tabular.data))
+              this.$set(this, 'tabular', update_data)
             } else {
-              frameDebounce(this.$set(this, 'tabular', Array.clone(this.$options.tabular.data)))
+              frameDebounce(this.$set(this, 'tabular', update_data))
             }
           }
           // debug('graph update_chart_stat updating %s %o %d %d', name, this.$refs, this.tabular.data.length, this.$options.tabular.data.length)

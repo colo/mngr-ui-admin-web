@@ -22,7 +22,7 @@
       <template v-if="hosts_data['_ALL_']">
         <os-host-card
           :key="'_ALL_'"
-          v-if="!host || host_name === host"
+          v-if="!host"
           :host="'_ALL_'"
           :host_data="hosts_data['_ALL_']"
         />

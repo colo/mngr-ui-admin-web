@@ -23,7 +23,7 @@
           v-if="chart"
           :is="tabular === false ? 'chart' : 'chart-tabular'"
           :wrapper="{
-            type: 'dygraph'
+            type: 'dygraph',
           }"
           :always_update="false"
           :ref="id"
@@ -146,7 +146,7 @@ export default {
   components: { chartTabular },
 
   // pipelines: {},
-  dygraph_chart: undefined,
+  dygraph_chart: {},
 
   props: {
     id: {
@@ -192,7 +192,7 @@ export default {
   __config_set: false,
   __labels_set: false,
 
-  plugin_data: undefined,
+  plugin_data: {},
 
   data () {
     return {
@@ -234,9 +234,14 @@ export default {
     }
   },
   created: function () {
+    if (!this.$options.plugin_data[this.id]) { this.$options.plugin_data[this.id] = {} }
+
     debug('lifecycle created', this.id)
     let id = this.id
+
+    id = id.replace('.periodical', '')
     id = id.replace('.minute', '')
+
     if (/cpus/.test(id)) {
       id = 'os.cpus'
     } else if (/os\.blockdevices\..*\.time/.test(id)) {
@@ -264,83 +269,84 @@ export default {
 
     switch (id) {
       case 'os.loadavg':
-        this.$options.dygraph_chart = dygraph_loadavg
+        this.$options.dygraph_chart[this.id] = dygraph_loadavg
         break
 
       case 'os.uptime':
-        this.$options.dygraph_chart = dygraph_uptime
+        this.$options.dygraph_chart[this.id] = dygraph_uptime
         break
 
       case 'os.memory':
-        this.$options.dygraph_chart = dygraph_memory
+        this.$options.dygraph_chart[this.id] = dygraph_memory
         break
 
       case 'os.cpus':
-        this.$options.dygraph_chart = dygraph_cpus
+        this.$options.dygraph_chart[this.id] = dygraph_cpus
         break
 
       case 'os.blockdevices.time':
-        this.$options.dygraph_chart = dygraph_blockdevices_time
+        this.$options.dygraph_chart[this.id] = dygraph_blockdevices_time
         break
 
       case 'os.blockdevices.sectors':
-        this.$options.dygraph_chart = dygraph_blockdevices_sectors
+        this.$options.dygraph_chart[this.id] = dygraph_blockdevices_sectors
         break
 
       case 'os.blockdevices.requests':
-        this.$options.dygraph_chart = dygraph_blockdevices_requests
+        this.$options.dygraph_chart[this.id] = dygraph_blockdevices_requests
         break
 
       case 'os.networkInterfaces.bytes':
-        this.$options.dygraph_chart = dygraph_networkInterfaces_bytes
+        this.$options.dygraph_chart[this.id] = dygraph_networkInterfaces_bytes
         break
 
       case 'os.networkInterfaces.packets':
-        this.$options.dygraph_chart = dygraph_networkInterfaces_packets
+        this.$options.dygraph_chart[this.id] = dygraph_networkInterfaces_packets
         break
 
       case 'os.mounts.used':
-        this.$options.dygraph_chart = dygraph_mounts_used
+        this.$options.dygraph_chart[this.id] = dygraph_mounts_used
         break
 
       case 'os.mounts.blocks':
-        this.$options.dygraph_chart = dygraph_mounts_blocks
+        this.$options.dygraph_chart[this.id] = dygraph_mounts_blocks
         break
 
       case 'os.rethinkdb.server.clients':
-        this.$options.dygraph_chart = dygraph_line_chart
-        this.$options.dygraph_chart.options.logscale = 'y'
-        this.$options.dygraph_chart.options.axes.y.logscale = true
+        this.$options.dygraph_chart[this.id] = dygraph_line_chart
+        this.$options.dygraph_chart[this.id].options.logscale = 'y'
+        this.$options.dygraph_chart[this.id].options.axes.y.logscale = true
         break
 
       case 'os.rethinkdb':
-        this.$options.dygraph_chart = dygraph_rethinkdb
+        this.$options.dygraph_chart[this.id] = dygraph_rethinkdb
         break
 
       default:
-        this.$options.dygraph_chart = dygraph_line_chart
+        this.$options.dygraph_chart[this.id] = dygraph_line_chart
     }
 
     Object.each(this.dygraph, function (value, prop) {
-      this.$options.dygraph_chart[prop] = value
+      this.$options.dygraph_chart[this.id][prop] = value
     }.bind(this))
 
-    if (!this.$options.dygraph_chart.interval || isNaN(this.$options.dygraph_chart.interval)) { this.$options.dygraph_chart.interval = 1 }
-    let interval = (this.interval === 0) ? this.$options.dygraph_chart.interval : this.interval
+    if (!this.$options.dygraph_chart[this.id].interval || isNaN(this.$options.dygraph_chart[this.id].interval)) { this.$options.dygraph_chart[this.id].interval = 1 }
+    let interval = (this.interval === 0) ? this.$options.dygraph_chart[this.id].interval : this.interval
+    // this.$options.dygraph_chart[this.id].interval = (interval > 0) ? interval : this.$options.dygraph_chart[this.id].interval
 
-    // this.$options.dygraph_chart.interval = interval
-    debug('ID %s', this.id, id, this.stat.length, interval)
+    // this.$options.dygraph_chart[this.id].interval = interval
+    debug('ID %s', this.id, id, this.stat.length, interval, this.$options.dygraph_chart[this.id])
 
     this.$set(this.stat, 'length', this.stat.length / interval)
 
-    if (this.$options.dygraph_chart.options && this.$options.dygraph_chart.options.labels && this.$options.dygraph_chart.options.labels.length > 1) {
+    if (this.$options.dygraph_chart[this.id].options && this.$options.dygraph_chart[this.id].options.labels && this.$options.dygraph_chart[this.id].options.labels.length > 1) {
       this.$options.__labels_set = true
     }
 
-    this.chart = Object.clone(this.$options.dygraph_chart)
+    this.chart = Object.clone(this.$options.dygraph_chart[this.id])
     this.config = this.chart.config
 
-    // this.chart = Object.merge(Object.clone(this.$options.dygraph_chart), {
+    // this.chart = Object.merge(Object.clone(this.$options.dygraph_chart[this.id]), {
     //   // interval: 1,
     //   options: {
     //     digitsAfterDecimal: 16,
@@ -366,7 +372,7 @@ export default {
       // this.no_buffer = true
       this.$options.__config_set = false
 
-      this.chart = Object.merge(Object.clone(this.$options.dygraph_chart), {
+      this.chart = Object.merge(Object.clone(this.$options.dygraph_chart[this.id]), {
         interval: 1,
         options: {
           strokeWidth: 1.5,
@@ -380,7 +386,7 @@ export default {
           // }
         }
       })
-      this.__process_data(this.$options.plugin_data)
+      this.__process_data(this.$options.plugin_data[this.id])
 
       // this.$refs[this.id].visibilityChanged(true)
       // this.processed_data = data
@@ -410,50 +416,46 @@ export default {
       // debug('set_data', this.id, data.periodical)
       // this.$options.plugin_data = Object.merge(data, this.$options.plugin_data)
       if (data.periodical) {
-        this.$options.plugin_data.periodical = data.periodical
+        this.$options.plugin_data[this.id].periodical = data.periodical
       }
       if (data.minute) {
-        this.$options.plugin_data.minute = data.minute
+        this.$options.plugin_data[this.id].minute = data.minute
       }
 
-      // debug('set_data', this.id, this.$options.plugin_data.periodical)
+      // debug('set_data', this.id, this.$options.plugin_data[this.id].periodical)
 
-      if (this.$options.plugin_data.periodical) {
-        // let splice = 120 // 12 points per min * 10 min
-        // let length
+      // if (this.$options.plugin_data[this.id].periodical) {
+      //   // let splice = 120 // 12 points per min * 10 min
+      //   // let length
+      //
+      //   Object.each(this.$options.plugin_data[this.id].periodical, function (periodical, key) {
+      //     let interval = (this.interval === 0) ? this.$options.dygraph_chart[this.id].interval : this.interval
+      //     debug('set_data slice', this.id, this.stat.length, interval)//, this.stat.length * interval
+      //     this.$options.plugin_data[this.id].periodical[key] = this.$options.plugin_data[this.id].periodical[key].slice(0, this.stat.length)// * interval
+      //
+      //   }.bind(this))
+      // }
 
-        Object.each(this.$options.plugin_data.periodical, function (periodical, key) {
-          let interval = (this.interval === 0) ? this.$options.dygraph_chart.interval : this.interval
-
-          this.$options.plugin_data.periodical[key] = this.$options.plugin_data.periodical[key].slice(0, this.stat.length * interval)
-          // this.$options.plugin_data.periodical[key].splice(
-          //   (splice * -1) + 1,
-          //   length - splice
-          // )
-          // // // this.$options.plugin_data.periodical[key].splice(0, this.$options.plugin_data.periodical[key].length - splice)
-        }.bind(this))
-      }
-
-      if (this.$options.plugin_data.minute) {
-        // debug('this.$options.plugin_data.minute %o', this.$options.plugin_data.minute)
+      if (this.$options.plugin_data[this.id].minute) {
+        // debug('this.$options.plugin_data[this.id].minute %o', this.$options.plugin_data[this.id].minute)
         // let splice = 10 // 1 points per min * 10 min
         // let length
 
-        Object.each(this.$options.plugin_data.minute, function (minute, key) {
+        Object.each(this.$options.plugin_data[this.id].minute, function (minute, key) {
           // length = minute.length
-          this.$options.plugin_data.minute[key] = this.$options.plugin_data.minute[key].slice(0, 7)
-          // this.$options.plugin_data.minute[key].splice(
+          this.$options.plugin_data[this.id].minute[key] = this.$options.plugin_data[this.id].minute[key].slice(0, 7)
+          // this.$options.plugin_data[this.id].minute[key].splice(
           //   (splice * -1) + 1,
           //   length - splice
           // )
-          // // this.$options.plugin_data.minute[key].splice(0, this.$options.plugin_data.minute[key].length - splice)
+          // // this.$options.plugin_data[this.id].minute[key].splice(0, this.$options.plugin_data[this.id].minute[key].length - splice)
         }.bind(this))
       }
 
-      // debug('----set_data', this.id, this.$options.plugin_data.periodical)
+      // debug('----set_data', this.id, this.$options.plugin_data[this.id].periodical)
 
       if (data.periodical) { // only update graph on periodical data
-        this.__process_data(this.$options.plugin_data)
+        this.__process_data(this.$options.plugin_data[this.id])
       }
     },
     __process_data: function (val) {

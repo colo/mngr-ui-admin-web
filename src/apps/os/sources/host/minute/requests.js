@@ -36,11 +36,18 @@ const HOUR = 60 * MINUTE
 const DAY = HOUR * 24
 const WEEK = DAY * 7
 
-const generic_callback = function (data, metadata, key, vm) {
-  // debug('MINUTE HOST CALLBACK data %s %o', key, data)
+let init = false
 
-  if (/minute/.test(key) && (data.os_historical || Object.getLength(data) > 0)) {
-    debug('MINUTE HOST CALLBACK data %s %o', key, data)
+const generic_callback = function (data, metadata, key, vm) {
+  debug('MINUTE HOST CALLBACK data %s %o', key, data, metadata)
+
+  if (/minute/.test(key) && metadata.opts && metadata.opts.params && metadata.opts.params.init === true) {
+    debug('MINUTE HOST CALLBACK data INIT')
+    init = true
+  }
+
+  if (/minute/.test(key) && (data.os_historical || Object.getLength(data) > 0) && init === true) {
+    // debug('MINUTE HOST CALLBACK data %s %o', key, data)
     let _data
     if (data.os_historical) _data = data.os_historical // comes from 'Range'
     else _data = data // comes from 'register'
@@ -96,6 +103,9 @@ const generic_callback = function (data, metadata, key, vm) {
         if (Object.getLength(_plugin) > 0) {
           // debug('MINUTE HOST CALLBACK %s %o', name, _plugin)
           // vm.$refs[name + '.minute'][0].set_data({ periodical: _plugin })
+          // if (metadata.opts && metadata.opts.params && metadata.opts.params.init === true) {
+          //   vm.set_plugin_data(name, _plugin, 'minute')
+          // }
           vm.set_plugin_data(name, _plugin, 'minute')
         }
         // }
@@ -160,9 +170,9 @@ const host_once_component = {
 
         case 'minute.once':
           source = [{
-            params: { id: _key },
+            params: { id: _key, init: true },
             path: 'all',
-            range: 'posix ' + (Date.now() - (HOUR + 10 * MINUTE)) + '-' + Date.now() + '/*',
+            range: 'posix ' + (Date.now() - (HOUR + 5 * MINUTE)) + '-' + Date.now() + '/*',
             query: {
               'from': 'os_historical',
               // 'register': 'changes',
