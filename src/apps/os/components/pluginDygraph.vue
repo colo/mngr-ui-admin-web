@@ -241,6 +241,8 @@ export default {
 
     id = id.replace('.periodical', '')
     id = id.replace('.minute', '')
+    id = id.replace('.hour', '')
+    id = id.replace('.day', '')
 
     if (/cpus/.test(id)) {
       id = 'os.cpus'

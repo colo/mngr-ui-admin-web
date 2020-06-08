@@ -135,7 +135,40 @@
             </div>
           </template>
         </q-toolbar>
-        <!-- contennt -->
+        <template v-for="(category) in hour.plugins_categories">
+          <!-- {{category}} -->
+          <q-card :key="category+'.hour'">
+            <a :id="category" :key="category+'.anchor'"/>
+            <q-card-section>
+              <div class="text-h3">{{category}}</div>
+            </q-card-section>
+
+            <q-card-section>
+              <template v-for="(name) in hour.plugins">
+                <!-- {{name}} -->
+                <os-plugin-dygraph
+                  v-if="name.indexOf(category) > -1"
+                  :ref="name+'.hour'"
+                  :id="'os.'+name+'.hour'"
+                  :name="name"
+                  :key="name+'.hour.plugin'"
+                  :stat="{
+                    data: [],
+                    length: 86400,
+                    range: undefined,
+                  }"
+                  :dygraph="{
+                    skip: 1,
+                    interval: 1,
+                  }"
+                  :interval="3600"
+                />
+              </template>
+            </q-card-section>
+
+            <!-- <q-separator dark /> -->
+          </q-card>
+        </template>
       </q-tab-panel>
 
       <q-tab-panel name="day" :key="$route.path +'.'+ JSON.stringify($route.query)+'.day'">
@@ -155,7 +188,40 @@
           </div>
         </template>
       </q-toolbar>
-      <!-- contennt -->
+      <template v-for="(category) in day.plugins_categories">
+        <!-- {{category}} -->
+        <q-card :key="category+'.day'">
+          <a :id="category" :key="category+'.anchor'"/>
+          <q-card-section>
+            <div class="text-h3">{{category}}</div>
+          </q-card-section>
+
+          <q-card-section>
+            <template v-for="(name) in day.plugins">
+              <!-- {{name}} -->
+              <os-plugin-dygraph
+                v-if="name.indexOf(category) > -1"
+                :ref="name+'.day'"
+                :id="'os.'+name+'.day'"
+                :name="name"
+                :key="name+'.day.plugin'"
+                :stat="{
+                  data: [],
+                  length: 2678400,
+                  range: undefined,
+                }"
+                :dygraph="{
+                  skip: 1,
+                  interval: 1,
+                }"
+                :interval="86400"
+              />
+            </template>
+          </q-card-section>
+
+          <!-- <q-separator dark /> -->
+        </q-card>
+      </template>
       </q-tab-panel>
     </q-tab-panels>
 
@@ -178,13 +244,13 @@ import JSPipeline from 'js-pipeline'
 // import { requests, store } from '../sources/host/periodical/index'
 import PeriodicalPipeline from '@apps/os/pipelines/host/periodical'
 import MinutePipeline from '@apps/os/pipelines/host/minute'
-// import HourPipeline from '@apps/os/pipelines/host/hour'
-// import DayPipeline from '@apps/os/pipelines/host/day'
+import HourPipeline from '@apps/os/pipelines/host/hour'
+import DayPipeline from '@apps/os/pipelines/host/day'
 
 import * as PeriodicalSources from '@apps/os/sources/host/periodical/index'
 import * as MinuteSources from '@apps/os/sources/host/minute/index'
-// import * as HourSources from '@apps/os/sources/host/hour/index'
-// import * as DaySources from '@apps/os/sources/host/day/index'
+import * as HourSources from '@apps/os/sources/host/hour/index'
+import * as DaySources from '@apps/os/sources/host/day/index'
 
 import moment from 'moment'
 
@@ -248,6 +314,18 @@ export default {
     interval: 60
   },
 
+  hour: {
+    plugins_data: {},
+    length: 86400,
+    interval: 3600
+  },
+
+  day: {
+    plugins_data: {},
+    length: 2678400,
+    interval: 86400
+  },
+
   data () {
     return {
       id: 'os.host',
@@ -292,8 +370,8 @@ export default {
       pipeline_id: [
         'input.os.host.periodical',
         'input.os.host.minute',
-        // 'input.os.host.hour',
-        // 'input.os.host.day'
+        'input.os.host.hour',
+        'input.os.host.day'
       ],
 
       range_tab: 'periodical',
@@ -351,22 +429,22 @@ export default {
             }
           }
         },
-        // 'input.os.host.hour': {
-        //   range: {
-        //     source: {
-        //       requests: HourSources.requests
-        //       // store: store
-        //     }
-        //   }
-        // },
-        // 'input.os.host.day': {
-        //   range: {
-        //     source: {
-        //       requests: DaySources.requests
-        //       // store: store
-        //     }
-        //   }
-        // }
+        'input.os.host.hour': {
+          range: {
+            source: {
+              requests: HourSources.requests
+              // store: store
+            }
+          }
+        },
+        'input.os.host.day': {
+          range: {
+            source: {
+              requests: DaySources.requests
+              // store: store
+            }
+          }
+        }
 
       }
     }
@@ -581,7 +659,7 @@ export default {
       //   //   this.$options.pipelines['input.os.host'].get_input_by_id('input.os').conn_pollers[0].fireEvent('onPeriodicalRequestsUpdated')
       //   // }
       // } else {
-      const pipelines = [PeriodicalPipeline, MinutePipeline] //, HourPipeline, DayPipeline
+      const pipelines = [PeriodicalPipeline, MinutePipeline, HourPipeline, DayPipeline] //,
       Array.each(pipelines, function (Pipeline) {
         let template = Object.clone(Pipeline)
 
