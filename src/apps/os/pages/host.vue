@@ -302,7 +302,33 @@ export default {
   minute: {
     dygraph: {
       skip: 300, // seconds (5 mins)
-      interval: 1
+      interval: 1,
+      'options': {
+        axes: {
+          x: {
+            pixelsPerLabel: 50,
+            // ticker: Dygraph.dateTicker,
+            axisLabelFormatter: function (d, gran) {
+              // return NETDATA.zeropad(d.getHours()) + ":" + NETDATA.zeropad(d.getMinutes()) + ":" + NETDATA.zeropad(d.getSeconds());
+              return d.getDate() + ' - ' + d.getHours() + ':' + d.getMinutes()
+            },
+            valueFormatter: function (ms) {
+              var d = new Date(ms)
+              return d.toLocaleDateString() + ' ' + d.toLocaleTimeString()
+            }
+          },
+          y: {
+            pixelsPerLabel: 15,
+            valueFormatter: function (x) {
+              // we format legends with the state object
+              // no need to do anything here
+              // return (Math.round(x*100) / 100).toLocaleString();
+              // return state.legendFormatValue(x);
+              return x
+            }
+          }
+        },
+      }
     },
     plugins_data: {},
     length: 43200,
@@ -312,7 +338,33 @@ export default {
   hour: {
     dygraph: {
       skip: 7200, // seconds (1 hour)
-      interval: 1
+      interval: 1,
+      'options': {
+        axes: {
+          x: {
+            pixelsPerLabel: 50,
+            // ticker: Dygraph.dateTicker,
+            axisLabelFormatter: function (d, gran) {
+              // return NETDATA.zeropad(d.getHours()) + ":" + NETDATA.zeropad(d.getMinutes()) + ":" + NETDATA.zeropad(d.getSeconds());
+              return d.getDate() + '/' + (d.getMonth() + 1) + ' - ' + d.getHours()
+            },
+            valueFormatter: function (ms) {
+              var d = new Date(ms)
+              return d.toLocaleDateString() + ' ' + d.toLocaleTimeString()
+            }
+          },
+          y: {
+            pixelsPerLabel: 15,
+            valueFormatter: function (x) {
+              // we format legends with the state object
+              // no need to do anything here
+              // return (Math.round(x*100) / 100).toLocaleString();
+              // return state.legendFormatValue(x);
+              return x
+            }
+          }
+        },
+      }
     },
     plugins_data: {},
     length: 604800,

@@ -328,9 +328,12 @@ export default {
         this.$options.dygraph_chart[this.id] = dygraph_line_chart
     }
 
-    Object.each(this.dygraph, function (value, prop) {
-      this.$options.dygraph_chart[this.id][prop] = value
-    }.bind(this))
+    // Object.each(this.dygraph, function (value, prop) {
+    //   this.$options.dygraph_chart[this.id][prop] = value
+    // }.bind(this))
+    if (Object.getLength(this.dygraph) > 0) {
+      this.$options.dygraph_chart[this.id] = Object.merge(this.$options.dygraph_chart[this.id], this.dygraph)
+    }
 
     if (!this.$options.dygraph_chart[this.id].interval || isNaN(this.$options.dygraph_chart[this.id].interval)) { this.$options.dygraph_chart[this.id].interval = 1 }
     let interval = (this.interval === 0) ? this.$options.dygraph_chart[this.id].interval : this.interval
