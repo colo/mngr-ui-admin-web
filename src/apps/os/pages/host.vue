@@ -95,14 +95,11 @@
                   :key="name+'.minute.plugin'"
                   :stat="{
                     data: [],
-                    length: 3600,
+                    length: $options.minute.length,
                     range: undefined,
                   }"
-                  :dygraph="{
-                    skip: 1,
-                    interval: 1,
-                  }"
-                  :interval="60"
+                  :dygraph="$options.minute.dygraph"
+                  :interval="$options.minute.interval"
                 />
               </template>
             </q-card-section>
@@ -154,14 +151,11 @@
                   :key="name+'.hour.plugin'"
                   :stat="{
                     data: [],
-                    length: 86400,
+                    length: $options.hour.length,
                     range: undefined,
                   }"
-                  :dygraph="{
-                    skip: 1,
-                    interval: 1,
-                  }"
-                  :interval="3600"
+                  :dygraph="$options.hour.dygraph"
+                  :interval="$options.hour.interval"
                 />
               </template>
             </q-card-section>
@@ -207,14 +201,11 @@
                 :key="name+'.day.plugin'"
                 :stat="{
                   data: [],
-                  length: 2678400,
+                  length: $options.day.length,
                   range: undefined,
                 }"
-                :dygraph="{
-                  skip: 1,
-                  interval: 1,
-                }"
-                :interval="86400"
+                :dygraph="$options.day.dygraph"
+                :interval="$options.day.interval"
               />
             </template>
           </q-card-section>
@@ -309,21 +300,33 @@ export default {
   },
 
   minute: {
+    dygraph: {
+      skip: 300, // seconds (5 mins)
+      interval: 1
+    },
     plugins_data: {},
-    length: 360,
+    length: 43200,
     interval: 60
   },
 
   hour: {
+    dygraph: {
+      skip: 7200, // seconds (1 hour)
+      interval: 1
+    },
     plugins_data: {},
-    length: 86400,
-    interval: 3600
+    length: 604800,
+    interval: 60
   },
 
   day: {
+    dygraph: {
+      // skip: 1,
+      interval: 1
+    },
     plugins_data: {},
     length: 2678400,
-    interval: 86400
+    interval: 3600
   },
 
   data () {

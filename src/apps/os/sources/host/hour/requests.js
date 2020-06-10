@@ -172,7 +172,7 @@ const host_once_component = {
           source = [{
             params: { id: _key, init: true },
             path: 'all',
-            range: 'posix ' + (Date.now() - (26 * HOUR)) + '-' + Date.now() + '/*',
+            range: 'posix ' + (Date.now() - WEEK) + '-' + Date.now() + '/*',
             query: {
               'from': 'os_historical',
               // 'register': 'changes',

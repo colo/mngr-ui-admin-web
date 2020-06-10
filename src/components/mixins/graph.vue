@@ -270,8 +270,8 @@ export default {
 
       if (
         this.chart.skip &&
-          this.chart.skip > 0 &&
-          inmediate !== true
+          this.chart.skip > 0
+          // && inmediate !== true
       ) {
         // this.chart.interval = this.chart.skip
         let new_data = []
@@ -300,10 +300,15 @@ export default {
 
           let timestamp = roundMilliseconds(row[0])
           // if(index % this.chart.skip === 0) new_data.push(row)
-          if (index === 0 || timestamp + (this.chart.skip * 1000) >= this.$options.__skiped) {
-            // debug('skiping', this.id, timestamp)
+          // if (index === 0 || timestamp + (this.chart.skip * 1000) >= this.$options.__skiped) {
+
+          // data has to be in ascending order
+          if (index === 0 || timestamp >= (this.chart.skip * 1000) + this.$options.__skiped) {
+            debug('NOT SKIPED %s %s %d', this.id, timestamp, this.chart.skip)
             new_data.push(row)
             this.$options.__skiped = timestamp
+          } else {
+            debug('SKIPED %s %s %d', this.id, new Date(timestamp), this.chart.skip)
           }
         }.bind(this))
 

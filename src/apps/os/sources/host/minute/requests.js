@@ -172,7 +172,8 @@ const host_once_component = {
           source = [{
             params: { id: _key, init: true },
             path: 'all',
-            range: 'posix ' + (Date.now() - (HOUR + 5 * MINUTE)) + '-' + Date.now() + '/*',
+            // range: 'posix ' + (Date.now() - (HOUR + 5 * MINUTE)) + '-' + Date.now() + '/*',
+            range: 'posix ' + (Date.now() - (HOUR * 12)) + '-' + Date.now() + '/*',
             query: {
               'from': 'os_historical',
               // 'register': 'changes',
@@ -267,7 +268,7 @@ const host_range_component = {
           source = [{
             params: { id: _key },
             path: 'all',
-            range: 'posix ' + (Date.now() - (10 * MINUTE)) + '-' + Date.now() + '/*',
+            range: 'posix ' + (Date.now() - (5 * MINUTE)) + '-' + Date.now() + '/*',
             query: {
               'from': 'os_historical',
               // 'register': 'changes',
