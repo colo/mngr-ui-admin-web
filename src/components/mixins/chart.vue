@@ -55,6 +55,14 @@ export default {
   //   this.create()
   // },
   destroyed () {
+    this.$options.graph = undefined
+    this.$options.freezed = false
+
+    this.$options.__unwatcher = undefined
+    this.$options.visible = false
+
+    this.$options.buffered_data = []
+
     this.destroy()
     // if(this.$options.graph && typeof this.$options.graph.destroy == 'function'){
     //   // //////////console.log('destroying ...', this.id)

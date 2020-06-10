@@ -367,6 +367,13 @@ export default {
     //   }
     // })
   },
+  destroyed: function () {
+    debug('life cyle destroyed', this.id)
+    delete this.$options.dygraph_chart[this.id]
+    delete this.$options.plugin_data[this.id]
+    this.$options.__config_set = false
+    this.$options.__labels_set = false
+  },
   watch: {
     'view.minute': function (val) {
       debug('VIEW MINUTE %o', val, this.id)

@@ -74,21 +74,22 @@ export default {
   },
   // updated: function () {
   // },
-  destroy: function () {
-    debug('lifecycle destroy')
-    this.destroy_pipelines()
-    // EventBus.$off(this.pipeline_id + '.' + this.path, this.__process_input_data)
-    let pipeline_id = []
-    if (!Array.isArray(this.pipeline_id)) {
-      pipeline_id = [this.pipeline_id]
-    } else {
-      pipeline_id = this.pipeline_id
-    }
-    Array.each(pipeline_id, function (id) {
-      EventBus.$off(id + '.' + this.path, this.__process_input_data)
-    }.bind(this))
-    this.__unregister_store_module(this.id)
-  },
+  // destroyed: function () {
+  //   debug('lifecycle destroy')
+  //   // if (typeof this.destroy === 'function') this.destroy()
+  //   this.destroy_pipelines()
+  //   // EventBus.$off(this.pipeline_id + '.' + this.path, this.__process_input_data)
+  //   let pipeline_id = []
+  //   if (!Array.isArray(this.pipeline_id)) {
+  //     pipeline_id = [this.pipeline_id]
+  //   } else {
+  //     pipeline_id = this.pipeline_id
+  //   }
+  //   Array.each(pipeline_id, function (id) {
+  //     EventBus.$off(id + '.' + this.path, this.__process_input_data)
+  //   }.bind(this))
+  //   this.__unregister_store_module(this.id)
+  // },
 
   beforeRouteLeave (to, from, next) {
     debug('lifecycle beforeRouteLeave')

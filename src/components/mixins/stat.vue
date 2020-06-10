@@ -33,6 +33,7 @@ export default {
   key: undefined,
 
   // length: undefined,
+  stat_data: [],
 
   props: {
     EventBus: {
@@ -76,8 +77,6 @@ export default {
       default: false
     }
   },
-
-  stat_data: [],
 
   data () {
     return {
@@ -269,6 +268,17 @@ export default {
     // this.$store.dispatch(this.$options.type+'/'+this.id+'/flush')
   },
   destroyed () {
+    this.$options.visible = true
+    this.$options.__range_init = false
+    this.$options.__stat_unwatcher = undefined
+    this.$options.__buffer_data = []
+
+    this.$options.root = undefined
+    this.$options.path = undefined
+    this.$options.key = undefined
+
+    this.$options.stat_data = []
+
     this.$off()
   },
   methods: {

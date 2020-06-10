@@ -115,7 +115,12 @@ export default {
   // //
   //   this.create()
   // },
-  // destroyed (){
+  destroyed () {
+    this.$options.buffered_data = {}
+    this.$options.chart_options = {}
+    this.$options.__unwatch_options = undefined
+    this.$options.__unwatch_smooth = undefined
+
   //   this.destroy()
   //   if(this.$options.graph && typeof this.$options.graph.destroy === 'function'){
   //     this.$options.graph.destroy()
@@ -124,7 +129,7 @@ export default {
   //
   //   this.$options.graph = undefined
   //   this.$off()
-  // },
+  },
   methods: {
 
     /**

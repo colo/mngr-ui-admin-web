@@ -153,13 +153,13 @@ export default {
     // }
   },
 
-  watch: {
-    // '$q.appVisible': function (newVal, oldVal) {
-    //   debug('$q.appVisible', newVal)
-    //   this.$options.focus = newVal
-    // }
-
-  },
+  // watch: {
+  //   // '$q.appVisible': function (newVal, oldVal) {
+  //   //   debug('$q.appVisible', newVal)
+  //   //   this.$options.focus = newVal
+  //   // }
+  //
+  // },
 
   data () {
     return {
@@ -195,6 +195,21 @@ export default {
   //   this.create()
   // },
   destroyed () {
+    this.$options.tabular = {
+      lastupdate: 0,
+      data: []
+    }
+
+    this.$options.focus = true
+
+    this.$options.firt_update = false
+
+    this.$options.__skiped = 0
+    this.$options.__data_unwatcher = undefined
+    this.$options.__chart_init = false
+
+    this.$options.visible = true
+
     this.destroy()
     // this.$delete(this.tabular, 'data')
     this.$off()
