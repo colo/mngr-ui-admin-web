@@ -406,6 +406,42 @@ export default {
     interval: 3600
   },
 
+  req_components: {
+    'input.os.host.periodical': {
+      range: {
+        source: {
+          requests: PeriodicalSources.requests
+          // store: store
+        }
+      }
+    },
+    'input.os.host.minute': {
+      range: {
+        source: {
+          requests: MinuteSources.requests
+          // store: store
+        }
+      }
+    },
+    'input.os.host.hour': {
+      range: {
+        source: {
+          requests: HourSources.requests
+          // store: store
+        }
+      }
+    },
+    'input.os.host.day': {
+      range: {
+        source: {
+          requests: DaySources.requests
+          // store: store
+        }
+      }
+    }
+
+  },
+
   data () {
     return {
       id: 'os.host',
@@ -477,56 +513,40 @@ export default {
       /** calendar **/
 
       // components: {
-      //   range: {
-      //     // source: {
-      //     //   requests: {
-      //     //     once: [],
-      //     //     periodical: []
-      //     //   }
-      //     // }
-      //     source: {
-      //       requests: requests
-      //
-      //       // store: store
+      //   'input.os.host.periodical': {
+      //     range: {
+      //       source: {
+      //         requests: PeriodicalSources.requests
+      //         // store: store
+      //       }
+      //     }
+      //   },
+      //   'input.os.host.minute': {
+      //     range: {
+      //       source: {
+      //         requests: MinuteSources.requests
+      //         // store: store
+      //       }
+      //     }
+      //   },
+      //   'input.os.host.hour': {
+      //     range: {
+      //       source: {
+      //         requests: HourSources.requests
+      //         // store: store
+      //       }
+      //     }
+      //   },
+      //   'input.os.host.day': {
+      //     range: {
+      //       source: {
+      //         requests: DaySources.requests
+      //         // store: store
+      //       }
       //     }
       //   }
       //
       // }
-      components: {
-        'input.os.host.periodical': {
-          range: {
-            source: {
-              requests: PeriodicalSources.requests
-              // store: store
-            }
-          }
-        },
-        'input.os.host.minute': {
-          range: {
-            source: {
-              requests: MinuteSources.requests
-              // store: store
-            }
-          }
-        },
-        'input.os.host.hour': {
-          range: {
-            source: {
-              requests: HourSources.requests
-              // store: store
-            }
-          }
-        },
-        'input.os.host.day': {
-          range: {
-            source: {
-              requests: DaySources.requests
-              // store: store
-            }
-          }
-        }
-
-      }
     }
   },
 
@@ -695,7 +715,7 @@ export default {
         if (!create_id || create_id === undefined || create_id === pipeline_id) {
           // template.input[0].poll.conn[0].requests = this.__components_sources_to_requests(this.components[pipeline_id], pipeline_id)
           Array.each(template.input[0].poll.conn, function (conn, index) {
-            template.input[0].poll.conn[index].requests = this.__components_sources_to_requests(this.components[pipeline_id], pipeline_id)
+            template.input[0].poll.conn[index].requests = this.__components_sources_to_requests(this.$options.req_components[pipeline_id], pipeline_id)
           }.bind(this))
 
           let pipe = new JSPipeline(template)
