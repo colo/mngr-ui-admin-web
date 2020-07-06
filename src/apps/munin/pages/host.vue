@@ -29,7 +29,7 @@ const debug = Debug('apps:munin:pages:host')
 
 import muninPluginDygraph from '@apps/munin/components/pluginDygraph'
 
-import DataSourcesMixin from '@components/mixins/dataSources'
+import DataSourcesMixin from '@mixins/dataSources'
 
 import JSPipeline from 'js-pipeline'
 import Pipeline from '@apps/munin/pipelines/host'

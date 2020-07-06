@@ -113,7 +113,7 @@ const debug = Debug('apps:vhosts')
 import JSPipeline from 'js-pipeline'
 import Pipeline from '@apps/vhosts/pipelines/index'
 
-import DataSourcesMixin from '@components/mixins/dataSources'
+import DataSourcesMixin from '@mixins/dataSources'
 
 import { requests, store } from './sources/index'
 

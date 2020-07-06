@@ -104,7 +104,7 @@ const debug = Debug('apps:os:pages:hosts')
 
 import JSPipeline from 'js-pipeline'
 // import Pipeline from '@apps/os/pipelines/hosts'
-import DataSourcesMixin from '@components/mixins/dataSources'
+import DataSourcesMixin from '@mixins/dataSources'
 
 import PeriodicalPipeline from '@apps/os/pipelines/hosts/periodical'
 import MinutePipeline from '@apps/os/pipelines/hosts/minute'

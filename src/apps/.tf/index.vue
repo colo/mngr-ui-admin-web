@@ -30,7 +30,7 @@ import JSPipeline from 'js-pipeline'
 
 import Pipeline from '@apps/tf/pipelines/index'
 
-import DataSourcesMixin from '@components/mixins/dataSources'
+import DataSourcesMixin from '@mixins/dataSources'
 
 // import OsHostCard from '@apps/tf/components/hostCard.vue'
 

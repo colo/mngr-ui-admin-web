@@ -58,7 +58,7 @@ const debug = Debug('apps:munin:pages:categories')
 import JSPipeline from 'js-pipeline'
 import Pipeline from '@apps/munin/pipelines/categories'
 
-import DataSourcesMixin from '@components/mixins/dataSources'
+import DataSourcesMixin from '@mixins/dataSources'
 
 import OsCategoryCard from '@apps/munin/components/categoryCard.vue'
 

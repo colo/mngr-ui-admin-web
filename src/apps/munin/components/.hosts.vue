@@ -23,7 +23,7 @@ const debug = Debug('apps:munin:hosts')
 import JSPipeline from 'js-pipeline'
 import Pipeline from '@apps/munin/pipelines/index'
 
-import DataSourcesMixin from '@components/mixins/dataSources'
+import DataSourcesMixin from '@mixins/dataSources'
 
 import MuninHostCard from './hostCard.vue'
 

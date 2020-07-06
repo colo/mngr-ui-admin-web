@@ -131,7 +131,7 @@ import JsonViewer from 'vue-json-viewer'
 import JSPipeline from 'js-pipeline'
 import Pipeline from '@apps/checks/pipelines/index'
 
-import DataSourcesMixin from '@components/mixins/dataSources'
+import DataSourcesMixin from '@mixins/dataSources'
 
 import { requests, store } from './sources/index'
 

@@ -58,8 +58,8 @@ import chartTabular from '@components/chart.tabular'
 
 import dygraph_line_chart from 'mngr-ui-admin-charts/defaults/dygraph.line'
 
-// // import AdminLteMixin from '@components/mixins/adminlte'
-// import DataSourcesMixin from '@components/mixins/dataSources'
+// // import AdminLteMixin from '@mixins/adminlte'
+// import DataSourcesMixin from '@mixins/dataSources'
 //
 // import GridView from '@components/gridView'
 //
@@ -74,7 +74,7 @@ import dygraph_line_chart from 'mngr-ui-admin-charts/defaults/dygraph.line'
 // import Widget from '@skins/flatlogic/lightblue/components/Widget/Widget'
 // import StatsCard from '@apps/munin/components/creativetim/argon/StatsCard'
 
-import DataSourcesMixin from '@components/mixins/dataSources'
+import DataSourcesMixin from '@mixins/dataSources'
 
 import JSPipeline from 'js-pipeline'
 import Pipeline from '@apps/munin/pipelines/index'

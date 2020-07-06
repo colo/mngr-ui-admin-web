@@ -32,7 +32,7 @@ import JSPipeline from 'js-pipeline'
 
 import Pipeline from '@apps/neataptic/pipelines/index'
 
-import DataSourcesMixin from '@components/mixins/dataSources'
+import DataSourcesMixin from '@mixins/dataSources'
 
 // import OsHostCard from '@apps/neataptic/components/hostCard.vue'
 

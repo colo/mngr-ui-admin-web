@@ -103,6 +103,11 @@ module.exports = function (/* ctx */) {
           }
         })
 
+        cfg.module.rules.push({
+          test: /\.worker\.js$/,
+          use: { loader: 'worker-loader' },
+        })
+
         cfg.resolve.alias = {
           ...cfg.resolve.alias, // This adds the existing alias
 
@@ -111,9 +116,10 @@ module.exports = function (/* ctx */) {
           '@libs': path.resolve(__dirname, './src/libs'),
           '@etc': path.resolve(__dirname, './src/etc'),
           '@components': path.resolve(__dirname, './src/components'),
-          '@mixins': path.resolve(__dirname, './src/components/mixins'),
+          '@mixins': path.resolve(__dirname, './src/mixins'),
           '@wrappers': path.resolve(__dirname, './src/components/wrappers'),
           '@apps': path.resolve(__dirname, './src/apps'),
+          '@store': path.resolve(__dirname, './src/store'),
           // '@skins': path.resolve(__dirname, './src/skins')
         }
 

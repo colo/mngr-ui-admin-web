@@ -31,7 +31,7 @@ const debug = Debug('apps:os:components:host')
 
 import OsPluginDygraph from './pluginDygraph'
 
-import DataSourcesMixin from '@components/mixins/dataSources'
+import DataSourcesMixin from '@mixins/dataSources'
 
 import JSPipeline from 'js-pipeline'
 import Pipeline from '@apps/os/pipelines/host'
