@@ -277,7 +277,10 @@ const hosts_range_component = {
         })
       })
 
+      debug('PERIODICAL HOSTS CALLBACK data %s %o', key, hosts_data, max_networkInterfaces, max_loadavg)
+
       Object.each(hosts_data, function (host_data, host) {
+        debug('PERIODICAL HOSTS CALLBACK data %s %o', host, host_data)
         // Object.each(host_data, function (path_data, path) {
         hosts_data[host]['os.networkInterfaces.max.in'] = (hosts_data[host]['os.networkInterfaces.in'] > max_networkInterfaces[host].in) ? hosts_data[host]['os.networkInterfaces.in'] : max_networkInterfaces[host].in
         hosts_data[host]['os.networkInterfaces.max.out'] = (hosts_data[host]['os.networkInterfaces.out'] > max_networkInterfaces[host].out) ? hosts_data[host]['os.networkInterfaces.out'] : max_networkInterfaces[host].out
@@ -287,11 +290,13 @@ const hosts_range_component = {
           out: hosts_data[host]['os.networkInterfaces.max.out']
         }
 
-        hosts_data[host]['os.loadavg.max'] = (hosts_data[host]['os.loadavg']['1_min'] > max_loadavg[host]) ? hosts_data[host]['os.loadavg']['1_min'] : max_loadavg[host]
+        hosts_data[host]['os.loadavg.max'] = (hosts_data[host]['os.loadavg'] && hosts_data[host]['os.loadavg']['1_min'] > max_loadavg[host]) ? hosts_data[host]['os.loadavg']['1_min'] : max_loadavg[host]
 
         max_loadavg[host] = hosts_data[host]['os.loadavg.max']
         // })
       })
+
+      // debug('PERIODICAL HOSTS CALLBACK data %s %o', key, hosts_data)
 
       /**
       * _all_hosts is merged data from all hosts
@@ -362,7 +367,10 @@ const hosts_range_component = {
       /**
       * @end _all_hosts
       **/
-      debug('PERIODICAL HOSTS CALLBACK data %s %o %o', key, hosts_data) //, max_networkInterfaces_in, max_networkInterfaces_out
+      debug('PERIODICAL HOSTS CALLBACK data %s %o %o', key, hosts_data, vm) //, max_networkInterfaces_in, max_networkInterfaces_out
+      // Object.each(hosts_data, function (data, host) {
+      //   vm.$set(vm.hosts_data, host, data)
+      // })
       vm.hosts_data = hosts_data
     }
   }

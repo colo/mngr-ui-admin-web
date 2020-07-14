@@ -44,7 +44,7 @@ export default {
   watch: {
     store: function (val) {
       debug('watch store', val)
-      if (val) this.__register_store_module(this.id, sourceStore)
+      if (val !== false) this.__register_store_module(this.id, sourceStore)
     }
   },
   created: function () {
@@ -60,7 +60,7 @@ export default {
       // EventBus.$on(id + '.' + this.path, function (data) { debug('EventBus.$on', id + '.' + this.path, data) })
     }.bind(this))
 
-    if (this.store) this.__register_store_module(this.id, sourceStore)
+    if (this.store && this.store === true) this.__register_store_module(this.id, sourceStore)
     // this.__bind_components_to_sources(this.components)
     Object.each(this.$options._components_req, function (_components_req, pipeline_id) {
       this.__bind_components_to_sources(_components_req)
@@ -123,6 +123,7 @@ export default {
     }
     Array.each(pipeline_id, function (id) {
       EventBus.$off(id + '.' + this.path, this.__process_input_data)
+      delete this.$options._components_req[pipeline_id]
     }.bind(this))
 
     this.destroy_pipelines()

@@ -30,7 +30,7 @@ const debug = Debug('components:wrappers:dygraph')
 // debug_internals = Debug('components:wrappers:dygraph:Internals'),
 // debug_events = Debug('components:wrappers:dygraph:Events')
 
-import chartMixin from '@mixins/chart.vue'
+import chartWrapperMixin from '@mixins/chartWrapper.vue'
 
 import Dygraph from 'dygraphs'
 import 'dygraphs/src/extras/smooth-plotter'
@@ -38,14 +38,16 @@ import 'dygraphs/src/extras/smooth-plotter'
 import 'dygraphs/dist/dygraph.css'
 
 export default {
-  mixins: [chartMixin],
+  mixins: [chartWrapperMixin],
 
   name: 'dygraph-wrapper',
 
-  buffered_data: {},
-  chart_options: {},
-  __unwatch_options: undefined,
-  __unwatch_smooth: undefined,
+  _dygraph_wrapper_defaults: {
+    buffered_data: {},
+    chart_options: {},
+    __unwatch_options: undefined,
+    __unwatch_smooth: undefined,
+  },
 
   props: {
     // EventBus: {
@@ -67,7 +69,11 @@ export default {
     }
   },
   created () {
-    if (!this.$options.buffered_data[this.id]) { this.$options.buffered_data[this.id] = [] }
+    if (!this.$options.charts[this.id]) { this.$options.charts[this.id] = {} }
+
+    this.$options.charts[this.id] = Object.merge(this.$options.charts[this.id], Object.clone(this.$options._dygraph_wrapper_defaults))
+
+    // if (!this.$options.charts[this.id].buffered_data) { this.$options.charts[this.id].buffered_data = [] }
 
     let self = this
     if (self.EventBus && typeof (self.EventBus.$on) === 'function') {
@@ -116,10 +122,12 @@ export default {
   //   this.create()
   // },
   destroyed () {
-    this.$options.buffered_data = {}
-    this.$options.chart_options = {}
-    this.$options.__unwatch_options = undefined
-    this.$options.__unwatch_smooth = undefined
+    if (this.$options.charts[this.id]) delete this.$options.charts[this.id]
+
+    // this.$options.buffered_data = {}
+    // this.$options.chart_options = {}
+    // this.$options.__unwatch_options = undefined
+    // this.$options.__unwatch_smooth = undefined
 
   //   this.destroy()
   //   if(this.$options.graph && typeof this.$options.graph.destroy === 'function'){
@@ -199,26 +207,26 @@ export default {
       //   // }
       //   console.log('dygraph chart.options watcher', val)
       // }, {deep: true})
-      this.$options.chart_options = Object.clone(this.chart.options)
-      this.$options.__unwatch_options = this.$watch('chart.options', function (val) {
+      this.$options.charts[this.id].chart_options = Object.clone(this.chart.options)
+      this.$options.charts[this.id].__unwatch_options = this.$watch('chart.options', function (val) {
         // // if(val && Object.getLength(val) > 0 && val.options){
         // //   this.__chart_create()
         // //   // this.create()
         // //   unwatch()
         // // }
         // console.log('dygraph chart.options watcher', val.labels)
-        this.$options.chart_options = Object.clone(val)
+        this.$options.charts[this.id].chart_options = Object.clone(val)
       }, { deep: true })
 
-      // console.log('__chart_create', this.id, this.$options.chart_options)
+      // console.log('__chart_create', this.id, this.$options.charts[this.id].chart_options)
 
-      if (this.$options.chart_options.labels && document.getElementById(this.id)) {
-        if (this.$options.chart_options.labelsDiv) { this.$options.chart_options.labelsDiv = this.id + '-' + this.$options.chart_options.labelsDiv }
+      if (this.$options.charts[this.id].chart_options.labels && document.getElementById(this.id)) {
+        if (this.$options.charts[this.id].chart_options.labelsDiv) { this.$options.charts[this.id].chart_options.labelsDiv = this.id + '-' + this.$options.charts[this.id].chart_options.labelsDiv }
 
         // let data = []
         // if (this.chart_data[0] && this.chart_data[0].length === 0) {
         //   let row = []
-        //   Array.each(this.$options.chart_options.labels, function (label) {
+        //   Array.each(this.$options.charts[this.id].chart_options.labels, function (label) {
         //     row.push(0)
         //   })
         //   data.push(row)
@@ -234,18 +242,18 @@ export default {
         //   data.push(row)
         // })
 
-        // console.log('__chart_create', this.id, this.$options.chart_options)
+        // console.log('__chart_create', this.id, this.$options.charts[this.id].chart_options)
 
         /**
         * should add an option for general smooth plotting (true | false)
         **/
-        if (this.$options.chart_options.fillGraph !== true && this.smoothness === true) { this.$options.chart_options.plotter = smoothPlotter }
+        if (this.$options.charts[this.id].chart_options.fillGraph !== true && this.smoothness === true) { this.$options.charts[this.id].chart_options.plotter = smoothPlotter }
 
         /**
         * seting 'ticker' is a really performance improvement
         **/
-        if (!this.$options.chart_options.axes || this.$options.chart_options.axes.x || this.$options.chart_options.axes.x.ticker) {
-          this.$options.chart_options = Object.merge(this.$options.chart_options, {
+        if (!this.$options.charts[this.id].chart_options.axes || this.$options.charts[this.id].chart_options.axes.x || this.$options.charts[this.id].chart_options.axes.x.ticker) {
+          this.$options.charts[this.id].chart_options = Object.merge(this.$options.charts[this.id].chart_options, {
             axes: {
               x: {
                 ticker: Dygraph.dateTicker
@@ -254,39 +262,39 @@ export default {
           })
         }
 
-        this.$options.graph = new Dygraph(
+        this.$options.charts[this.id].graph = new Dygraph(
           document.getElementById(this.id), // containing div
           data,
-          this.$options.chart_options
+          this.$options.charts[this.id].chart_options
         )
 
-        debug('__chart_create', this.id, this.$options.chart_options, data)
+        debug('__chart_create', this.id, this.$options.charts[this.id].chart_options, data)
 
-        this.$options.graph.ready(function () {
+        this.$options.charts[this.id].graph.ready(function () {
           // //////////////console.log('chart '+this.id+' ready')
           debug('__chart_create ready', this.id)
           this.ready = true
           // this.update()
         }.bind(this))
 
-        if (this.chart.init) { this.chart.init(this, this.$options.graph, 'dygraph') }
+        if (this.chart.init) { this.chart.init(this, this.$options.charts[this.id].graph, 'dygraph') }
 
         // this.update()
       }
     },
     get_data: function (data) {
       let self = this
-      debug('get_data', this.id, data, this.chart_data, this.$options.buffered_data[this.id])
-      if (this.$options.buffered_data[this.id] && Array.isArray(this.$options.buffered_data[this.id]) && this.$options.buffered_data[this.id].length > 0 && this.$options.buffered_data[this.id][0][0]) {
+      debug('get_data', this.id, data, this.chart_data, this.$options.charts[this.id].buffered_data)
+      if (this.$options.charts[this.id].buffered_data && Array.isArray(this.$options.charts[this.id].buffered_data) && this.$options.charts[this.id].buffered_data.length > 0 && this.$options.charts[this.id].buffered_data[0][0]) {
         if (data && Array.isArray(data) && data.length > 0 && data[0][0]) {
-          data = this.$options.buffered_data[this.id].append(data)
+          data = this.$options.charts[this.id].buffered_data.append(data)
         } else {
-          data = this.$options.buffered_data[this.id]
+          data = this.$options.charts[this.id].buffered_data
         }
       } else if (this.chart_data[0] && this.chart_data[0].length === 0 && (!data || data.length === 0)) {
         let row = []
         data = []
-        Array.each(self.$options.chart_options.labels, function (label) {
+        Array.each(self.$options.charts[this.id].chart_options.labels, function (label) {
           row.push(0)
         })
         data.push(row)
@@ -313,15 +321,15 @@ export default {
     },
     update: function (data) {
       data = this.get_data(data)
-      debug('update', this.id, this.ready, data, this.$options.chart_options.labels)
-      // let options = (this.ready === true && this.$options.graph.numRows() > 1) ? { 'dateWindow': this.$options.graph.xAxisExtremes() } : {}
-      // if(this.$options.visible === true && this.ready === true){
-      if (this.ready === true && data && data[0]) {
+      debug('update', this.id, this.ready, data, this.$options.charts[this.id].chart_options.labels)
+      // let options = (this.ready === true && this.$options.charts[this.id].graph.numRows() > 1) ? { 'dateWindow': this.$options.charts[this.id].graph.xAxisExtremes() } : {}
+      // if(this.$options.charts[this.id].visible === true && this.ready === true){
+      if (this.ready === true && data && data[0] && data[0].length === this.$options.charts[this.id].chart_options.labels.length) {
         // //console.log('updateOptions', this.id, data)
 
         // this.updateOptions(
         //   data,
-        //   Object.merge(this.$options.chart_options, { 'dateWindow': this.$options.graph.xAxisExtremes() }),
+        //   Object.merge(this.$options.charts[this.id].chart_options, { 'dateWindow': this.$options.charts[this.id].graph.xAxisExtremes() }),
         //   false
         // )
 
@@ -344,15 +352,15 @@ export default {
 
         this.updateOptions(
           data,
-          Object.merge(Object.clone(this.$options.chart_options), { 'dateWindow': [start, end] }),
+          Object.merge(Object.clone(this.$options.charts[this.id].chart_options), { 'dateWindow': [start, end] }),
           false
         )
 
-        this.$options.buffered_data[this.id] = []
+        this.$options.charts[this.id].buffered_data = []
 
         return true
-      } else {
-        // this.$options.buffered_data[this.id].append(data)
+      } else if (data && data[0] && data[0].length === this.$options.charts[this.id].chart_options.labels.length) {
+        // this.$options.charts[this.id].buffered_data.append(data)
         setTimeout(function () {
           this.update(data)
         }.bind(this), 1000)
@@ -368,7 +376,7 @@ export default {
         this.ready === true
         // && this.data.length > 1
         // && this.data[0].length > 1
-        // && this.$options.freezed <= 2//needed number of iterations to update data 'onRange'
+        // && this.$options.charts[this.id].freezed <= 2//needed number of iterations to update data 'onRange'
         // && this.freezed === false
       ) {
         // if(self.data[0][0] === undefined && self.chart.options && self.chart.options.labels)//dygraph code, should be would
@@ -392,7 +400,7 @@ export default {
         // let data = []
         // console.log('updateOptions', data, options)
 
-        this.$options.graph.updateOptions(
+        this.$options.charts[this.id].graph.updateOptions(
           Object.merge(
             {
               'file': data
@@ -402,15 +410,15 @@ export default {
           block_redraw
         )
 
-        // this.$options.graph.updateOptions(
-        //   { 'dateWindow': this.$options.graph.xAxisExtremes() },
+        // this.$options.charts[this.id].graph.updateOptions(
+        //   { 'dateWindow': this.$options.charts[this.id].graph.xAxisExtremes() },
         //   block_redraw
         // );
         let selection = (this.chart.skip && this.chart.skip > 0) ? this.chart.skip : 1
 
         debug('updateOptions selection', this.id, data.length, selection)
 
-        this.$options.graph.setSelection(this.$options.graph.numRows() - selection, {}, false)
+        this.$options.charts[this.id].graph.setSelection(this.$options.charts[this.id].graph.numRows() - selection, {}, false)
       }
     }
   }

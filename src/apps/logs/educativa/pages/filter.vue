@@ -50,7 +50,34 @@
 
           </q-toolbar>
 
-          <bar-race
+          <component
+            :is="'chart-tabular'"
+            :wrapper="{
+              type: 'amchartsBarRace',
+              props:{
+                categoryY: 'cgi',
+                valueX: 'count',
+                label: 'Per CGI count (last 5 secs)',
+                zoom: apply_zoom
+              }
+            }"
+            :always_update="false"
+            :ref="'periodical.cgi_count'"
+            :id="'periodical.cgi_count'"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.cgi_count'"
+            :stat="{
+              data: [
+                periodical.top_cgi_count
+              ],
+              length: 1,
+              numeric: false
+            }"
+            :reactive="false"
+            :no_buffer="false"
+          >
+          </component>
+
+          <!-- <amcharts-bar-race
             :categoryY="'cgi'"
             :valueX="'count'"
             :values="periodical.top_cgi_count"
@@ -58,9 +85,37 @@
             :id="'cgi_count'"
             :zoom="apply_zoom"
             :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.cgi_count'"
-          />
+          /> -->
 
-          <bar-race
+          <component
+            :is="'chart-tabular'"
+            :wrapper="{
+              type: 'amchartsBarRace',
+              props:{
+                categoryY: 'cgi',
+                valueX: 'count',
+                label: 'Per CGI count (sum)',
+                zoom: apply_zoom,
+                sum: true
+              }
+            }"
+            :always_update="false"
+            :ref="'periodical.cgi_count_sum'"
+            :id="'periodical.cgi_count_sum'"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.cgi_count_sum'"
+            :stat="{
+              data: [
+                periodical.top_cgi_count
+              ],
+              length: 1,
+              numeric: false
+            }"
+            :reactive="false"
+            :no_buffer="false"
+          >
+          </component>
+
+          <!-- <amcharts-bar-race
             :categoryY="'cgi'"
             :valueX="'count'"
             :values="periodical.top_cgi_count"
@@ -69,10 +124,37 @@
             :zoom="apply_zoom"
             :sum="true"
             :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.cgi_count_sum'"
-          />
+          /> -->
           <!-- :label="format_time(periodical.timestamp)" -->
 
-          <bar-race
+          <component
+            :is="'chart-tabular'"
+            :wrapper="{
+              type: 'amchartsBarRace',
+              props:{
+                categoryY: 'domain',
+                valueX: 'count',
+                label: 'Per DOMAIN - CGI count (last 5 secs)',
+                zoom: apply_zoom
+              }
+            }"
+            :always_update="false"
+            :ref="'periodical.per_domain_count'"
+            :id="'periodical.per_domain_count'"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.per_domain_count'"
+            :stat="{
+              data: [
+                periodical.top_per_domain
+              ],
+              length: 1,
+              numeric: false
+            }"
+            :reactive="false"
+            :no_buffer="false"
+          >
+          </component>
+
+          <!-- <amcharts-bar-race
             :categoryY="'domain'"
             :valueX="'count'"
             :values="periodical.top_per_domain"
@@ -80,9 +162,37 @@
             :id="'per_domain_count'"
             :zoom="apply_zoom"
             :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.per_domain_count'"
-          />
+          /> -->
 
-          <bar-race
+          <component
+            :is="'chart-tabular'"
+            :wrapper="{
+              type: 'amchartsBarRace',
+              props:{
+                categoryY: 'domain',
+                valueX: 'count',
+                label: 'Per DOMAIN - CGI count (sum)',
+                zoom: apply_zoom,
+                sum: true
+              }
+            }"
+            :always_update="false"
+            :ref="'periodical.per_domain_count_sum'"
+            :id="'periodical.per_domain_count_sum'"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.per_domain_count_sum'"
+            :stat="{
+              data: [
+                periodical.top_per_domain
+              ],
+              length: 1,
+              numeric: false
+            }"
+            :reactive="false"
+            :no_buffer="false"
+          >
+          </component>
+
+          <!-- <amcharts-bar-race
             :categoryY="'domain'"
             :valueX="'count'"
             :values="periodical.top_per_domain"
@@ -91,9 +201,36 @@
             :zoom="apply_zoom"
             :sum="true"
             :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.per_domain_count_sum'"
-          />
+          /> -->
 
-          <bar-race
+          <component
+            :is="'chart-tabular'"
+            :wrapper="{
+              type: 'amchartsBarRace',
+              props:{
+                categoryY: 'host',
+                valueX: 'count',
+                label: 'Per HOST - CGI count (last 5 secs)',
+                zoom: apply_zoom,
+              }
+            }"
+            :always_update="false"
+            :ref="'periodical.per_host_count'"
+            :id="'periodical.per_host_count'"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.per_host_count'"
+            :stat="{
+              data: [
+                periodical.top_per_host
+              ],
+              length: 1,
+              numeric: false
+            }"
+            :reactive="false"
+            :no_buffer="false"
+          >
+          </component>
+
+          <!-- <amcharts-bar-race
             :categoryY="'host'"
             :valueX="'count'"
             :values="periodical.top_per_host"
@@ -101,9 +238,37 @@
             :id="'per_host_count'"
             :zoom="apply_zoom"
             :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.per_host_count'"
-          />
+          /> -->
 
-          <bar-race
+          <component
+            :is="'chart-tabular'"
+            :wrapper="{
+              type: 'amchartsBarRace',
+              props:{
+                categoryY: 'host',
+                valueX: 'count',
+                label: 'Per HOST - CGI count (sum)',
+                zoom: apply_zoom,
+                sum: true
+              }
+            }"
+            :always_update="false"
+            :ref="'periodical.per_host_count_sum'"
+            :id="'periodical.per_host_count_sum'"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.per_host_count_sum'"
+            :stat="{
+              data: [
+                periodical.top_per_host
+              ],
+              length: 1,
+              numeric: false
+            }"
+            :reactive="false"
+            :no_buffer="false"
+          >
+          </component>
+
+          <!-- <amcharts-bar-race
             :categoryY="'host'"
             :valueX="'count'"
             :values="periodical.top_per_host"
@@ -112,9 +277,36 @@
             :zoom="apply_zoom"
             :sum="true"
             :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.per_host_count_sum'"
-          />
+          /> -->
 
-          <bar-race
+          <component
+            :is="'chart-tabular'"
+            :wrapper="{
+              type: 'amchartsBarRace',
+              props:{
+                categoryY: 'domain',
+                valueX: 'sum',
+                label: 'Per DOMAIN - total duration (last 5 secs)',
+                zoom: apply_zoom,
+              }
+            }"
+            :always_update="false"
+            :ref="'periodical.per_domain_total'"
+            :id="'periodical.per_domain_total'"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.per_domain_total'"
+            :stat="{
+              data: [
+                periodical.top_per_domain
+              ],
+              length: 1,
+              numeric: false
+            }"
+            :reactive="false"
+            :no_buffer="false"
+          >
+          </component>
+
+          <!-- <amcharts-bar-race
             :categoryY="'domain'"
             :valueX="'sum'"
             :values="periodical.top_per_domain"
@@ -122,9 +314,9 @@
             :id="'per_domain_total'"
             :zoom="apply_zoom"
             :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.per_domain_total'"
-          />
+          /> -->
 
-          <!-- <bar-race :categoryY="'host'" :valueX="'sum'" :values="periodical.per_host" :label="'Per HOST - total duration'" :id="'per_host_sum'" :zoom="apply_zoom" :sum="true"/> -->
+          <!-- <amcharts-bar-race :categoryY="'host'" :valueX="'sum'" :values="periodical.per_host" :label="'Per HOST - total duration'" :id="'per_host_sum'" :zoom="apply_zoom" :sum="true"/> -->
 
           <div v-for="(count, cgi) in periodical.cgi_count" :key="'cgi_count.'+cgi">
             periodical.cgi_count: {{cgi}} - {{count}} <br/>
@@ -184,7 +376,35 @@
               </div>
             </template>
           </q-toolbar>
-          <bar-race
+
+          <component
+            :is="'chart-tabular'"
+            :wrapper="{
+              type: 'amchartsBarRace',
+              props:{
+                categoryY: 'domain',
+                valueX: 'hits',
+                label: 'Minute Per DOMAIN - CGI count',
+                zoom: apply_zoom
+              }
+            }"
+            :always_update="false"
+            :ref="'minute_per_domain_sum'"
+            :id="'minute_per_domain_sum'"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute_per_domain_sum'"
+            :stat="{
+              data: [
+                minute.top_per_domain
+              ],
+              length: 1,
+              numeric: false
+            }"
+            :reactive="false"
+            :no_buffer="false"
+          >
+          </component>
+
+          <!-- <amcharts-bar-race
             :categoryY="'domain'"
             :valueX="'hits'"
             :values="minute.top_per_domain"
@@ -192,11 +412,38 @@
             :id="'minute_per_domain_sum'"
             :zoom="apply_zoom"
             :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute_per_domain_sum'"
-            />
+          /> -->
             <!-- :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute_per_domain_sum'" -->
           <!-- :zoom="apply_zoom" -->
 
-          <bar-race
+          <component
+            :is="'chart-tabular'"
+            :wrapper="{
+              type: 'amchartsBarRace',
+              props:{
+                categoryY: 'host',
+                valueX: 'hits',
+                label: 'Minute Per HOST - CGI count',
+                zoom: apply_zoom
+              }
+            }"
+            :always_update="false"
+            :ref="'minute_per_host_sum'"
+            :id="'minute_per_host_sum'"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute_per_host_sum'"
+            :stat="{
+              data: [
+                minute.top_per_host
+              ],
+              length: 1,
+              numeric: false
+            }"
+            :reactive="false"
+            :no_buffer="false"
+          >
+          </component>
+
+          <!-- <amcharts-bar-race
             :categoryY="'host'"
             :valueX="'hits'"
             :values="minute.top_per_host"
@@ -204,7 +451,7 @@
             :id="'minute_per_host_sum'"
             :zoom="apply_zoom"
             :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute_per_host_sum'"
-          />
+          /> -->
           <!-- :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute_per_host_sum'" -->
           <!-- :zoom="apply_zoom" -->
 
@@ -248,7 +495,34 @@
               </div>
             </template>
           </q-toolbar>
-          <bar-race
+          <component
+            :is="'chart-tabular'"
+            :wrapper="{
+              type: 'amchartsBarRace',
+              props:{
+                categoryY: 'domain',
+                valueX: 'hits',
+                label: 'Hour Per DOMAIN - CGI count',
+                zoom: apply_zoom
+              }
+            }"
+            :always_update="false"
+            :ref="'hour_per_domain_sum'"
+            :id="'hour_per_domain_sum'"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour_per_domain_sum'"
+            :stat="{
+              data: [
+                hour.top_per_domain
+              ],
+              length: 1,
+              numeric: false
+            }"
+            :reactive="false"
+            :no_buffer="false"
+          >
+          </component>
+
+          <!-- <amcharts-bar-race
             :categoryY="'domain'"
             :valueX="'hits'"
             :values="hour.top_per_domain"
@@ -256,10 +530,37 @@
             :id="'hour_per_domain_sum'"
             :zoom="apply_zoom"
             :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour_per_domain_sum'"
-            />
+            /> -->
           <!-- :zoom="apply_zoom" -->
 
-          <bar-race
+          <component
+            :is="'chart-tabular'"
+            :wrapper="{
+              type: 'amchartsBarRace',
+              props:{
+                categoryY: 'host',
+                valueX: 'hits',
+                label: 'Hour Per HOST - CGI count',
+                zoom: apply_zoom
+              }
+            }"
+            :always_update="false"
+            :ref="'hour_per_host_sum'"
+            :id="'hour_per_host_sum'"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour_per_host_sum'"
+            :stat="{
+              data: [
+                hour.top_per_host
+              ],
+              length: 1,
+              numeric: false
+            }"
+            :reactive="false"
+            :no_buffer="false"
+          >
+          </component>
+
+          <!-- <amcharts-bar-race
             :categoryY="'host'"
             :valueX="'hits'"
             :values="hour.top_per_host"
@@ -267,7 +568,7 @@
             :id="'hour_per_host_sum'"
             :zoom="apply_zoom"
             :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour_per_host_sum'"
-            />
+            /> -->
           <!-- :zoom="apply_zoom" -->
         </q-tab-panel>
 
@@ -316,7 +617,34 @@
         </q-toolbar>
 
           <!-- <div class="text-h6">From: {{ format_time(day.range.start) }} - To: {{ format_time(day.range.end) }} / Updated on: {{ format_time(day.timestamp) }}</div> -->
-          <bar-race
+          <component
+            :is="'chart-tabular'"
+            :wrapper="{
+              type: 'amchartsBarRace',
+              props:{
+                categoryY: 'domain',
+                valueX: 'hits',
+                label: 'Day Per DOMAIN - CGI count',
+                zoom: apply_zoom
+              }
+            }"
+            :always_update="false"
+            :ref="'day_per_domain_sum'"
+            :id="'day_per_domain_sum'"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.day_per_domain_sum'"
+            :stat="{
+              data: [
+                day.top_per_domain
+              ],
+              length: 1,
+              numeric: false
+            }"
+            :reactive="false"
+            :no_buffer="false"
+          >
+          </component>
+
+          <!-- <amcharts-bar-race
             :categoryY="'domain'"
             :valueX="'hits'"
             :values="day.top_per_domain"
@@ -324,10 +652,37 @@
             :id="'day_per_domain_sum'"
             :zoom="apply_zoom"
             :key="$route.path +'.'+ JSON.stringify($route.query)+'.day_per_domain_sum'"
-            />
+            /> -->
           <!-- :zoom="apply_zoom" -->
 
-          <bar-race
+          <component
+            :is="'chart-tabular'"
+            :wrapper="{
+              type: 'amchartsBarRace',
+              props:{
+                categoryY: 'host',
+                valueX: 'hits',
+                label: 'Day Per HOST - CGI count',
+                zoom: apply_zoom
+              }
+            }"
+            :always_update="false"
+            :ref="'day_per_host_sum'"
+            :id="'day_per_host_sum'"
+            :key="$route.path +'.'+ JSON.stringify($route.query)+'.day_per_host_sum'"
+            :stat="{
+              data: [
+                day.top_per_host
+              ],
+              length: 1,
+              numeric: false
+            }"
+            :reactive="false"
+            :no_buffer="false"
+          >
+          </component>
+
+          <!-- <amcharts-bar-race
             :categoryY="'host'"
             :valueX="'hits'"
             :values="day.top_per_host"
@@ -335,7 +690,7 @@
             :id="'day_per_host_sum'"
             :zoom="apply_zoom"
             :key="$route.path +'.'+ JSON.stringify($route.query)+'.day_per_host_sum'"
-            />
+            /> -->
           <!-- :zoom="apply_zoom" -->
         </q-tab-panel>
       </q-tab-panels>
@@ -562,9 +917,11 @@ const debug = Debug('apps:logs:educativa:pages:filter')
 
 import { date } from 'quasar'
 
-import BarRace from '@apps/logs/components/barRace'
+// import amchartsBarRace from '@components/wrappers/amchartsBarRace'
 
 import DataSourcesMixin from '@mixins/dataSources'
+import chartTabular from '@components/chart.tabular'
+// import chart from '@components/chart'
 
 import JSPipeline from 'js-pipeline'
 
@@ -625,7 +982,7 @@ const WEEK = DAY * 7
 export default {
   mixins: [DataSourcesMixin],
 
-  components: { BarRace },
+  components: { chartTabular },
 
   name: 'LogsEducativaFilter',
 

@@ -34,12 +34,11 @@
             :name="name"
             :key="$route.path +'.'+ JSON.stringify($route.query)+'.day.'+name+'.plugin'"
             :stat="{
-              data: [],
-              length: $options.day.length,
+              length: $options[id].day.length,
               range: undefined,
             }"
-            :dygraph="$options.day.dygraph"
-            :interval="$options.day.interval"
+            :dygraph="$options[id].day.dygraph"
+            :interval="undefined"
           />
         </template>
       </q-card-section>
@@ -110,39 +109,41 @@ export default {
 
   name: 'OsHostDay',
 
-  day: {
-    dygraph: {
-      interval: 1,
-      'options': {
-        axes: {
-          x: {
-            pixelsPerLabel: 50,
-            // ticker: Dygraph.dateTicker,
-            axisLabelFormatter: function (d, gran) {
-              // return NETDATA.zeropad(d.getHours()) + ":" + NETDATA.zeropad(d.getMinutes()) + ":" + NETDATA.zeropad(d.getSeconds());
-              return d.getDate() + '/' + (d.getMonth() + 1) + ' - ' + d.getHours()
+  'os.host.day': {
+    day: {
+      dygraph: {
+        interval: 1,
+        'options': {
+          axes: {
+            x: {
+              pixelsPerLabel: 50,
+              // ticker: Dygraph.dateTicker,
+              axisLabelFormatter: function (d, gran) {
+                // return NETDATA.zeropad(d.getHours()) + ":" + NETDATA.zeropad(d.getMinutes()) + ":" + NETDATA.zeropad(d.getSeconds());
+                return d.getDate() + '/' + (d.getMonth() + 1) + ' - ' + d.getHours()
+              },
+              valueFormatter: function (ms) {
+                var d = new Date(ms)
+                return d.toLocaleDateString() + ' ' + d.toLocaleTimeString()
+              }
             },
-            valueFormatter: function (ms) {
-              var d = new Date(ms)
-              return d.toLocaleDateString() + ' ' + d.toLocaleTimeString()
+            y: {
+              pixelsPerLabel: 15,
+              valueFormatter: function (x) {
+                // we format legends with the state object
+                // no need to do anything here
+                // return (Math.round(x*100) / 100).toLocaleString();
+                // return state.legendFormatValue(x);
+                return x
+              }
             }
           },
-          y: {
-            pixelsPerLabel: 15,
-            valueFormatter: function (x) {
-              // we format legends with the state object
-              // no need to do anything here
-              // return (Math.round(x*100) / 100).toLocaleString();
-              // return state.legendFormatValue(x);
-              return x
-            }
-          }
-        },
-      }
+        }
+      },
+      plugins_data: {},
+      length: 2678400,
+      interval: 3600
     },
-    plugins_data: {},
-    length: 2678400,
-    interval: 3600
   },
 
   req_components: {
@@ -198,6 +199,10 @@ export default {
       /** calendar **/
 
     }
+  },
+
+  created: function () {
+    if (!this.$options[this.id]) this.$options[this.id] = {}
   },
 
   watch: {
@@ -260,18 +265,19 @@ export default {
         this.$refs[plugin + '.' + type][0].$options.plugin_data['os.' + plugin + '.' + type] = { periodical: undefined, minute: undefined }
       }
 
-      if (!this.$options[type].plugins_data[this.host]) {
-        this.$options[type].plugins_data[this.host] = {}
+      if (!this.$options[this.id][type].plugins_data[this.host]) {
+        this.$options[this.id][type].plugins_data[this.host] = {}
       }
 
-      if (!this.$options[type].plugins_data[this.host][plugin]) {
-        this.$options[type].plugins_data[this.host][plugin] = { periodical: Object.clone(data) }
+      if (!this.$options[this.id][type].plugins_data[this.host][plugin] || Object.getLength(this.$options[this.id][type].plugins_data[this.host][plugin])) {
+        this.$options[this.id][type].plugins_data[this.host][plugin] = { periodical: Object.clone(data) }
       } else if (refresh !== true) {
-        // this.$options[type].plugins_data[this.host][plugin].push(Object.clone(value))
+        // this.$options[this.id][type].plugins_data[this.host][plugin].push(Object.clone(value))
         Object.each(data, function (val, prop) {
-          // this.$options[type].plugins_data[this.host][plugin].periodical[prop].append(val)
+          // this.$options[this.id][type].plugins_data[this.host][plugin].periodical[prop].append(val)
+
           let val_not_found = []
-          Array.each(this.$options[type].plugins_data[this.host][plugin].periodical[prop], function (row) {
+          Array.each(this.$options[this.id][type].plugins_data[this.host][plugin].periodical[prop], function (row) {
             // debug('periodical.plugins_data %d', row[0], val[0][0])
 
             Array.each(val, function (val_row, val_row_index) {
@@ -285,41 +291,43 @@ export default {
 
           // debug('periodical.plugins_data to add %o', val_not_found)
           Array.each(val_not_found, function (index) {
-            this.$options[type].plugins_data[this.host][plugin].periodical[prop].push(val[index])
+            this.$options[this.id][type].plugins_data[this.host][plugin].periodical[prop].push(val[index])
           }.bind(this))
+
           // if (found === false) {
-          //   this.$options[type].plugins_data[this.host][plugin].periodical[prop].push(val)
+          //   this.$options[this.id][type].plugins_data[this.host][plugin].periodical[prop].push(val)
           // }
-          // this.$options[type].plugins_data[this.host][plugin].periodical[prop].sort(function (b, a) { return (a[0] > b[0]) ? 1 : ((b[0] > a[0]) ? -1 : 0) })
-          // this.$options[type].plugins_data[this.host][plugin].periodical[prop] = this.$options[type].plugins_data[this.host][plugin].periodical[prop].slice(0, this.$options[type].length)
-          // this.$options[type].plugins_data[this.host][plugin].periodical[prop].sort(function (a, b) { return (a[0] > b[0]) ? 1 : ((b[0] > a[0]) ? -1 : 0) })
+          // this.$options[this.id][type].plugins_data[this.host][plugin].periodical[prop].sort(function (b, a) { return (a[0] > b[0]) ? 1 : ((b[0] > a[0]) ? -1 : 0) })
+          // this.$options[this.id][type].plugins_data[this.host][plugin].periodical[prop] = this.$options[this.id][type].plugins_data[this.host][plugin].periodical[prop].slice(0, this.$options[this.id][type].length)
+          // this.$options[this.id][type].plugins_data[this.host][plugin].periodical[prop].sort(function (a, b) { return (a[0] > b[0]) ? 1 : ((b[0] > a[0]) ? -1 : 0) })
         }.bind(this))
       }
 
       if (this.$refs[plugin + '.' + type] && this.$refs[plugin + '.' + type][0]) {
         if (type === 'minute') {
-          debug('set_plugin_data TO PLUGIN %s %o %s', plugin, this.$options[type].plugins_data[this.host][plugin].periodical, type)
+          debug('set_plugin_data TO PLUGIN %s %o %s', plugin, this.$options[this.id][type].plugins_data[this.host][plugin].periodical, type)
         }
-        // this.$options[type].plugins_data[this.host][plugin] = this.$options[type].plugins_data[this.host][plugin].slice(0, 360)
+        // this.$options[this.id][type].plugins_data[this.host][plugin] = this.$options[this.id][type].plugins_data[this.host][plugin].slice(0, 360)
         //
-        // if (this.$options[type].plugins_data[this.host][plugin] && this.$options[type].plugins_data[this.host][plugin].length > 0) {
-        //   debug('periodical.plugins_data from BUFFER %o', this.$options[type].plugins_data[this.host][plugin])
-        //   Array.each(this.$options[type].plugins_data[this.host][plugin], function (value) {
+        // if (this.$options[this.id][type].plugins_data[this.host][plugin] && this.$options[this.id][type].plugins_data[this.host][plugin].length > 0) {
+        //   debug('periodical.plugins_data from BUFFER %o', this.$options[this.id][type].plugins_data[this.host][plugin])
+        //   Array.each(this.$options[this.id][type].plugins_data[this.host][plugin], function (value) {
         //     this.$refs[plugin + '.' + type][0].set_data(Object.clone(value))
         //   }.bind(this))
         //
-        //   // this.$options[type].plugins_data[this.host][plugin] = []
+        //   // this.$options[this.id][type].plugins_data[this.host][plugin] = []
         // }
-        // this.$refs[plugin + '.' + type][0].set_data(this.$options[type].plugins_data[this.host][plugin])
+        // this.$refs[plugin + '.' + type][0].set_data(this.$options[this.id][type].plugins_data[this.host][plugin])
 
         let count = 0
         Object.each(data, function (val, prop) {
-          this.$options[type].plugins_data[this.host][plugin].periodical[prop].sort(function (b, a) { return (a[0] > b[0]) ? 1 : ((b[0] > a[0]) ? -1 : 0) })
-          this.$options[type].plugins_data[this.host][plugin].periodical[prop] = this.$options[type].plugins_data[this.host][plugin].periodical[prop].slice(0, this.$options[type].length)
-          this.$options[type].plugins_data[this.host][plugin].periodical[prop].sort(function (a, b) { return (a[0] > b[0]) ? 1 : ((b[0] > a[0]) ? -1 : 0) })
+          this.$options[this.id][type].plugins_data[this.host][plugin].periodical[prop].sort(function (b, a) { return (a[0] > b[0]) ? 1 : ((b[0] > a[0]) ? -1 : 0) })
+          this.$options[this.id][type].plugins_data[this.host][plugin].periodical[prop] = this.$options[this.id][type].plugins_data[this.host][plugin].periodical[prop].slice(0, this.$options[this.id][type].length)
+          this.$options[this.id][type].plugins_data[this.host][plugin].periodical[prop].sort(function (a, b) { return (a[0] > b[0]) ? 1 : ((b[0] > a[0]) ? -1 : 0) })
 
           if (count === Object.getLength(data) - 1) {
-            this.$refs[plugin + '.' + type][0].set_data(Object.clone(this.$options[type].plugins_data[this.host][plugin]))
+            this.$refs[plugin + '.' + type][0].set_data(Object.clone(this.$options[this.id][type].plugins_data[this.host][plugin]))
+            this.$options[this.id][type].plugins_data[this.host][plugin].periodical = {}
           }
 
           count++
@@ -327,8 +335,8 @@ export default {
       } else { // buffer data until plugin available
         //   debug('periodical.plugins_data BUFFER %o', data)
         setTimeout(function () {
-          if (this.$options[type].plugins_data[this.host] && this.$options[type].plugins_data[this.host][plugin]) {
-            this.set_plugin_data(plugin, Object.clone(this.$options[type].plugins_data[this.host][plugin].periodical), type, true)
+          if (this.$options[this.id][type].plugins_data[this.host] && this.$options[this.id][type].plugins_data[this.host][plugin]) {
+            this.set_plugin_data(plugin, Object.clone(this.$options[this.id][type].plugins_data[this.host][plugin].periodical), type, true)
           }
         }.bind(this), 1000)
       }
@@ -374,13 +382,13 @@ export default {
         }
       }.bind(this))
 
-      debug('create_pipelines %o', this.$options.pipelines)
+      debug('create_pipelines %o', this.$options[this.id].pipelines)
 
       if (next) { next() }
       // }
     },
     destroy: function () {
-      this.$options['day'].plugins_data = {}
+      this.$options[this.id]['day'].plugins_data = {}
     },
 
     /**

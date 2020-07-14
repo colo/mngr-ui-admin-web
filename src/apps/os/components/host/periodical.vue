@@ -101,12 +101,18 @@ export default {
 
   name: 'OsHostPeriodical',
 
-  periodical: {
-    plugins_data: {},
-    length: 360,
-    interval: 60
+  // periodical: {
+  //   plugins_data: {},
+  //   length: 360,
+  //   interval: 60
+  // },
+  'os.host.periodical': {
+    periodical: {
+      plugins_data: {},
+      length: 360,
+      interval: 60
+    },
   },
-
   req_components: {
     'input.os.host.periodical': {
       range: {
@@ -141,6 +147,9 @@ export default {
 
     }
   },
+  created: function () {
+    if (!this.$options[this.id]) this.$options[this.id] = {}
+  },
 
   methods: {
     set_plugin_data: function (plugin, data, type, refresh) {
@@ -151,18 +160,19 @@ export default {
         this.$refs[plugin + '.' + type][0].$options.plugin_data['os.' + plugin + '.' + type] = { periodical: undefined, minute: undefined }
       }
 
-      if (!this.$options[type].plugins_data[this.host]) {
-        this.$options[type].plugins_data[this.host] = {}
+      if (!this.$options[this.id][type].plugins_data[this.host]) {
+        this.$options[this.id][type].plugins_data[this.host] = {}
       }
 
-      if (!this.$options[type].plugins_data[this.host][plugin]) {
-        this.$options[type].plugins_data[this.host][plugin] = { periodical: Object.clone(data) }
+      if (!this.$options[this.id][type].plugins_data[this.host][plugin] || Object.getLength(this.$options[this.id][type].plugins_data[this.host][plugin])) {
+        this.$options[this.id][type].plugins_data[this.host][plugin] = { periodical: Object.clone(data) }
       } else if (refresh !== true) {
-        // this.$options[type].plugins_data[this.host][plugin].push(Object.clone(value))
+        // this.$options[this.id][type].plugins_data[this.host][plugin].push(Object.clone(value))
         Object.each(data, function (val, prop) {
-          // this.$options[type].plugins_data[this.host][plugin].periodical[prop].append(val)
+          // this.$options[this.id][type].plugins_data[this.host][plugin].periodical[prop].append(val)
+
           let val_not_found = []
-          Array.each(this.$options[type].plugins_data[this.host][plugin].periodical[prop], function (row) {
+          Array.each(this.$options[this.id][type].plugins_data[this.host][plugin].periodical[prop], function (row) {
             // debug('periodical.plugins_data %d', row[0], val[0][0])
 
             Array.each(val, function (val_row, val_row_index) {
@@ -176,41 +186,43 @@ export default {
 
           // debug('periodical.plugins_data to add %o', val_not_found)
           Array.each(val_not_found, function (index) {
-            this.$options[type].plugins_data[this.host][plugin].periodical[prop].push(val[index])
+            this.$options[this.id][type].plugins_data[this.host][plugin].periodical[prop].push(val[index])
           }.bind(this))
+
           // if (found === false) {
-          //   this.$options[type].plugins_data[this.host][plugin].periodical[prop].push(val)
+          //   this.$options[this.id][type].plugins_data[this.host][plugin].periodical[prop].push(val)
           // }
-          // this.$options[type].plugins_data[this.host][plugin].periodical[prop].sort(function (b, a) { return (a[0] > b[0]) ? 1 : ((b[0] > a[0]) ? -1 : 0) })
-          // this.$options[type].plugins_data[this.host][plugin].periodical[prop] = this.$options[type].plugins_data[this.host][plugin].periodical[prop].slice(0, this.$options[type].length)
-          // this.$options[type].plugins_data[this.host][plugin].periodical[prop].sort(function (a, b) { return (a[0] > b[0]) ? 1 : ((b[0] > a[0]) ? -1 : 0) })
+          // this.$options[this.id][type].plugins_data[this.host][plugin].periodical[prop].sort(function (b, a) { return (a[0] > b[0]) ? 1 : ((b[0] > a[0]) ? -1 : 0) })
+          // this.$options[this.id][type].plugins_data[this.host][plugin].periodical[prop] = this.$options[this.id][type].plugins_data[this.host][plugin].periodical[prop].slice(0, this.$options[this.id][type].length)
+          // this.$options[this.id][type].plugins_data[this.host][plugin].periodical[prop].sort(function (a, b) { return (a[0] > b[0]) ? 1 : ((b[0] > a[0]) ? -1 : 0) })
         }.bind(this))
       }
 
       if (this.$refs[plugin + '.' + type] && this.$refs[plugin + '.' + type][0]) {
         if (type === 'minute') {
-          debug('set_plugin_data TO PLUGIN %s %o %s', plugin, this.$options[type].plugins_data[this.host][plugin].periodical, type)
+          debug('set_plugin_data TO PLUGIN %s %o %s', plugin, this.$options[this.id][type].plugins_data[this.host][plugin].periodical, type)
         }
-        // this.$options[type].plugins_data[this.host][plugin] = this.$options[type].plugins_data[this.host][plugin].slice(0, 360)
+        // this.$options[this.id][type].plugins_data[this.host][plugin] = this.$options[this.id][type].plugins_data[this.host][plugin].slice(0, 360)
         //
-        // if (this.$options[type].plugins_data[this.host][plugin] && this.$options[type].plugins_data[this.host][plugin].length > 0) {
-        //   debug('periodical.plugins_data from BUFFER %o', this.$options[type].plugins_data[this.host][plugin])
-        //   Array.each(this.$options[type].plugins_data[this.host][plugin], function (value) {
+        // if (this.$options[this.id][type].plugins_data[this.host][plugin] && this.$options[this.id][type].plugins_data[this.host][plugin].length > 0) {
+        //   debug('periodical.plugins_data from BUFFER %o', this.$options[this.id][type].plugins_data[this.host][plugin])
+        //   Array.each(this.$options[this.id][type].plugins_data[this.host][plugin], function (value) {
         //     this.$refs[plugin + '.' + type][0].set_data(Object.clone(value))
         //   }.bind(this))
         //
-        //   // this.$options[type].plugins_data[this.host][plugin] = []
+        //   // this.$options[this.id][type].plugins_data[this.host][plugin] = []
         // }
-        // this.$refs[plugin + '.' + type][0].set_data(this.$options[type].plugins_data[this.host][plugin])
+        // this.$refs[plugin + '.' + type][0].set_data(this.$options[this.id][type].plugins_data[this.host][plugin])
 
         let count = 0
         Object.each(data, function (val, prop) {
-          this.$options[type].plugins_data[this.host][plugin].periodical[prop].sort(function (b, a) { return (a[0] > b[0]) ? 1 : ((b[0] > a[0]) ? -1 : 0) })
-          this.$options[type].plugins_data[this.host][plugin].periodical[prop] = this.$options[type].plugins_data[this.host][plugin].periodical[prop].slice(0, this.$options[type].length)
-          this.$options[type].plugins_data[this.host][plugin].periodical[prop].sort(function (a, b) { return (a[0] > b[0]) ? 1 : ((b[0] > a[0]) ? -1 : 0) })
+          this.$options[this.id][type].plugins_data[this.host][plugin].periodical[prop].sort(function (b, a) { return (a[0] > b[0]) ? 1 : ((b[0] > a[0]) ? -1 : 0) })
+          this.$options[this.id][type].plugins_data[this.host][plugin].periodical[prop] = this.$options[this.id][type].plugins_data[this.host][plugin].periodical[prop].slice(0, this.$options[this.id][type].length)
+          this.$options[this.id][type].plugins_data[this.host][plugin].periodical[prop].sort(function (a, b) { return (a[0] > b[0]) ? 1 : ((b[0] > a[0]) ? -1 : 0) })
 
           if (count === Object.getLength(data) - 1) {
-            this.$refs[plugin + '.' + type][0].set_data(Object.clone(this.$options[type].plugins_data[this.host][plugin]))
+            this.$refs[plugin + '.' + type][0].set_data(Object.clone(this.$options[this.id][type].plugins_data[this.host][plugin]))
+            this.$options[this.id][type].plugins_data[this.host][plugin].periodical = {}
           }
 
           count++
@@ -218,8 +230,8 @@ export default {
       } else { // buffer data until plugin available
         //   debug('periodical.plugins_data BUFFER %o', data)
         setTimeout(function () {
-          if (this.$options[type].plugins_data[this.host] && this.$options[type].plugins_data[this.host][plugin]) {
-            this.set_plugin_data(plugin, Object.clone(this.$options[type].plugins_data[this.host][plugin].periodical), type, true)
+          if (this.$options[this.id][type].plugins_data[this.host] && this.$options[this.id][type].plugins_data[this.host][plugin]) {
+            this.set_plugin_data(plugin, Object.clone(this.$options[this.id][type].plugins_data[this.host][plugin].periodical), type, true)
           }
         }.bind(this), 1000)
       }
@@ -271,7 +283,7 @@ export default {
       // }
     },
     destroy: function () {
-      this.$options['periodical'].plugins_data = {}
+      this.$options[this.id]['periodical'].plugins_data = {}
     },
 
     /**

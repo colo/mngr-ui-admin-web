@@ -18,44 +18,57 @@ export default {
 
   name: 'chart-tabular',
 
-  type: 'tabular',
+  charts: {},
+
+  // type: 'tabular',
+
+  _chart_tabular_component_defaults: {
+    type: 'tabular'
+  },
 
   methods: {
     create () {
       debug('create', this.id)
-      /// ///console.log('create chart.tabular', this.id, this.chart)
-
-      // if(this.$refs[this.id] && typeof this.$refs[this.id].create === 'function')
-      //   this.$refs[this.id].create()
-
-      this.$options.tabular = {
-        lastupdate: 0,
-        data: []
+      if (!this.$options['charts'][this.id]) {
+        this.$options['charts'][this.id] = {}
       }
 
-      // let unwatch = this.$watch('stat_data', function (val, old) {
-      //   // //////console.log('create chart.tabular', val)
-      //   // if(val && val.length > 1){
-      //   if(val){
-      //     // if(this.$options.__chart_init === false){
-      //     if(this.chart_init === false){
-      //
-      //       // this.__create_watcher(this.id)
-      //       this.__process_chart(this.chart, this.id)
-      //       // this.$options.__chart_init = true
-      //
-      //
-      //     }
-      //
-      //
-      //     unwatch()
-      //   }
-      //
-      // }, { deep: true } )
-
-      // this.$on('stat_data', this.__first_stat_data_event.bind(this))
-      // this.$on('stat_data', this.__first_stat_data_event.bind(this))
+      this.$options['charts'][this.id] = Object.merge(this.$options['charts'][this.id], Object.clone(this.$options._chart_tabular_component_defaults))
     },
+    //   debug('create', this.id)
+    //   /// ///console.log('create chart.tabular', this.id, this.chart)
+    //
+    //   // if(this.$refs[this.id] && typeof this.$refs[this.id].create === 'function')
+    //   //   this.$refs[this.id].create()
+    //
+    //   this.$options.tabular = {
+    //     lastupdate: 0,
+    //     data: []
+    //   }
+    //
+    //   // let unwatch = this.$watch('stat_data', function (val, old) {
+    //   //   // //////console.log('create chart.tabular', val)
+    //   //   // if(val && val.length > 1){
+    //   //   if(val){
+    //   //     // if(this.$options.__chart_init === false){
+    //   //     if(this.chart_init === false){
+    //   //
+    //   //       // this.__create_watcher(this.id)
+    //   //       this.__process_chart(this.chart, this.id)
+    //   //       // this.$options.__chart_init = true
+    //   //
+    //   //
+    //   //     }
+    //   //
+    //   //
+    //   //     unwatch()
+    //   //   }
+    //   //
+    //   // }, { deep: true } )
+    //
+    //   // this.$on('stat_data', this.__first_stat_data_event.bind(this))
+    //   // this.$on('stat_data', this.__first_stat_data_event.bind(this))
+    // },
     // __first_stat_data_event: function (val) {
     //
     //   if(val){
@@ -69,18 +82,24 @@ export default {
     //   }
     // },
     __update_data: function (data) {
+      debug('__update_data %s %o', this.id, data, this.stat)
       if (data) {
         let inmediate = false
         if (this.chart_init === false) {
           // this.__process_stat(this.chart, this.id, val)
-          this.__process_chart(this.chart, this.id, data)
+          this.__process_chart(this.chart, this.id, JSON.parse(JSON.stringify(data)))
           inmediate = true
         }
 
         let current = []
+        if (!Array.isArray(data)) data = [data]
+
+        // debug('__update_data2 %s %o', this.id, data)
+
         Array.each(data, function (row) {
+          // debug('__update_data2 %s %o', this.id, row)
           // if you are not using buffer, you are managing your data, you are in charge of fixing values
-          if (this.no_buffer === false) {
+          if (this.no_buffer === false && this.stat.numeric === true) {
             // fix for incorrect values like "" (empty)
             if (Array.isArray(row.value)) {
               Array.each(row.value, function (value, index) {
@@ -95,7 +114,7 @@ export default {
         }.bind(this))
 
         // debug('__create_watcher->generic_data_watcher',this.id, current, inmediate)
-        debug('__update_data %s %o %o', this.id, data, this.chart_init, this.no_buffer, inmediate)
+        debug('__update_data3 %s %o %o %o', this.id, data, current, this.chart_init, this.no_buffer, inmediate)
 
         this.update_chart_stat(this.id, current, inmediate)
       }

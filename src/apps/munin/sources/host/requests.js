@@ -203,7 +203,7 @@ const host_once_component = {
     let key
 
     if (!_key) {
-      key = ['periodical.once', 'config.once', 'minute.once']//
+      key = ['periodical.once', 'config.once']//, 'minute.once'
       // key = ['config.once']
     }
 
@@ -217,7 +217,7 @@ const host_once_component = {
           source = [{
             params: { id: _key },
             path: 'all',
-            range: 'posix ' + (Date.now() - (10 * MINUTE)) + '-' + Date.now() + '/*',
+            range: 'posix ' + (Date.now() - (6 * MINUTE)) + '-' + Date.now() + '/*',
             // range: 'posix ' + (Date.now() - MINUTE) + '-' + Date.now() + '/*',
             query: {
               'from': 'munin',
@@ -251,7 +251,7 @@ const host_once_component = {
         case 'config.once':
           source = [{
             params: { id: _key },
-            range: 'posix ' + (Date.now() - 15 * SECOND) + '-' + Date.now() + '/*',
+            range: 'posix ' + (Date.now() - MINUTE) + '-' + Date.now() + '/*',
             path: 'all',
             // range: 'posix ' + (Date.now() - (5 * MINUTE)) + '-' + Date.now() + '/*',
             query: {
@@ -454,7 +454,7 @@ const host_range_component = {
           source = [{
             params: { id: _key },
             path: 'all',
-            range: 'posix ' + (Date.now() - (10 * SECOND)) + '-' + Date.now() + '/*',
+            range: 'posix ' + (Date.now() - (20 * SECOND)) + '-' + Date.now() + '/*',
             query: {
               'from': 'munin',
               // 'register': 'changes',

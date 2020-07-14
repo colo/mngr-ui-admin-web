@@ -30,11 +30,11 @@
         :EventBus="eventbus"
         :stat="{
           data: [],
-          length: 120,
+          length: 66,
         }"
         :chart="chart"
         :reactive="false"
-        :no_buffer="true"
+        :no_buffer="false"
       >
       <!-- data: [processed_data] -->
       <!-- stat -> length: 300, -->

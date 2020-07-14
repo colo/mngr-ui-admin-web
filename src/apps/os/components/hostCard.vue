@@ -17,7 +17,43 @@
 
           <div class="row" :style="'width: 100%'">
             <div class="col">
-              <vue-easy-pie-chart-wrapper
+              <component
+                v-if="host_data['os.loadavg']"
+                :is="'chart-tabular'"
+                :wrapper="{
+                  type: 'vueEasyPieChart',
+                }"
+                :always_update="false"
+                :ref="host+'.loadavg'"
+                :id="host+'.loadavg'"
+                :stat="{
+                  data: [[
+                    host_data['os.loadavg']['1_min'],
+                    (100 * host_data['os.loadavg']['1_min']  / host_data['os.loadavg.max']) || 0,
+                    host_data['os.loadavg.max'] || 0
+                  ]],
+                  length: 1
+                }"
+                :chart="{
+                  class: 'netdata-chart netdata-easypiechart-chart',
+                  params:{
+                    'bar-color': '#66AA00',
+                    'size': 130,
+                    'title': 'Load',
+                    unit: '1min avg',
+                    /**minValue: 0,
+                    maxValue: 100,
+                    unit: '%',
+                    value: host_data['os.cpus.percentage'] || 0,
+                    height: '200px',
+                    width: '334px' */
+                  }
+                }"
+                :reactive="false"
+                :no_buffer="false"
+              >
+              </component>
+              <!-- <vue-easy-pie-chart-wrapper
                 :id="host+'.loadavg'"
                 :chart="{
                   class: 'netdata-chart netdata-easypiechart-chart',
@@ -38,10 +74,42 @@
                     width: '334px' */
                   }
                 }"
-              />
+              /> -->
             </div>
             <div class="col">
-              <vue-easy-pie-chart-wrapper
+              <component
+                v-if="host_data['os.networkInterfaces.out']"
+                :is="'chart-tabular'"
+                :wrapper="{
+                  type: 'vueEasyPieChart',
+                }"
+                :always_update="false"
+                :ref="host+'.net.out'"
+                :id="host+'.net.out'"
+                :stat="{
+                  data: [[
+                    Date.now(),
+                    host_data['os.networkInterfaces.out'] / 125, //value
+                    (100 * host_data['os.networkInterfaces.out'] / host_data['os.networkInterfaces.max.out']) || 0, //percent
+                    host_data['os.networkInterfaces.max.out'] / 125 || 0 //max
+                  ]],
+                  length: 1
+                }"
+                :chart="{
+                  class: 'netdata-chart netdata-easypiechart-chart',
+                  params:{
+                    'bar-color': '#3366CC',
+                    'size': 150,
+                    title: 'Net Outbound',
+                    unit: 'kilobits/s',
+                    animate: { duration: 900, enabled: true }
+                  }
+                }"
+                :reactive="false"
+                :no_buffer="false"
+              >
+              </component>
+              <!-- <vue-easy-pie-chart-wrapper
                 :id="host+'.net.out'"
                 :chart="{
                   class: 'netdata-chart netdata-easypiechart-chart',
@@ -55,10 +123,40 @@
                     unit: 'kilobits/s',
                   }
                 }"
-              />
+              /> -->
             </div>
             <div class="col">
-              <vue-easy-pie-chart-wrapper
+              <component
+                v-if="host_data['os.networkInterfaces.in']"
+                :is="'chart-tabular'"
+                :wrapper="{
+                  type: 'vueEasyPieChart',
+                }"
+                :always_update="false"
+                :ref="host+'.net.in'"
+                :id="host+'.net.in'"
+                :stat="{
+                  data: [[
+                    host_data['os.networkInterfaces.in'] / 125,
+                    (100 * host_data['os.networkInterfaces.in'] / host_data['os.networkInterfaces.max.in']) || 0,
+                    host_data['os.networkInterfaces.max.in'] / 125 || 0
+                  ]],
+                  length: 1
+                }"
+                :chart="{
+                  class: 'netdata-chart netdata-easypiechart-chart',
+                  params:{
+                    'bar-color': '#DC3912',
+                    'size': 150,
+                    'title': 'Net Inbound',
+                    'unit': 'kilobits/s'//'kilobits/s',
+                  }
+                }"
+                :reactive="false"
+                :no_buffer="false"
+              >
+              </component>
+              <!-- <vue-easy-pie-chart-wrapper
                 :id="host+'.net.in'"
                 :chart="{
                   class: 'netdata-chart netdata-easypiechart-chart',
@@ -72,10 +170,37 @@
                     'unit': 'kilobits/s'//'kilobits/s',
                   }
                 }"
-              />
+              /> -->
             </div>
             <div class="col-3">
-              <v-gauge-wrapper
+              <!-- :is="tabular === false ? 'chart' : 'chart-tabular'" -->
+              <component
+                v-if="host_data['os.cpus.percentage']"
+                :is="'chart-tabular'"
+                :wrapper="{
+                  type: 'vGauge',
+                }"
+                :always_update="false"
+                :ref="host+'.cpu'"
+                :id="host+'.cpu'"
+                :stat="{
+                  data: [host_data['os.cpus.percentage']],
+                  length: 1
+                }"
+                :chart="{
+                  class: 'netdata-chart netdata-gauge-chart',
+                  params:{
+                    height: '180px',
+                    title: 'CPU',
+                    minValue: 0,
+                    maxValue: 100,
+                  }
+                }"
+                :reactive="false"
+                :no_buffer="false"
+              >
+              </component>
+              <!-- <v-gauge-wrapper
                 :id="host+'.cpu'"
                 :chart="{
                   class: 'netdata-chart netdata-gauge-chart',
@@ -87,11 +212,36 @@
                     value: host_data['os.cpus.percentage'] || 0,
                   }
                 }"
-              />
+              /> -->
             </div>
             <template v-for="(used, mount) in host_data['os.mounts.used']">
               <div class="col" :key="host+'.'+mount+'.used'">
-                <vue-easy-pie-chart-wrapper
+                <component
+                  :is="'chart-tabular'"
+                  :wrapper="{
+                    type: 'vueEasyPieChart',
+                  }"
+                  :always_update="false"
+                  :ref="host+'.'+mount+'.used'"
+                  :id="host+'.'+mount+'.used'"
+                  :stat="{
+                    data: [used || 0],
+                    length: 1
+                  }"
+                  :chart="{
+                    class: 'netdata-chart netdata-easypiechart-chart',
+                    params:{
+                      'bar-color': '#AD69AD',
+                      'size': 150,
+                      'title': 'Used: '+ mount,
+                      /* unit: 'kilobits/s', */
+                    }
+                  }"
+                  :reactive="false"
+                  :no_buffer="false"
+                >
+                </component>
+                <!-- <vue-easy-pie-chart-wrapper
                   :id="host+'.'+mount+'.used'"
                   :chart="{
                     class: 'netdata-chart netdata-easypiechart-chart',
@@ -103,12 +253,44 @@
                       /* unit: 'kilobits/s', */
                     }
                   }"
-                />
+                /> -->
               </div>
             </template>
 
             <div class="col">
-              <vue-easy-pie-chart-wrapper
+              <component
+                v-if="host_data['os.memory.percentage']"
+                :is="'chart-tabular'"
+                :wrapper="{
+                  type: 'vueEasyPieChart',
+                }"
+                :always_update="false"
+                :ref="host+'.ram'"
+                :id="host+'.ram'"
+                :stat="{
+                  data: [host_data['os.memory.percentage'] || 0],
+                  length: 1
+                }"
+                :chart="{
+                  class: 'netdata-chart netdata-easypiechart-chart',
+                  params:{
+                    'bar-color': '#66AA00',
+                    'size': 130,
+                    'title': 'Used RAM',
+                    /* unit: '%', */
+                    /**minValue: 0,
+                    maxValue: 100,
+                    unit: '%',
+                    value: host_data['os.cpus.percentage'] || 0,
+                    height: '200px',
+                    width: '334px' */
+                  }
+                }"
+                :reactive="false"
+                :no_buffer="false"
+              >
+              </component>
+              <!-- <vue-easy-pie-chart-wrapper
                 :id="host+'.ram'"
                 :chart="{
                   class: 'netdata-chart netdata-easypiechart-chart',
@@ -126,7 +308,7 @@
                     width: '334px' */
                   }
                 }"
-              />
+              /> -->
             </div>
           </div>
 
@@ -172,13 +354,18 @@ const debug = Debug('apps:os:components:hostCard')
 
 // import { requests, store } from './sources/index'
 
-import vGaugeWrapper from './wrappers/vGauge'
-import vueEasyPieChartWrapper from './wrappers/vueEasyPieChart'
+// import vGaugeWrapper from '@components/wrappers/vGauge'
+// import vueEasyPieChartWrapper from './wrappers/vueEasyPieChart'
+import chartTabular from '@components/chart.tabular'
 
 export default {
   // mixins: [DataSourcesMixin],
   // extends: DataSourcesMixin,
-  components: { vGaugeWrapper, vueEasyPieChartWrapper },
+  components: {
+    // vGaugeWrapper,
+    // vueEasyPieChartWrapper,
+    chartTabular
+  },
 
   name: 'osHostCard',
 
@@ -202,7 +389,10 @@ export default {
   },
   data () {
     return {
-
+      default_stat: {
+        data: [0],
+        length: 1
+      }
     }
   }
 

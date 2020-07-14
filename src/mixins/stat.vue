@@ -3,7 +3,7 @@
 
 import * as Debug from 'debug'
 
-const debug = Debug('components:mixins:stat')
+const debug = Debug('mixins:stat')
 // debug_internals = Debug('components:mixins:stat:Internals'),
 // debug_events = Debug('components:mixins:stat:Events')
 
@@ -13,27 +13,31 @@ const debug = Debug('components:mixins:stat')
 
 // import statStore from 'src/store/stat'
 
+import { v4 as uuidv4 } from 'uuid'
+
 export default {
 
   components: {
   },
 
-  /**
-  * set/modified by graph.vue or your own logic
-  **/
-  // focus: true,
-  visible: true,
+  _stat_mixin_defaults: {
+    /**
+    * set/modified by graph.vue or your own logic
+    **/
+    // focus: true,
+    visible: true,
 
-  __range_init: false,
-  __stat_unwatcher: undefined,
-  __buffer_data: [], // array to save individual stats until we fill in with ranges
+    __range_init: false,
+    __stat_unwatcher: undefined,
+    __buffer_data: [], // array to save individual stats until we fill in with ranges
 
-  root: undefined,
-  path: undefined,
-  key: undefined,
+    root: undefined,
+    path: undefined,
+    key: undefined,
 
-  // length: undefined,
-  stat_data: [],
+    // length: undefined,
+    stat_data: [],
+  },
 
   props: {
     EventBus: {
@@ -48,6 +52,7 @@ export default {
         // interval: 1, // in seconds
         merged: false,
         data: [],
+        numeric: true,
         sources: undefined
       })
     },
@@ -61,7 +66,7 @@ export default {
     },
     id: {
       type: [String],
-      default: ''
+      default: () => (uuidv4())
     },
     // wrapper_props: {
     //   type: [Object],
@@ -113,37 +118,43 @@ export default {
     }
   },
   created () {
-    this.$options.__buffer_data = []
+    debug('create', this.id)
+    if (!this.$options['charts'][this.id]) {
+      this.$options['charts'][this.id] = {}
+    }
 
-    this.$options.stat_data = []
+    this.$options['charts'][this.id] = Object.merge(this.$options['charts'][this.id], Object.clone(this.$options._stat_mixin_defaults))
+
+    // this.$options['charts'][this.id].__buffer_data = []
+    // this.$options['charts'][this.id].stat_data = []
 
     // const DATA_LENGTH = (this.stat && this.stat.data) ? this.stat.data.length : 0
     let range_length = (this.stat.range && this.stat.range[1] && this.stat.range[0]) ? (this.stat.range[1] - this.stat.range[0]) / 1000 : undefined
-    if (range_length === undefined || range_length <= 1) { this.$options.__range_init = true }
+    if (range_length === undefined || range_length <= 1) { this.$options['charts'][this.id].__range_init = true }
 
     this.stat.length = this.stat.length || range_length
-    // this.$options.length = this.stat.length || range_length
+    // this.$options['charts'][this.id].length = this.stat.length || range_length
 
-    this.$options.root = this.id.split('.')[0]
-    this.$options.path = this.id.split('.')[1]
-    // this.$options.key = this.id.split('.')[2]
-    this.$options.key = this.id.substring(this.id.lastIndexOf('.') + 1)
+    this.$options['charts'][this.id].root = this.id.split('.')[0]
+    this.$options['charts'][this.id].path = this.id.split('.')[1]
+    // this.$options['charts'][this.id].key = this.id.split('.')[2]
+    this.$options['charts'][this.id].key = this.id.substring(this.id.lastIndexOf('.') + 1)
 
-    /// /console.log('stat.vue id', this.id, this.$options.type)
+    /// /console.log('stat.vue id', this.id, this.$options['charts'][this.id].type)
     /**
     * @test - no local data
     **/
-    //   if (!this.$store.state[this.$options.type][this.id]) {
-    //     this.$store.registerModule([this.$options.type, this.id], Object.clone(statStore))
-    //     this.$store.commit(this.$options.type + '/' + this.id + '/id', this.id)
-    //     this.$store.commit(this.$options.type + '/' + this.id + '/type', this.$options.type)
+    //   if (!this.$store.state[this.$options['charts'][this.id].type][this.id]) {
+    //     this.$store.registerModule([this.$options['charts'][this.id].type, this.id], Object.clone(statStore))
+    //     this.$store.commit(this.$options['charts'][this.id].type + '/' + this.id + '/id', this.id)
+    //     this.$store.commit(this.$options['charts'][this.id].type + '/' + this.id + '/type', this.$options['charts'][this.id].type)
     //     /** new PouchDB(
-    //   this.$options.type+'_'+this.$options.root+'_'+this.$options.path+'_'+this.$options.key,
+    //   this.$options['charts'][this.id].type+'_'+this.$options['charts'][this.id].root+'_'+this.$options['charts'][this.id].path+'_'+this.$options['charts'][this.id].key,
     //   {adapter: 'memory'}
     // )**/
     //     let db = new PouchDB(
-    //       // this.$options.type+'_'+this.$options.path+'_'+this.$options.key
-    //       this.$options.type + '_' + this.$options.root + '_' + this.$options.path + '_' + this.$options.key
+    //       // this.$options['charts'][this.id].type+'_'+this.$options['charts'][this.id].path+'_'+this.$options['charts'][this.id].key
+    //       this.$options['charts'][this.id].type + '_' + this.$options['charts'][this.id].root + '_' + this.$options['charts'][this.id].path + '_' + this.$options['charts'][this.id].key
     //     )
     //     db.createIndex({
     //       'index': {
@@ -156,7 +167,7 @@ export default {
     //       // console.log('creating index', result)
     //     })
     //
-    //     this.$store.commit(this.$options.type + '/' + this.id + '/db', db)
+    //     this.$store.commit(this.$options['charts'][this.id].type + '/' + this.id + '/db', db)
     //   }
     /**
     * @test - no local data
@@ -165,10 +176,10 @@ export default {
     debug('stat.vue data', this.id, this.stat.data, this.stat.range, this.stat.length)
 
     if (this.stat.range && this.stat.length > 1) {
-      // this.$store.dispatch(this.$options.type+'/'+this.id+'/get', {
-      //   root: this.$options.root,
-      //   path: this.$options.path,
-      //   key: this.$options.key,
+      // this.$store.dispatch(this.$options['charts'][this.id].type+'/'+this.id+'/get', {
+      //   root: this.$options['charts'][this.id].root,
+      //   path: this.$options['charts'][this.id].path,
+      //   key: this.$options['charts'][this.id].key,
       //   length: this.stat.length,
       //   range: this.stat.range
       // }).then((docs) => {
@@ -202,14 +213,14 @@ export default {
       //   }
       //
       //   if(range.length > 0 && range[0] && range[1]){
-      //     this.$options.__range_init = false
+      //     this.$options['charts'][this.id].__range_init = false
       //
       //     this.$store.commit('dashboard/events/add', {
       //       id: this.id,
       //       type: 'onRange',
       //       'opts': {
       //         range: range,
-      //         // tabular: (this.$options.type === 'tabular') ? true : false
+      //         // tabular: (this.$options['charts'][this.id].type === 'tabular') ? true : false
       //       }
       //     })
       //   }
@@ -250,34 +261,38 @@ export default {
       **/
     }
 
-    if (this.stat.merged === true) {
-      // this.$options.deque = new Deque(this.stat.data.length * 1)
+    if (this.stat && this.stat.data && this.stat.merged === true) {
+      // this.$options['charts'][this.id].deque = new Deque(this.stat.data.length * 1)
       //
-      // //////////console.log('stat.vue id', this.id, this.$options.type, this.stat.range, this.$options.deque, this.$options.deque.length, QUEUE_SIZE)
+      // //////////console.log('stat.vue id', this.id, this.$options['charts'][this.id].type, this.stat.range, this.$options['charts'][this.id].deque, this.$options['charts'][this.id].deque.length, QUEUE_SIZE)
       // if(this.stat.data && this.stat.data[0]){
-      this.$options.__stat_unwatcher = this.$watch('stat.data', this.update_stat_merged_data.bind(this), { deep: true })
+      this.$options['charts'][this.id].__stat_unwatcher = this.$watch('stat.data', this.update_stat_merged_data.bind(this), { deep: true })
+      this.update_stat_merged_data(this.stat.data)
       // }
-    } else {
-      this.$options.__stat_unwatcher = this.$watch('stat.data', this.update_stat_data.bind(this), { deep: true })
+    } else if (this.stat && this.stat.data) {
+      this.$options['charts'][this.id].__stat_unwatcher = this.$watch('stat.data', this.update_stat_data.bind(this)) // { deep: true }
+      this.update_stat_data(this.stat.data)
     }
   },
   beforeDestroy () {
     /**
     * @test - no local data
     **/
-    // this.$store.dispatch(this.$options.type+'/'+this.id+'/flush')
+    // this.$store.dispatch(this.$options['charts'][this.id].type+'/'+this.id+'/flush')
   },
   destroyed () {
-    this.$options.visible = true
-    this.$options.__range_init = false
-    this.$options.__stat_unwatcher = undefined
-    this.$options.__buffer_data = []
-
-    this.$options.root = undefined
-    this.$options.path = undefined
-    this.$options.key = undefined
-
-    this.$options.stat_data = []
+    // if (this.$options['charts'][this.id]) delete this.$options['charts'][this.id]
+    // this.$options['charts'][this.id].visible = true
+    // this.$options['charts'][this.id].__range_init = false
+    // this.$options['charts'][this.id].__stat_unwatcher = undefined
+    // this.$options['charts'][this.id].__buffer_data = []
+    //
+    // this.$options['charts'][this.id].root = undefined
+    // this.$options['charts'][this.id].path = undefined
+    // this.$options['charts'][this.id].key = undefined
+    //
+    // this.$options['charts'][this.id].stat_data = []
+    this.$options['charts'][this.id] = Object.merge(this.$options['charts'][this.id], Object.clone(this.$options._stat_mixin_defaults))
 
     this.$off()
   },
@@ -333,26 +348,28 @@ export default {
       }
     },
     update_stat_data: function (val, old) {
-      debug('update_stat_data %s', this.id, val)
+      if (val !== undefined) {
+        // console.log('__stat_unwatcher', this.id, val, this.stat.length)
+        try {
+          val = JSON.parse(JSON.stringify(val))
+          debug('update_stat_data %s', this.id, val)
+          /**
+          * when use "stat.sources" as data, is always an array, even if it's not merged data
+          * so we need to pick the only element (if there are more, is an error)
+          */
 
-      // console.log('__stat_unwatcher', this.id, val, this.stat.length)
-      val = JSON.parse(JSON.stringify(val))
+          if (Array.isArray(val) && val.length > 1) { val = val[0] }
 
-      /**
-      * when use "stat.sources" as data, is always an array, even if it's not merged data
-      * so we need to pick the only element (if there are more, is an error)
-      */
-
-      if (Array.isArray(val) && val.length > 1) { val = val[0] }
-
-      // this.__stat_data_watcher(val)
-      if (val && val.length > 0) {
-        let __cloned = Array.clone(val)
-        if (val.length === 1) {
-          this.__add_stats(__cloned[__cloned.length - 1])
-        } else {
-          this.__add_stats(__cloned)
-        }
+          // this.__stat_data_watcher(val)
+          if (val && val.length > 0) {
+            let __cloned = val // Array.clone(val)
+            if (val.length === 1) {
+              this.__add_stats(__cloned[__cloned.length - 1])
+            } else {
+              this.__add_stats(__cloned)
+            }
+          }
+        } catch (e) {}
       }
     },
     /**
@@ -360,7 +377,7 @@ export default {
     * plus a shorter remote range, or we need to clear and obtain all new data from remote
     */
     __change_range (range) {
-      this.$options.__range_init = false
+      this.$options['charts'][this.id].__range_init = false
 
       debug('adding event', 'dashboard_' + this.dashboard + '/events/add', this.id)
 
@@ -369,7 +386,7 @@ export default {
         type: 'onRange',
         'opts': {
           range: range
-          // tabular: (this.$options.type === 'tabular') ? true : false
+          // tabular: (this.$options['charts'][this.id].type === 'tabular') ? true : false
         }
       })
     },
@@ -409,11 +426,11 @@ export default {
       return { docs: docs, range: range }
     },
     // __stat_data_watcher: function(val){
-    //   if(val && val.length > 0 && !this.$store.state[this.$options.type][this.id]){
-    //     //////////console.log('registerModule stat', this.$options.type, this.id)
-    //     this.$store.registerModule([this.$options.type, this.id], Object.clone(statStore))
-    //     this.$store.commit(this.$options.type+'/'+this.id+'/set_id', this.id)
-    //     this.$store.commit(this.$options.type+'/'+this.id+'/set_type', this.$options.type)
+    //   if(val && val.length > 0 && !this.$store.state[this.$options['charts'][this.id].type][this.id]){
+    //     //////////console.log('registerModule stat', this.$options['charts'][this.id].type, this.id)
+    //     this.$store.registerModule([this.$options['charts'][this.id].type, this.id], Object.clone(statStore))
+    //     this.$store.commit(this.$options['charts'][this.id].type+'/'+this.id+'/set_id', this.id)
+    //     this.$store.commit(this.$options['charts'][this.id].type+'/'+this.id+'/set_type', this.$options['charts'][this.id].type)
     //   }
     //   else if(val && val.length > 0){
     //     this.__add_stats(val)
@@ -431,10 +448,11 @@ export default {
       return merged
     },
     __add_stats: function (stat) {
+      debug('__add_stats', this.id, this.$options['charts'])
       // console.log('stat.vue __add_stats', this.id, stat)
 
       let data = {}
-      if (this.$options.type === 'tabular') {
+      if (this.$options['charts'][this.id].type === 'tabular') {
         if (Array.isArray(stat[0])) { // array of array, range data
           let result = []
           Array.each(stat, function (value) {
@@ -449,19 +467,20 @@ export default {
           /// /////////////////console.log('process_os_tabular', path, key, result)
           data = {
             tabular: true,
-            root: this.$options.root,
-            path: this.$options.path,
-            key: this.$options.key,
+            root: this.$options['charts'][this.id].root,
+            path: this.$options['charts'][this.id].path,
+            key: this.$options['charts'][this.id].key,
             data: result
           }
         } else {
           data = {
             tabular: true,
-            root: this.$options.root,
-            path: this.$options.path,
-            key: this.$options.key,
+            root: this.$options['charts'][this.id].root,
+            path: this.$options['charts'][this.id].path,
+            key: this.$options['charts'][this.id].key,
             data: {
-              timestamp: stat[0],
+              // timestamp: stat[0],
+              timestamp: new Date(),
               value: stat
             }
           }
@@ -469,9 +488,9 @@ export default {
       } else {
         data = {
           tabular: false,
-          root: this.$options.root,
-          path: this.$options.path,
-          key: this.$options.key,
+          root: this.$options['charts'][this.id].root,
+          path: this.$options['charts'][this.id].path,
+          key: this.$options['charts'][this.id].key,
           data: stat
         }
       }
@@ -485,15 +504,15 @@ export default {
       /**
       * @test - no local data
       */
-      // this.$store.dispatch(this.$options.type+'/'+this.id+'/add', data)
+      // this.$store.dispatch(this.$options['charts'][this.id].type+'/'+this.id+'/add', data)
 
       this.__set_stat_data(data.data)
-      // this.$options.stat_data.push( data.data )
+      // this.$options['charts'][this.id].stat_data.push( data.data )
       // this.stat_lastupdate = Date.now()
       //
       // let splice = this.stat.length * 1
       //
-      // let length = this.$options.stat_data.length
+      // let length = this.$options['charts'][this.id].stat_data.length
       //
       // // splice = (splice === 1) ? 2 : splice
       //
@@ -501,14 +520,14 @@ export default {
       // //   this.$set(this.stats[name], 'data', [])
       // // }
       // // else{
-      //   this.$options.stat_data.splice(
+      //   this.$options['charts'][this.id].stat_data.splice(
       //     (splice * -1) -1,
       //     length - splice
       //   )
       // // }
       //
       //
-      // // //////////console.log('stat.vue __add_stats', this.id, data.data, this.$options.stat_data.length, splice, length)
+      // // //////////console.log('stat.vue __add_stats', this.id, data.data, this.$options['charts'][this.id].stat_data.length, splice, length)
       //
 
       //   }.bind(this))
@@ -520,21 +539,21 @@ export default {
       // console.log('stat.vue __set_stat_data', this.id, data)
       /**
       * @config: this should be config options
-      * this.$options.focus
-      * this.$options.visible
+      * this.$options['charts'][this.id].focus
+      * this.$options['charts'][this.id].visible
       */
-      // if(this.$options.focus === true && this.$options.visible === true && data){
-      //   //////console.log('__set_stat_data visibility', this.id, this.$options.focus, this.$options.visible)
+      // if(this.$options['charts'][this.id].focus === true && this.$options['charts'][this.id].visible === true && data){
+      //   //////console.log('__set_stat_data visibility', this.id, this.$options['charts'][this.id].focus, this.$options['charts'][this.id].visible)
 
       // docs.sort(function(a,b) {return (a.metadata.timestamp > b.metadata.timestamp) ? 1 : ((b.metadata.timestamp > a.metadata.timestamp) ? -1 : 0);} )
-      // let __stat_data = Array.clone(this.$options.stat_data)
+      // let __stat_data = Array.clone(this.$options['charts'][this.id].stat_data)
       //
-      // if(!Array.isArray(data) && this.$options.__range_init === true){
+      // if(!Array.isArray(data) && this.$options['charts'][this.id].__range_init === true){
       //   __stat_data.push(Object.clone(data))
       // }
       // else{
       //   __stat_data = __stat_data.append(Array.clone(data))
-      //   this.$options.__range_init = true
+      //   this.$options['charts'][this.id].__range_init = true
       // }
       //
       // __stat_data.sort(function(a,b) {
@@ -551,48 +570,52 @@ export default {
       // this.$set(this, 'stat_data', __stat_data)
 
       if (this.no_buffer === false) {
-        // if (this.$options.__range_init === false) {
-        //   // this.$options.__buffer_data.push(JSON.parse(JSON.stringify(data)))
-        //   this.$options.__buffer_data = this.$options.__buffer_data.append(JSON.parse(JSON.stringify(data)))
+        // if (this.$options['charts'][this.id].__range_init === false) {
+        //   // this.$options['charts'][this.id].__buffer_data.push(JSON.parse(JSON.stringify(data)))
+        //   this.$options['charts'][this.id].__buffer_data = this.$options['charts'][this.id].__buffer_data.append(JSON.parse(JSON.stringify(data)))
         //
-        //   if (this.$options.__buffer_data.length > 10) { this.$options.__range_init = true }
+        //   if (this.$options['charts'][this.id].__buffer_data.length > 10) { this.$options['charts'][this.id].__range_init = true }
         // } else {
-        // this.$options.__buffer_data.push(JSON.parse(JSON.stringify(data)))
-        this.$options.__range_init = true
+        // this.$options['charts'][this.id].__buffer_data.push(JSON.parse(JSON.stringify(data)))
+        if (!Array.isArray(data)) data = [data]
 
-        this.$options.__buffer_data = this.$options.__buffer_data.append(JSON.parse(JSON.stringify(data)))
+        this.$options['charts'][this.id].__range_init = true
 
-        Array.each(Array.clone(this.$options.__buffer_data), function (val) {
+        this.$options['charts'][this.id].__buffer_data = this.$options['charts'][this.id].__buffer_data.append(JSON.parse(JSON.stringify(data)))
+
+        debug('no_buffer === false', this.$options['charts'][this.id].__buffer_data)
+        // Array.each(Array.clone(this.$options['charts'][this.id].__buffer_data), function (val) {
+        Array.each(this.$options['charts'][this.id].__buffer_data, function (val) {
           let found = false
-          Array.each(this.$options.stat_data, function (stat) {
+          Array.each(this.$options['charts'][this.id].stat_data, function (stat) {
             if (stat.timestamp === val.timestamp) { found = true }
           })
 
-          if (found === false) { this.$options.stat_data.push(val) }
+          if (found === false) { this.$options['charts'][this.id].stat_data.push(val) }
         }.bind(this))
 
-        this.$options.__buffer_data = []
+        this.$options['charts'][this.id].__buffer_data = []
         // }
       } else { // no_buffer
-        this.$options.stat_data = data
-        this.$options.__range_init = true
+        this.$options['charts'][this.id].stat_data = data
+        this.$options['charts'][this.id].__range_init = true
       }
 
-      // if (Array.isArray(data) && this.$options.__range_init === false) {
-      //   // this.$set(this, 'stat_data', this.$options.stat_data.append(data))
+      // if (Array.isArray(data) && this.$options['charts'][this.id].__range_init === false) {
+      //   // this.$set(this, 'stat_data', this.$options['charts'][this.id].stat_data.append(data))
       //   Array.each(Array.clone(data), function (val) {
       //     let found = false
-      //     Array.each(this.$options.stat_data, function (stat) {
+      //     Array.each(this.$options['charts'][this.id].stat_data, function (stat) {
       //       if (stat.timestamp === val.timestamp) { found = true }
       //     })
       //
-      //     if (found === false) { this.$options.stat_data.push(val) }
+      //     if (found === false) { this.$options['charts'][this.id].stat_data.push(val) }
       //   }.bind(this))
       //
       //   /**
       //   * avoid putting data on graph until range data arrives
       //   **/
-      //   if (data.length > 1) { this.$options.__range_init = true }
+      //   if (data.length > 1) { this.$options['charts'][this.id].__range_init = true }
       //
       //   // this.$store.commit('dashboard/events/remove', {
       //   //   id: this.id,
@@ -600,50 +623,58 @@ export default {
       //   // })
       // }
 
-      // if (this.$options.__buffer_data.length > 10) { this.$options.__range_init = true }
-      // debug('__set_stat_data', this.id, data, this.$options.stat_data, this.$options.__buffer_data.length, this.$options.__range_init)
+      // if (this.$options['charts'][this.id].__buffer_data.length > 10) { this.$options['charts'][this.id].__range_init = true }
+      debug('__set_stat_data2', this.id, this.$options['charts'][this.id].stat_data)
 
-      if (this.$options.__range_init === true) {
+      if (this.$options['charts'][this.id].__range_init === true) {
         // if you are not using buffer, you are managing your data, you are in charge of sorting
         if (this.no_buffer === false) {
-          this.$options.stat_data.sort(function (a, b) {
+          // this.$options['charts'][this.id].stat_data.sort(function (a, b) {
+          //   return (a.timestamp < b.timestamp) ? 1 : ((b.timestamp < a.timestamp) ? -1 : 0)
+          // })
+          this.$options['charts'][this.id].stat_data.sort(function (a, b) {
             return (a.timestamp > b.timestamp) ? 1 : ((b.timestamp > a.timestamp) ? -1 : 0)
           })
 
-          let length = this.$options.stat_data.length
-          let splice = this.stat.length * this.chart.interval
-          // || this.$options.stat_data.length
-          // this.$options.tabular.data = data
+          let length = this.$options['charts'][this.id].stat_data.length
+          let splice = (!this.chart.interval || this.chart.interval === undefined) ? this.stat.length : this.stat.length * this.chart.interval
 
-          this.$options.stat_data.splice(
+          this.$options['charts'][this.id].stat_data.splice(
             (splice * -1) + 1,
             length - splice
           )
 
-          debug('__set_stat_data', this.id, this.$options.stat_data.length, splice, length)
+          debug('__set_stat_data3', this.id, JSON.parse(JSON.stringify(this.$options['charts'][this.id].stat_data)), splice, length) //
+
+          // let length = (!this.chart.interval || this.chart.interval === undefined) ? this.stat.length : this.stat.length * this.chart.interval
+          // this.$options['charts'][this.id].stat_data = this.$options['charts'][this.id].stat_data.slice(0, length)
+          //
+          // this.$options['charts'][this.id].stat_data.sort(function (a, b) {
+          //   return (a.timestamp > b.timestamp) ? 1 : ((b.timestamp > a.timestamp) ? -1 : 0)
+          // })
         }
 
         this.stat_lastupdate = Date.now()
 
         // let splice = this.stat.length
-        // let length = this.$options.stat_data.length
+        // let length = this.$options['charts'][this.id].stat_data.length
         //
-        // debug('__set_stat_data splice %o %o %o', splice, length, this.$options.stat_data)
-        // this.$options.stat_data.splice(
+        // debug('__set_stat_data splice %o %o %o', splice, length, this.$options['charts'][this.id].stat_data)
+        // this.$options['charts'][this.id].stat_data.splice(
         //   // (splice * -1) - 1,
         //   (splice * -1) + 1,
         //   length - splice
         // )
         //
-        // // this.$emit('stat_data', this.$options.stat_data)
-        // debug('__update_data', this.$options.stat_data.length)
+        // // this.$emit('stat_data', this.$options['charts'][this.id].stat_data)
+        // debug('__update_data', this.$options['charts'][this.id].stat_data.length)
 
-        this.__update_data(this.$options.stat_data)
+        this.__update_data(this.$options['charts'][this.id].stat_data)
       }
-      // ////console.log('stat.vue/splice', splice, length, this.$options.stat_data)
+      // ////console.log('stat.vue/splice', splice, length, this.$options['charts'][this.id].stat_data)
 
       // }
-      // //console.log('__set_stat_data', data, this.$options.__range_init)
+      // //console.log('__set_stat_data', data, this.$options['charts'][this.id].__range_init)
     }
     // get: function(payload, cb){
     //   //////////////console.log('__get_stat', payload)

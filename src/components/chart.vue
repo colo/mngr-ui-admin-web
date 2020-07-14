@@ -1,8 +1,6 @@
 
 <script>
-// let array_to_tabular = require( 'node-tabular-data' ).array_to_tabular
-// let number_to_tabular = require( 'node-tabular-data' ).number_to_tabular
-// let nested_array_to_tabular = require( 'node-tabular-data' ).nested_array_to_tabular
+
 let data_to_tabular = require('node-tabular-data').data_to_tabular
 
 import * as Debug from 'debug'
@@ -14,74 +12,34 @@ import stat from '@mixins/stat'
 export default {
   mixins: [graph, stat],
 
-  tabular: {
-    lastupdate: 0,
-    data: []
-  },
+  // _chart_componets_defaults: {
+  //   tabular: {
+  //     lastupdate: 0,
+  //     data: []
+  //   }
+  // },
 
   name: 'chart',
 
-  type: 'stat',
+  charts: {},
 
+  _chart_component_defaults: {
+    type: 'stat'
+  },
   // updated () {
   //   if(this.stat.data.length > 0)
   //     this.__process_stat(this.chart, this.id, this.stat.data)
   // },
   methods: {
-    // visibilityChanged (isVisible, entry) {
-    //   // if(
-    //   //   isVisible === true
-    //   // ){
-    //   //     // this.__process_stat(this.chart, this.id, this.stat.data)
-    //   //     this.create()
-    //   // }
-    //   // else{
-    //   //   this.destroy()
-    //   // }
-    //
-    //   this.$options.visible = isVisible
-    // },
-
-    // mounted () {
-    //   this.$set(this, 'chart_init', false)
-    // },
     create () {
       debug('create', this.id)
-      // console.log('chart.vue create', this.id, this.stat_data)
-      // if(this.$refs[this.id] && typeof this.$refs[this.id].create === 'function')
-      //   this.$refs[this.id].create()
-      // this.$set(this, 'chart_init', false)
-      this.$options.tabular = {
-        lastupdate: 0,
-        data: []
+      if (!this.$options['charts'][this.id]) {
+        this.$options['charts'][this.id] = {}
       }
 
-      // let unwatch = this.$watch('stat_data', function (val, old) {
-      // this.$on('stat_data', this.__first_stat_data_event.bind(this))
-
-      // }, { deep: true } )
+      this.$options['charts'][this.id] = Object.merge(this.$options['charts'][this.id], Object.clone(this.$options._chart_component_defaults))
     },
 
-    // __first_stat_data_event: function (val) {
-    //   // //console.log('chart.vue create', this.id, this.stat_data)
-    //
-    //   // if(val && val.length > 1){
-    //   if(val && val.length > 1){
-    //
-    //     // if(this.$options.__chart_init === false){
-    //     if(this.chart_init === false){
-    //
-    //
-    //       this.__process_stat(this.chart, this.id, val)
-    //       // this.$options.__chart_init = true
-    //
-    //     }
-    //
-    //
-    //     // unwatch()
-    //     // this.$off('stat_data', this.__first_stat_data_event)
-    //   }
-    // },
     __update_data: function (data) {
       debug('__update_data %s %o %o', this.id, data, this.chart_init)
 

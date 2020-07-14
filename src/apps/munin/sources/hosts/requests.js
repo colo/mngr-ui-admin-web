@@ -22,7 +22,7 @@ const munin_hosts_categories = {
     ) {
       source = [{
         params: { id: _key },
-        range: 'posix ' + (Date.now() - (15 * SECOND)) + '-' + Date.now() + '/*',
+        range: 'posix ' + (Date.now() - (20 * SECOND)) + '-' + Date.now() + '/*',
         path: 'all',
         query: {
           'from': 'munin',

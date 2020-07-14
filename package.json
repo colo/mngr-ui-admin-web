@@ -14,8 +14,6 @@
   "dependencies": {
     "@quasar/extras": "^1.0.0",
     "axios": "^0.18.1",
-    "quasar": "^1.0.0",
-    "vue-i18n": "^8.0.0",
     "debug": "^4.1.1",
     "dygraphs": "^2.1.0",
     "js-pipeline": "git+https://github.com/colo/js-pipeline.git",
@@ -24,7 +22,13 @@
     "mootools": "^1.5.2",
     "node-app-socket.io-client": "git+https://github.com/colo/node-app-socket.io-client.git",
     "node-tabular-data": "git+https://github.com/colo/node-tabular-data.git",
-    "vue-observe-visibility": "^0.4.6"
+    "quasar": "^1.0.0",
+    "vue-i18n": "^8.0.0",
+    "vue-observe-visibility": "^0.4.6",
+    "vgauge": "^1.2.11",
+    "vue-easy-pie-chart": "^1.0.3",
+    "@amcharts/amcharts4": "^4.9.1",
+    "@amcharts/amcharts4-geodata": "^4.1.12"
   },
   "devDependencies": {
     "@quasar/app": "^1.0.0",
