@@ -149,7 +149,9 @@ export default {
       allColumns: ['host', 'alert', 'timestamp', 'path'],
       visibleColumns: ['alert'],
       pagination: {
-        rowsPerPage: 50
+        rowsPerPage: 50,
+        sortBy: 'timestamp', // string column name
+        descending: true // boolean
       },
       columns: [
         // { name: 'status',

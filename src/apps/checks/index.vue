@@ -160,7 +160,9 @@ export default {
       allColumns: ['status', 'protocol', 'hostname', 'port', 'host', 'timestamp', 'path'],
       visibleColumns: ['status', 'hostname'],
       pagination: {
-        rowsPerPage: 50
+        rowsPerPage: 50,
+        sortBy: 'timestamp', // string column name
+        descending: true // boolean
       },
       columns: [
         { name: 'status',

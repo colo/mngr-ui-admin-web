@@ -140,7 +140,9 @@ export default {
       allColumns: ['schema', 'uri', 'port', 'host', 'timestamp', 'path'],
       visibleColumns: ['schema', 'uri'],
       pagination: {
-        rowsPerPage: 50
+        rowsPerPage: 50,
+        sortBy: 'timestamp', // string column name
+        descending: true // boolean
       },
       columns: [
         { name: 'schema', label: 'Schema', field: 'schema', sortable: true, align: 'left' },
