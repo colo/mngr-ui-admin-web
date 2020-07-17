@@ -7,7 +7,7 @@
 // import HelloWorld from '@/components/HelloWorld.vue'
 
 import * as Debug from 'debug'
-const debug = Debug('apps:os:pages:web')
+const debug = Debug('apps:system:pages:web')
 
 // import JSPipeline from 'js-pipeline'
 // import Pipeline from '@apps/logs/pipelines/web'

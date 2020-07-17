@@ -34,7 +34,7 @@ import Pipeline from '@apps/neataptic/pipelines/index'
 
 import DataSourcesMixin from '@mixins/dataSources'
 
-// import OsHostCard from '@apps/neataptic/components/hostCard.vue'
+// import SystemHostCard from '@apps/neataptic/components/hostCard.vue'
 
 import { requests, store } from '@apps/neataptic/sources/index'
 // import moment from 'moment'

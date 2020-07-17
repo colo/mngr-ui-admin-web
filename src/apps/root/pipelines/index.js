@@ -21,7 +21,7 @@ let buffer = []
 // let buffer_expire = 0
 let expire_buffer_timeout = 1000 // one second
 
-import IO from '@etc/os.io'
+import IO from '@etc/system.io'
 
 let ios = []
 Array.each(IO(), function (io, index) {

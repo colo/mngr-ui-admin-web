@@ -31,7 +31,7 @@
     </vk-card>
 
     <template v-for="(host_paths, host_name) in hosts_paths">
-      <os-host-card
+      <system-host-card
         :key="host_name"
         v-if="!host || host_name === host"
         :categories="host_paths"
@@ -42,7 +42,7 @@
     <router-view :key="$route.path +'.'+ JSON.stringify($route.query)"></router-view>
 
     <template v-for="(host_paths, host_name) in hosts_paths">
-      <os-host-card
+      <system-host-card
         :key="host_name+'.bottom'"
         v-if="host_name === host"
         :categories="host_paths"
@@ -51,14 +51,14 @@
     </template>
 
     <!-- <template v-for="(host_paths, host_name) in hosts_paths">
-      <os-host-card
+      <system-host-card
         :key="host_name"
         v-if="!host"
         :categories="host_paths"
         :host="host_name"
       />
       <q-page-sticky v-else position="top" :key="host_name+'.sticky'">
-        <os-host-card
+        <system-host-card
           v-if="host_name === host"
           :categories="host_paths"
           :host="host_name"
@@ -75,7 +75,7 @@
     <!-- <vk-card class="uk-background-secondary uk-light" v-for="(categories, host) in hosts_paths" :key="host">
 
       <vk-card-title>
-        <router-link :to="'/os/hosts/'+host" v-slot="{ href, route, navigate, isActive, isExactActive }"
+        <router-link :to="'/system/hosts/'+host" v-slot="{ href, route, navigate, isActive, isExactActive }"
         >
           <h3 class="uk-light"><a class="uk-link-heading" :href="href" @click="navigate">{{host}}</a></h3>
         </router-link>
@@ -84,7 +84,7 @@
 
       <ul class="uk-subnav uk-subnav-divider" uk-margin>
         <li v-for="category in categories" :key="host+'.'+category">
-          <router-link :to="'/os/hosts/'+host+'#'+category" v-slot="{ href, route, navigate, isActive, isExactActive }"
+          <router-link :to="'/system/hosts/'+host+'#'+category" v-slot="{ href, route, navigate, isActive, isExactActive }"
           >
             <a :href="href" @click="navigate">{{category}}</a>
           </router-link>
@@ -99,20 +99,20 @@
 // import HelloWorld from '@/components/HelloWorld.vue'
 
 import * as Debug from 'debug'
-const debug = Debug('apps:os')
+const debug = Debug('apps:system')
 
 import JSPipeline from 'js-pipeline'
-import Pipeline from '@apps/os/pipelines/index'
+import Pipeline from '@apps/system/pipelines/index'
 
 import DataSourcesMixin from '@mixins/dataSources'
 
-import OsHostCard from './components/hostCard.vue'
+import SystemHostCard from './components/hostCard.vue'
 
 import { requests, store } from './sources/index'
 
 export default {
   mixins: [DataSourcesMixin],
-  components: { OsHostCard },
+  components: { SystemHostCard },
   // extends: DataSourcesMixin,
 
   name: 'OS',
@@ -132,7 +132,7 @@ export default {
       * dataSources
       **/
       store: false,
-      pipeline_id: 'input.os',
+      pipeline_id: 'input.system',
 
       id: 'os',
       path: 'all',
@@ -163,16 +163,16 @@ export default {
     create_pipelines: function (next) {
       debug('create_pipelines %o', this.$options.pipelines)
 
-      if (this.$options.pipelines['input.os'] && this.$options.pipelines['input.os'].get_input_by_id('input.os')) {
+      if (this.$options.pipelines['input.system'] && this.$options.pipelines['input.system'].get_input_by_id('input.system')) {
         // let requests = this.__components_sources_to_requests(this.components)
         // if (requests.once) {
-        //   this.$options.pipelines['input.os'].get_input_by_id('input.os').conn_pollers[0].options.requests.once.combine(requests.once)
-        //   this.$options.pipelines['input.os'].get_input_by_id('input.os').conn_pollers[0].fireEvent('onOnceRequestsUpdated')
+        //   this.$options.pipelines['input.system'].get_input_by_id('input.system').conn_pollers[0].options.requests.once.combine(requests.once)
+        //   this.$options.pipelines['input.system'].get_input_by_id('input.system').conn_pollers[0].fireEvent('onOnceRequestsUpdated')
         // }
         //
         // if (requests.periodical) {
-        //   this.$options.pipelines['input.os'].get_input_by_id('input.os').conn_pollers[0].options.requests.periodical.combine(requests.periodical)
-        //   this.$options.pipelines['input.os'].get_input_by_id('input.os').conn_pollers[0].fireEvent('onPeriodicalRequestsUpdated')
+        //   this.$options.pipelines['input.system'].get_input_by_id('input.system').conn_pollers[0].options.requests.periodical.combine(requests.periodical)
+        //   this.$options.pipelines['input.system'].get_input_by_id('input.system').conn_pollers[0].fireEvent('onPeriodicalRequestsUpdated')
         // }
       } else {
         let template = Object.clone(Pipeline)

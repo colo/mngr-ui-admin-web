@@ -1,10 +1,10 @@
 import * as Debug from 'debug'
-const debug = Debug('apps:os:sources:requests')
+const debug = Debug('apps:system:sources:requests')
 
 const SECOND = 1000
 const MINUTE = 60 * SECOND
 
-const os_hosts_paths = {
+const system_hosts_paths = {
   params: function (_key, vm) {
     debug('PERIODICAL %o %o', _key, vm)
 
@@ -86,11 +86,11 @@ const os_hosts_paths = {
 }
 
 const once = [
-  os_hosts_paths
+  system_hosts_paths
 ]
 
 const periodical = [
-  os_hosts_paths
+  system_hosts_paths
 ]
 
 const requests = {
@@ -98,5 +98,5 @@ const requests = {
   once: once
 }
 
-export { periodical, once, os_hosts_paths }
+export { periodical, once, system_hosts_paths }
 export default requests

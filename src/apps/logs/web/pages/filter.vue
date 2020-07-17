@@ -517,13 +517,13 @@ export default {
     //   // ) {
     //   //   // let requests = this.__components_sources_to_requests(this.components)
     //   //   // if (requests.once) {
-    //   //   //   this.$options.pipelines['input.logs.web.filter'].get_input_by_id('input.os').conn_pollers[0].options.requests.once.combine(requests.once)
-    //   //   //   this.$options.pipelines['input.logs.web.filter'].get_input_by_id('input.os').conn_pollers[0].fireEvent('onOnceRequestsUpdated')
+    //   //   //   this.$options.pipelines['input.logs.web.filter'].get_input_by_id('input.system').conn_pollers[0].options.requests.once.combine(requests.once)
+    //   //   //   this.$options.pipelines['input.logs.web.filter'].get_input_by_id('input.system').conn_pollers[0].fireEvent('onOnceRequestsUpdated')
     //   //   // }
     //   //   //
     //   //   // if (requests.periodical) {
-    //   //   //   this.$options.pipelines['input.logs.web.filter'].get_input_by_id('input.os').conn_pollers[0].options.requests.periodical.combine(requests.periodical)
-    //   //   //   this.$options.pipelines['input.logs.web.filter'].get_input_by_id('input.os').conn_pollers[0].fireEvent('onPeriodicalRequestsUpdated')
+    //   //   //   this.$options.pipelines['input.logs.web.filter'].get_input_by_id('input.system').conn_pollers[0].options.requests.periodical.combine(requests.periodical)
+    //   //   //   this.$options.pipelines['input.logs.web.filter'].get_input_by_id('input.system').conn_pollers[0].fireEvent('onPeriodicalRequestsUpdated')
     //   //   // }
     //   // } else {
     //   const pipelines = [PeriodicalPipeline, MinutePipeline, HourPipeline, DayPipeline]

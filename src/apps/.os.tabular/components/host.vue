@@ -8,7 +8,7 @@
         <h3 class="uk-light">{{category}}</h3>
       </vk-card-title>
       <template v-for="(config, name) in plugins_config_per_category">
-        <os-plugin-dygraph :ref="name" :id="category+'.'+name" :data="plugins[name]" :config="config" :key="category+'.'+name+'.plugin'"/>
+        <system-plugin-dygraph :ref="name" :id="category+'.'+name" :data="plugins[name]" :config="config" :key="category+'.'+name+'.plugin'"/>
       </template>
     </vk-card>
 
@@ -16,14 +16,14 @@
 
     <template v-for="(plugin, name) in plugins">
       <!-- <a :id="name" :key="name+'.anchor'"/> -->
-      <os-plugin-dygraph :ref="name" :id="name" :data="plugin" :key="name+'.plugin'"/>
+      <system-plugin-dygraph :ref="name" :id="name" :data="plugin" :key="name+'.plugin'"/>
     </template>
 </div>
 </template>
 
 <script>
 import * as Debug from 'debug'
-const debug = Debug('apps:os:components:host')
+const debug = Debug('apps:system:components:host')
 
 //
 
@@ -34,7 +34,7 @@ import OsPluginDygraph from './pluginDygraph'
 import DataSourcesMixin from '@mixins/dataSources'
 
 import JSPipeline from 'js-pipeline'
-import Pipeline from '@apps/os/pipelines/host'
+import Pipeline from '@apps/system/pipelines/host'
 
 import { requests, store } from '../sources/host'
 
@@ -45,16 +45,16 @@ export default {
 
   components: { OsPluginDygraph },
 
-  name: 'OSHost',
+  name: 'SystemHost',
 
   data () {
     return {
-      id: 'os.host',
+      id: 'system.host',
       path: 'all',
 
       // os: [],
       store: false,
-      pipeline_id: 'input.os.host',
+      pipeline_id: 'input.system.host',
 
       plugins: {},
       plugins_config: {},
@@ -92,22 +92,22 @@ export default {
     create_pipelines: function (next) {
       debug('create_pipelines %o', this.$options.pipelines)
 
-      if (this.$options.pipelines['input.os.host'] && this.$options.pipelines['input.os.host'].get_input_by_id('input.os')) {
+      if (this.$options.pipelines['input.system.host'] && this.$options.pipelines['input.system.host'].get_input_by_id('input.system')) {
         // let requests = this.__components_sources_to_requests(this.components)
         // if (requests.once) {
-        //   this.$options.pipelines['input.os.host'].get_input_by_id('input.os').conn_pollers[0].options.requests.once.combine(requests.once)
-        //   this.$options.pipelines['input.os.host'].get_input_by_id('input.os').conn_pollers[0].fireEvent('onOnceRequestsUpdated')
+        //   this.$options.pipelines['input.system.host'].get_input_by_id('input.system').conn_pollers[0].options.requests.once.combine(requests.once)
+        //   this.$options.pipelines['input.system.host'].get_input_by_id('input.system').conn_pollers[0].fireEvent('onOnceRequestsUpdated')
         // }
         //
         // if (requests.periodical) {
-        //   this.$options.pipelines['input.os.host'].get_input_by_id('input.os').conn_pollers[0].options.requests.periodical.combine(requests.periodical)
-        //   this.$options.pipelines['input.os.host'].get_input_by_id('input.os').conn_pollers[0].fireEvent('onPeriodicalRequestsUpdated')
+        //   this.$options.pipelines['input.system.host'].get_input_by_id('input.system').conn_pollers[0].options.requests.periodical.combine(requests.periodical)
+        //   this.$options.pipelines['input.system.host'].get_input_by_id('input.system').conn_pollers[0].fireEvent('onPeriodicalRequestsUpdated')
         // }
       } else {
         let template = Object.clone(Pipeline)
 
         let pipeline_id = template.input[0].poll.id
-        // let pipeline_id = 'input.os.host'
+        // let pipeline_id = 'input.system.host'
 
         template.input[0].poll.conn[0].requests = this.__components_sources_to_requests(this.components)
 
@@ -158,7 +158,7 @@ export default {
   // //   }
   // },
   // mounted: function () {
-  //   this.pipeline_id = 'input.os.host'
+  //   this.pipeline_id = 'input.system.host'
   // },
   // create: function () {
   //   debug('created HOST %s %o %o', this.host, this.$options.range_component, this.$options.__pipelines_cfg)

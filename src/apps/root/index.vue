@@ -7,8 +7,8 @@
         <q-toolbar >
           <q-breadcrumbs active-color="white" style="font-size: 16px">
             <q-breadcrumbs-el label="Home" disabled icon="home" to="/"/>
-            <!-- <q-breadcrumbs-el label="System" :to="{name : 'os'}"/>
-            <q-breadcrumbs-el label="Hosts" v-bind="(!host) ? {'disabled' : true} : ''" :to="{name : 'os_hosts'}"/>
+            <!-- <q-breadcrumbs-el label="System" :to="{name : 'system'}"/>
+            <q-breadcrumbs-el label="Hosts" v-bind="(!host) ? {'disabled' : true} : ''" :to="{name : 'system_hosts'}"/>
             <q-breadcrumbs-el :label="host" v-if="host" /> -->
           </q-breadcrumbs>
         </q-toolbar>
@@ -16,7 +16,7 @@
           <!-- <q-btn flat round dense icon="assignment_ind"/> -->
           <!-- <q-toolbar-title>Quasar</q-toolbar-title> -->
           <q-btn flat class="q-mr-xs" label="Logs" :to="{name : 'logs'}"/>
-          <q-btn flat class="q-mr-xs" label="System" :to="{name : 'os'}"/>
+          <q-btn flat class="q-mr-xs" label="System" :to="{name : 'system'}"/>
           <q-btn flat class="q-mr-xs" label="Munin" :to="{name : 'munin'}"/>
           <q-btn flat class="q-mr-xs" label="Vhosts" :to="{name : 'vhosts'}"/>
           <q-btn flat class="q-mr-xs" label="Checks" :to="{name : 'checks'}"/>

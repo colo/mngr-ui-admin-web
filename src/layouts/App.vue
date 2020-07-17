@@ -175,7 +175,7 @@ export default {
       byDate: 'Any time',
       links1: [
         { icon: 'web', text: 'Logs', to: {name: 'logs'}},
-        { icon: 'person', text: 'System', to: {name: 'os'}},
+        { icon: 'person', text: 'System', to: {name: 'system'}},
         { icon: 'star_border', text: 'Munin', to: {name: 'munin'}},
         { icon: 'search', text: 'Vhosts', to: {name: 'vhosts'}}
       ],

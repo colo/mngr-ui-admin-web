@@ -21,7 +21,7 @@
       </div>
 
       <template v-for="(category_hosts, category_name) in categories_paths">
-        <os-category-card
+        <system-category-card
           :key="category_name"
           v-if="!category || category_name === category"
           :hosts="category_hosts"
@@ -32,7 +32,7 @@
       <router-view :key="$route.path +'.'+ JSON.stringify($route.query)"></router-view>
 
       <template v-for="(category_hosts, category_name) in categories_paths">
-        <os-category-card
+        <system-category-card
           :key="category_name+'.bottom'"
           v-if="category_name === category"
           :hosts="category_hosts"
@@ -60,13 +60,13 @@ import Pipeline from '@apps/munin/pipelines/categories'
 
 import DataSourcesMixin from '@mixins/dataSources'
 
-import OsCategoryCard from '@apps/munin/components/categoryCard.vue'
+import SystemCategoryCard from '@apps/munin/components/categoryCard.vue'
 
 import { requests, store } from '@apps/munin/sources/categories/index'
 
 export default {
   mixins: [DataSourcesMixin],
-  components: { OsCategoryCard },
+  components: { SystemCategoryCard },
   // extends: DataSourcesMixin,
 
   name: 'MuninCategories',

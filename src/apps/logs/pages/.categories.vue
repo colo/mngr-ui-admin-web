@@ -43,7 +43,7 @@
     </vk-card>
 
     <template v-for="(category_hosts, category_name) in categories_paths">
-      <os-category-card
+      <system-category-card
         :key="category_name"
         v-if="!category || category_name === category"
         :hosts="category_hosts"
@@ -54,7 +54,7 @@
     <router-view :key="$route.path +'.'+ JSON.stringify($route.query)"></router-view>
 
     <template v-for="(category_hosts, category_name) in categories_paths">
-      <os-category-card
+      <system-category-card
         :key="category_name+'.bottom'"
         v-if="category_name === category"
         :hosts="category_hosts"
@@ -63,14 +63,14 @@
     </template>
 
     <!-- <template v-for="(category_hosts, category_name) in categories_paths">
-      <os-category-card
+      <system-category-card
         :key="category_name"
         v-if="!category"
         :categories="category_hosts"
         :category="category_name"
       />
       <q-page-sticky v-else position="top" :key="category_name+'.sticky'">
-        <os-category-card
+        <system-category-card
           v-if="category_name === category"
           :categories="category_hosts"
           :category="category_name"
@@ -87,7 +87,7 @@
     <!-- <vk-card class="uk-background-secondary uk-light" v-for="(categories, category) in categories_paths" :key="category">
 
       <vk-card-title>
-        <router-link :to="'/os/categories/'+category" v-slot="{ href, route, navigate, isActive, isExactActive }"
+        <router-link :to="'/system/categories/'+category" v-slot="{ href, route, navigate, isActive, isExactActive }"
         >
           <h3 class="uk-light"><a class="uk-link-heading" :href="href" @click="navigate">{{category}}</a></h3>
         </router-link>
@@ -96,7 +96,7 @@
 
       <ul class="uk-subnav uk-subnav-divider" uk-margin>
         <li v-for="category in categories" :key="category+'.'+category">
-          <router-link :to="'/os/categories/'+category+'#'+category" v-slot="{ href, route, navigate, isActive, isExactActive }"
+          <router-link :to="'/system/categories/'+category+'#'+category" v-slot="{ href, route, navigate, isActive, isExactActive }"
           >
             <a :href="href" @click="navigate">{{category}}</a>
           </router-link>
@@ -111,23 +111,23 @@
 // import HelloWorld from '@/components/HelloWorld.vue'
 
 import * as Debug from 'debug'
-const debug = Debug('apps:os:pages:categories')
+const debug = Debug('apps:system:pages:categories')
 
 import JSPipeline from 'js-pipeline'
-import Pipeline from '@apps/os/pipelines/categories'
+import Pipeline from '@apps/system/pipelines/categories'
 
 import DataSourcesMixin from '@mixins/dataSources'
 
-import OsCategoryCard from '@apps/os/components/categoryCard.vue'
+import SystemCategoryCard from '@apps/system/components/categoryCard.vue'
 
-import { requests, store } from '@apps/os/sources/categories/index'
+import { requests, store } from '@apps/system/sources/categories/index'
 
 export default {
   mixins: [DataSourcesMixin],
-  components: { OsCategoryCard },
+  components: { SystemCategoryCard },
   // extends: DataSourcesMixin,
 
-  name: 'OSCategories',
+  name: 'SystemCategories',
 
   // pipelines: {},
   // __pipelines_cfg: {},
@@ -144,9 +144,9 @@ export default {
       * dataSources
       **/
       store: false,
-      pipeline_id: 'input.os.categories',
+      pipeline_id: 'input.system.categories',
 
-      id: 'os.categories',
+      id: 'system.categories',
       path: 'all',
 
       components: {
@@ -175,16 +175,16 @@ export default {
     create_pipelines: function (next) {
       debug('create_pipelines %o', this.$options.pipelines)
 
-      if (this.$options.pipelines['input.os.categories'] && this.$options.pipelines['input.os.categories'].get_input_by_id('input.os.categories')) {
+      if (this.$options.pipelines['input.system.categories'] && this.$options.pipelines['input.system.categories'].get_input_by_id('input.system.categories')) {
         // let requests = this.__components_sources_to_requests(this.components)
         // if (requests.once) {
-        //   this.$options.pipelines['input.os.categories'].get_input_by_id('input.os.categories').conn_pollers[0].options.requests.once.combine(requests.once)
-        //   this.$options.pipelines['input.os.categories'].get_input_by_id('input.os.categories').conn_pollers[0].fireEvent('onOnceRequestsUpdated')
+        //   this.$options.pipelines['input.system.categories'].get_input_by_id('input.system.categories').conn_pollers[0].options.requests.once.combine(requests.once)
+        //   this.$options.pipelines['input.system.categories'].get_input_by_id('input.system.categories').conn_pollers[0].fireEvent('onOnceRequestsUpdated')
         // }
         //
         // if (requests.periodical) {
-        //   this.$options.pipelines['input.os.categories'].get_input_by_id('input.os.categories').conn_pollers[0].options.requests.periodical.combine(requests.periodical)
-        //   this.$options.pipelines['input.os.categories'].get_input_by_id('input.os.categories').conn_pollers[0].fireEvent('onPeriodicalRequestsUpdated')
+        //   this.$options.pipelines['input.system.categories'].get_input_by_id('input.system.categories').conn_pollers[0].options.requests.periodical.combine(requests.periodical)
+        //   this.$options.pipelines['input.system.categories'].get_input_by_id('input.system.categories').conn_pollers[0].fireEvent('onPeriodicalRequestsUpdated')
         // }
       } else {
         let template = Object.clone(Pipeline)

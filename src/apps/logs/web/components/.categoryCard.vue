@@ -2,8 +2,8 @@
 
   <vk-card class="uk-background-secondary uk-light">
     <vk-card-title>
-      <!-- <q-btn flat color="primary" :label="category" :to="{name: 'os_category', params: category}"/> -->
-      <router-link :to="'/os/categories/'+category" v-slot="{ href, route, navigate, isActive, isExactActive }"
+      <!-- <q-btn flat color="primary" :label="category" :to="{name: 'system_category', params: category}"/> -->
+      <router-link :to="'/system/categories/'+category" v-slot="{ href, route, navigate, isActive, isExactActive }"
       >
         <h3 class="uk-light"><a class="uk-link-heading" :href="href" @click="navigate">{{category}}</a></h3>
       </router-link>
@@ -16,19 +16,19 @@
           flat color="primary"
           :label="host"
           :to="{
-            name: 'os_category',
+            name: 'system_category',
             params: { category: category },
             hash: '#'+host
           }"
         /> -->
 
-        <!-- <router-link :to="'/os/categories/'+category+'#'+host" v-slot="{ href, route, navigate, isActive, isExactActive }">
+        <!-- <router-link :to="'/system/categories/'+category+'#'+host" v-slot="{ href, route, navigate, isActive, isExactActive }">
           <a :href="href" @click="navigate">{{host}}</a>
         </router-link> -->
         <router-link
           tag="a"
           :to="{
-            name: 'os_category',
+            name: 'system_category',
             params: { category: category },
             hash: '#'+host
           }"
@@ -47,10 +47,10 @@
 // import HelloWorld from '@/components/HelloWorld.vue'
 
 import * as Debug from 'debug'
-const debug = Debug('apps:os:components:categoryCard')
+const debug = Debug('apps:system:components:categoryCard')
 
 // import JSPipeline from 'js-pipeline'
-// import Pipeline from '@apps/os/pipelines/index'
+// import Pipeline from '@apps/system/pipelines/index'
 
 // import DataSourcesMixin from '@mixins/dataSources'
 
@@ -60,7 +60,7 @@ export default {
   // mixins: [DataSourcesMixin],
   // extends: DataSourcesMixin,
 
-  name: 'OsCategoryCard',
+  name: 'SystemCategoryCard',
 
   // pipelines: {},
   // __pipelines_cfg: {},

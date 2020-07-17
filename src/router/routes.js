@@ -143,50 +143,50 @@ const routes = [
         ]
       },
       {
-        path: 'os',
-        name: 'os',
+        path: 'system',
+        name: 'system',
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "os" */ '@apps/os/index.vue'),
-        redirect: { name: 'os_hosts' },
+        component: () => import(/* webpackChunkName: "system" */ '@apps/system/index.vue'),
+        redirect: { name: 'system_hosts' },
         meta: {
-          breadcrumb: { label: 'OS', icon: 'widgets', app: 'os' }
+          breadcrumb: { label: 'System', icon: 'widgets', app: 'system' }
         },
 
         children: [
           {
             path: 'hosts',
-            name: 'os_hosts',
-            component: () => import(/* webpackChunkName: "os.hosts" */ '@apps/os/pages/hosts.vue'),
+            name: 'system_hosts',
+            component: () => import(/* webpackChunkName: "system.hosts" */ '@apps/system/pages/hosts.vue'),
             meta: {
-              breadcrumb: { label: 'OS Hosts', icon: 'widgets', app: 'os' }
+              breadcrumb: { label: 'System Hosts', icon: 'widgets', app: 'system' }
             },
             children: [
               {
                 path: ':host',
-                name: 'os_host',
-                component: () => import(/* webpackChunkName: "os.host" */ '@apps/os/pages/host.vue'),
+                name: 'system_host',
+                component: () => import(/* webpackChunkName: "system.host" */ '@apps/system/pages/host.vue'),
                 meta: {
-                  breadcrumb: { label: 'OS Host', icon: 'widgets', app: 'os' }
+                  breadcrumb: { label: 'System Host', icon: 'widgets', app: 'system' }
                 }
               }
             ]
           },
           {
             path: 'categories',
-            name: 'os_categories',
-            component: () => import(/* webpackChunkName: "os.hosts" */ '@apps/os/pages/categories.vue'),
+            name: 'system_categories',
+            component: () => import(/* webpackChunkName: "system.hosts" */ '@apps/system/pages/categories.vue'),
             meta: {
-              breadcrumb: { label: 'OS Categories', icon: 'widgets', app: 'os' }
+              breadcrumb: { label: 'System Categories', icon: 'widgets', app: 'system' }
             },
             children: [
               {
                 path: ':category',
-                name: 'os_category',
-                component: () => import(/* webpackChunkName: "os.category" */ '@apps/os/pages/category.vue'),
+                name: 'system_category',
+                component: () => import(/* webpackChunkName: "system.category" */ '@apps/system/pages/category.vue'),
                 meta: {
-                  breadcrumb: { label: 'OS Category', icon: 'widgets', app: 'os' }
+                  breadcrumb: { label: 'System Category', icon: 'widgets', app: 'system' }
                 }
               }
             ]

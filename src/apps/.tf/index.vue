@@ -32,7 +32,7 @@ import Pipeline from '@apps/tf/pipelines/index'
 
 import DataSourcesMixin from '@mixins/dataSources'
 
-// import OsHostCard from '@apps/tf/components/hostCard.vue'
+// import SystemHostCard from '@apps/tf/components/hostCard.vue'
 
 import { requests, store } from '@apps/tf/sources/index'
 // import moment from 'moment'

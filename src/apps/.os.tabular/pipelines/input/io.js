@@ -14,16 +14,16 @@ const debug = Debug("libs:input:io")
 // import store from 'src/store'
 
 // import DefaultConn from '@etc/default.io'
-import IO from '@etc/os.io'
+import IO from '@etc/system.io'
 
 export default new Class({
   Extends: App,
 
-  // types: ['count', 'os', 'paths'],
+  // types: ['count', 'system', 'paths'],
   // recived: [],
 
   options: {
-    // path: '/os',
+    // path: '/system',
 
     scheme: undefined,
     log: undefined,
@@ -52,7 +52,7 @@ export default new Class({
 
     io: {
 			middlewares: [], //namespace.use(fn)
-			// rooms: ['os'], //atomatically join connected sockets to this rooms
+			// rooms: ['system'], //atomatically join connected sockets to this rooms
 			routes: {
 				// 'app.doc': [{
 				// 	// path: ':param',
@@ -63,7 +63,7 @@ export default new Class({
         'all': [{
 					// path: ':param',
 					// once: true, //socket.once
-					callbacks: ['os'],
+					callbacks: ['system'],
 					// middlewares: [], //socket.use(fn)
 				}],
         // 'on': [{
@@ -86,12 +86,12 @@ export default new Class({
   //   debug('register %o', result)
   //
   // },
-  os: function(socket, next, doc){
+  system: function(socket, next, doc){
     // let {type} = doc
-    debug('os %o', doc)
+    debug('system %o', doc)
 
     if(doc.status){
-      debug('ERROR os %o', doc)
+      debug('ERROR system %o', doc)
     }
     else if (doc.metadata && Array.isArray(doc.metadata.from)) {
 
@@ -99,7 +99,7 @@ export default new Class({
     // else if(
     //   doc.data
     //   && (!doc.metadata.opts || !doc.metadata.opts.params || Object.getLength(doc.metadata.opts.params) === 0)){
-    //   debug('os %o', doc)
+    //   debug('system %o', doc)
     //   // Array.each(doc.os.tags, function(tag){
     //   //   debug('TAG %s', tag)
     //   //   // this.io.emit('/tags/'+tag)
@@ -116,7 +116,7 @@ export default new Class({
     //   //
     //   // }.bind(this))
     //   //
-    //   // Array.each(doc.os.hosts, function(host){
+    //   // Array.each(doc.system.hosts, function(host){
     //   //   debug('HOST %s', host)
     //   //   // this.io.emit('/tags/'+tag)
     //   //   this.io.emit('/', {
@@ -177,7 +177,7 @@ export default new Class({
     // let _io = new App(DefaultConn)
     this.add_io(IO)
 
-		this.profile('os_init');//start profiling
+		this.profile('system_init');//start profiling
 
 
     this.addEvent('onConnect', function(){
@@ -359,9 +359,9 @@ export default new Class({
         // this.io.close()
     }.bind(this))
 
-		this.profile('os_init');//end profiling
+		this.profile('system_init');//end profiling
 
-		this.log('os', 'info', 'os started');
+		this.log('system', 'info', 'system started');
   },
 
 });

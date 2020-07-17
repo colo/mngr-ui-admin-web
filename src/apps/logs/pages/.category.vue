@@ -8,14 +8,14 @@
         <h3 class="uk-light">{{host}}</h3>
       </vk-card-title>
       <!-- <template v-for="(config, name) in plugins_config_per_host">
-        <os-plugin-dygraph :ref="name" :id="host+'.'+name" :data="plugins[name]" :config="config" :key="host+'.'+name+'.plugin'"/>
+        <system-plugin-dygraph :ref="name" :id="host+'.'+name" :data="plugins[name]" :config="config" :key="host+'.'+name+'.plugin'"/>
       </template> -->
       <template v-for="(name) in plugins">
 
         <!-- {{host}}
         {{name}} -->
         <!-- <a :id="name" :key="name+'.anchor'"/> -->
-        <os-plugin-dygraph v-if="name.indexOf(host) > -1" :ref="name" :id="name" :name="name"  :key="name+'.plugin'"/>
+        <system-plugin-dygraph v-if="name.indexOf(host) > -1" :ref="name" :id="name" :name="name"  :key="name+'.plugin'"/>
           <!-- :data="plugin" -->
       </template>
     </vk-card>
@@ -24,27 +24,27 @@
 
     <!-- <template v-for="(plugin, name) in plugins">
 
-      <os-plugin-dygraph :ref="name" :id="name" :data="plugin" :key="name+'.plugin'"/>
+      <system-plugin-dygraph :ref="name" :id="name" :data="plugin" :key="name+'.plugin'"/>
     </template> -->
 </div>
 </template>
 
 <script>
 import * as Debug from 'debug'
-const debug = Debug('apps:os:pages:category')
+const debug = Debug('apps:system:pages:category')
 
 //
 
 // let moment = require('moment')
 
-import OsPluginDygraph from '@apps/os/components/pluginDygraph'
+import OsPluginDygraph from '@apps/system/components/pluginDygraph'
 
 import DataSourcesMixin from '@mixins/dataSources'
 
 import JSPipeline from 'js-pipeline'
-import Pipeline from '@apps/os/pipelines/category'
+import Pipeline from '@apps/system/pipelines/category'
 
-import { requests, store } from '@apps/os/sources/category/index'
+import { requests, store } from '@apps/system/sources/category/index'
 
 // const MAX_FEED_DATA = 10
 
@@ -53,16 +53,16 @@ export default {
 
   components: { OsPluginDygraph },
 
-  name: 'OSHost',
+  name: 'SystemHost',
 
   data () {
     return {
-      id: 'os.category',
+      id: 'system.category',
       path: 'all',
 
       // os: [],
       store: false,
-      pipeline_id: 'input.os.category',
+      pipeline_id: 'input.system.category',
 
       plugins: [],
       // plugins_config: {},
@@ -100,22 +100,22 @@ export default {
     create_pipelines: function (next) {
       debug('create_pipelines %o', this.$options.pipelines)
 
-      if (this.$options.pipelines['input.os.category'] && this.$options.pipelines['input.os.category'].get_input_by_id('input.os.category')) {
+      if (this.$options.pipelines['input.system.category'] && this.$options.pipelines['input.system.category'].get_input_by_id('input.system.category')) {
         // let requests = this.__components_sources_to_requests(this.components)
         // if (requests.once) {
-        //   this.$options.pipelines['input.os.category'].get_input_by_id('input.os.category').conn_pollers[0].options.requests.once.combine(requests.once)
-        //   this.$options.pipelines['input.os.category'].get_input_by_id('input.os.category').conn_pollers[0].fireEvent('onOnceRequestsUpdated')
+        //   this.$options.pipelines['input.system.category'].get_input_by_id('input.system.category').conn_pollers[0].options.requests.once.combine(requests.once)
+        //   this.$options.pipelines['input.system.category'].get_input_by_id('input.system.category').conn_pollers[0].fireEvent('onOnceRequestsUpdated')
         // }
         //
         // if (requests.periodical) {
-        //   this.$options.pipelines['input.os.category'].get_input_by_id('input.os.category').conn_pollers[0].options.requests.periodical.combine(requests.periodical)
-        //   this.$options.pipelines['input.os.category'].get_input_by_id('input.os.category').conn_pollers[0].fireEvent('onPeriodicalRequestsUpdated')
+        //   this.$options.pipelines['input.system.category'].get_input_by_id('input.system.category').conn_pollers[0].options.requests.periodical.combine(requests.periodical)
+        //   this.$options.pipelines['input.system.category'].get_input_by_id('input.system.category').conn_pollers[0].fireEvent('onPeriodicalRequestsUpdated')
         // }
       } else {
         let template = Object.clone(Pipeline)
 
         let pipeline_id = template.input[0].poll.id
-        // let pipeline_id = 'input.os.category'
+        // let pipeline_id = 'input.system.category'
 
         template.input[0].poll.conn[0].requests = this.__components_sources_to_requests(this.components)
 
@@ -171,7 +171,7 @@ export default {
   // //   }
   // },
   // mounted: function () {
-  //   this.pipeline_id = 'input.os.category'
+  //   this.pipeline_id = 'input.system.category'
   // },
   // create: function () {
   //   debug('created HOST %s %o %o', this.category, this.$options.range_component, this.$options.__pipelines_cfg)

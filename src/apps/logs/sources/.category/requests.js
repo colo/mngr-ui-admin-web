@@ -1,5 +1,5 @@
 import * as Debug from 'debug'
-const debug = Debug('apps:os:sources:category_requests')
+const debug = Debug('apps:system:sources:category_requests')
 
 const SECOND = 1000
 const MINUTE = 60 * SECOND

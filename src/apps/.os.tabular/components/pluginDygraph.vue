@@ -62,7 +62,7 @@
 // import Vue from 'vue'
 
 import * as Debug from 'debug'
-const debug = Debug('apps:os:components:pluginDygraph')
+const debug = Debug('apps:system:components:pluginDygraph')
 
 import { EventBus } from '@libs/eventbus'
 
@@ -99,12 +99,12 @@ import Dygraph from 'dygraphs'
 // let moment = require('moment')
 
 // import Widget from '@skins/flatlogic/lightblue/components/Widget/Widget'
-// import StatsCard from '@apps/os/components/creativetim/argon/StatsCard'
+// import StatsCard from '@apps/system/components/creativetim/argon/StatsCard'
 
 import DataSourcesMixin from '@mixins/dataSources'
 
 import JSPipeline from 'js-pipeline'
-import Pipeline from '@apps/os/pipelines/index'
+import Pipeline from '@apps/system/pipelines/index'
 
 // const MAX_FEED_DATA = 10
 

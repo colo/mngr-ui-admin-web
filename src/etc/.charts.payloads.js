@@ -25,7 +25,7 @@ export default {
     * for __get_stat_for_chart
     **/
     pipeline: {
-      name: 'input.os',
+      name: 'input.system',
       // // path: 'os',
       // range: true
     }
@@ -55,7 +55,7 @@ export default {
     * for __get_stat_for_chart
     **/
     pipeline: {
-      name: 'input.os',
+      name: 'input.system',
       // // path: 'os',
       // range: true
     }
@@ -81,7 +81,7 @@ export default {
     * for __get_stat_for_chart
     **/
     pipeline: {
-      name: 'input.os',
+      name: 'input.system',
       // // path: 'os',
       range: true
     }
@@ -108,7 +108,7 @@ export default {
     * for __get_stat_for_chart
     **/
     pipeline: {
-      name: 'input.os',
+      name: 'input.system',
       // // path: 'os',
       range: true
     }
@@ -134,7 +134,7 @@ export default {
     * for __get_stat_for_chart
     **/
     pipeline: {
-      name: 'input.os',
+      name: 'input.system',
       // // path: 'os.blockdevices',
       range: true
     }
@@ -160,7 +160,7 @@ export default {
     * for __get_stat_for_chart
     **/
     pipeline: {
-      name: 'input.os',
+      name: 'input.system',
       // // path: 'os.mounts',
       range: true
     }
@@ -187,7 +187,7 @@ export default {
     * for __get_stat_for_chart
     **/
     pipeline: {
-      name: 'input.os',
+      name: 'input.system',
       // // path: 'os',
       // range: true
     }
@@ -214,7 +214,7 @@ export default {
     * for __get_stat_for_chart
     **/
     pipeline: {
-      name: 'input.os',
+      name: 'input.system',
       // // path: 'os.networkInterfaces_stats',
       // range: true
     }

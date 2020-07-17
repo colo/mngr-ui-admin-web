@@ -53,7 +53,7 @@ export default {
   // mixins: [DataSourcesMixin],
   // extends: DataSourcesMixin,
 
-  name: 'OsCategoryCard',
+  name: 'SystemCategoryCard',
 
   // pipelines: {},
   // __pipelines_cfg: {},

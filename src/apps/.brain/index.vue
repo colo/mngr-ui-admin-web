@@ -90,7 +90,7 @@ import Pipeline from '@apps/brain/pipelines/index'
 
 import DataSourcesMixin from '@mixins/dataSources'
 
-// import OsHostCard from '@apps/brain/components/hostCard.vue'
+// import SystemHostCard from '@apps/brain/components/hostCard.vue'
 
 import { requests, store } from '@apps/brain/sources/index'
 // import moment from 'moment'
