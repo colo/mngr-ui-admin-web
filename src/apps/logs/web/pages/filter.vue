@@ -148,7 +148,7 @@ export default {
       id: 'logs.web.filter',
       path: 'all',
 
-      range_tab: 'day',
+      range_tab: 'minute',
 
       // current_day: undefined,
       // current_hour: undefined,
