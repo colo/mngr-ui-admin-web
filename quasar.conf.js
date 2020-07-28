@@ -18,17 +18,19 @@ module.exports = function (/* ctx */) {
       'i18n',
       'axios',
       'vue-observe-visibility',
+      'dashblocks'
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
     css: [
-      'app.sass'
+      '../../dashblocks-template/src/styles/quasar.scss',
+      'app.sass',
     ],
 
     // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
       // 'ionicons-v4',
-      // 'mdi-v5',
+      'mdi-v5',
       // 'fontawesome-v5',
       // 'eva-icons',
       // 'themify',
@@ -66,7 +68,7 @@ module.exports = function (/* ctx */) {
     },
 
     // https://quasar.dev/quasar-cli/cli-documentation/supporting-ie
-    supportIE: true,
+    // supportIE: true,
 
     // https://quasar.dev/quasar-cli/cli-documentation/supporting-ts
     supportTS: false,
@@ -76,6 +78,8 @@ module.exports = function (/* ctx */) {
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
+      vueCompiler: true,
+      modern: true,
       // vueRouterMode: 'hash', // available values: 'hash', 'history'
       scopeHoisting: true,
       vueRouterMode: 'history',
@@ -120,6 +124,8 @@ module.exports = function (/* ctx */) {
           '@wrappers': path.resolve(__dirname, './src/components/wrappers'),
           '@apps': path.resolve(__dirname, './src/apps'),
           '@store': path.resolve(__dirname, './src/store'),
+          '@dashblocks': path.resolve(__dirname, './dashblocks'),
+          '@dashblocks-template': path.resolve(__dirname, './dashblocks-template'),
           // '@skins': path.resolve(__dirname, './src/skins')
         }
 

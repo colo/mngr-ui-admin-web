@@ -39,19 +39,23 @@
       <q-separator />
       <q-tab-panels v-model="range_tab">
         <!-- animated -->
-        <q-tab-panel name="periodical" :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical'">
+        <q-tab-panel name="periodical">
+          <!-- :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical'" -->
           <logs-web-filter-periodical/>
         </q-tab-panel>
 
-        <q-tab-panel name="minute" :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute'">
+        <q-tab-panel name="minute">
+           <!-- :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute'" -->
           <logs-web-filter-minute/>
         </q-tab-panel>
 
-        <q-tab-panel name="hour" :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour'">
+        <q-tab-panel name="hour">
+           <!-- :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour'" -->
           <logs-web-filter-hour/>
         </q-tab-panel>
 
-        <q-tab-panel name="day" :key="$route.path +'.'+ JSON.stringify($route.query)+'.day'">
+        <q-tab-panel name="day">
+          <!-- :key="$route.path +'.'+ JSON.stringify($route.query)+'.day'" -->
           <logs-web-filter-day/>
         </q-tab-panel>
       </q-tab-panels>

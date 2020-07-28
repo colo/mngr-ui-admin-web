@@ -2,8 +2,8 @@
 const routes = [
   {
     path: '/',
-    // component: () => import('@apps/root/index.vue'),
-    component: () => import('layouts/App'),
+    // component: () => import('layouts/App'),
+    component: () => import('layouts/DashblocksTemplate'),
     meta: {
       breadcrumb: { label: 'Index', icon: 'widgets', app: 'root' }
     },

@@ -48,6 +48,29 @@ export default {
     }
   },
   created: function () {
+    // debug('lifecycle created')
+    // let pipeline_id = []
+    // if (!Array.isArray(this.pipeline_id)) {
+    //   pipeline_id = [this.pipeline_id]
+    // } else {
+    //   pipeline_id = this.pipeline_id
+    // }
+    // Array.each(pipeline_id, function (id) {
+    //   EventBus.$on(id + '.' + this.path, this.__process_input_data)
+    //   // EventBus.$on(id + '.' + this.path, function (data) { debug('EventBus.$on', id + '.' + this.path, data) })
+    // }.bind(this))
+    //
+    // if (this.store && this.store === true) this.__register_store_module(this.id, sourceStore)
+    // // this.__bind_components_to_sources(this.components)
+    // Object.each(this.$options._components_req, function (_components_req, pipeline_id) {
+    //   this.__bind_components_to_sources(_components_req)
+    // }.bind(this))
+    //
+    // this.create_pipelines()
+  },
+
+  mounted: function () {
+    debug('lifecycle mounted')
     debug('lifecycle created')
     let pipeline_id = []
     if (!Array.isArray(this.pipeline_id)) {
@@ -67,10 +90,6 @@ export default {
     }.bind(this))
 
     this.create_pipelines()
-  },
-
-  mounted: function () {
-    debug('lifecycle mounted')
     this.resume_pipelines()
   },
   // updated: function () {

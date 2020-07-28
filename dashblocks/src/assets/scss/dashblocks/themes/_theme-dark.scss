@@ -1,0 +1,14 @@
+@import "../dbdashboard";
+
+$accent: red;
+
+.db-dashboard.db-theme-dark {
+  @include db-dashboard;
+  color: white;
+
+  & .db-widget-container {
+    border: 1px solid material-color('red', '600');
+  }
+
+}
+

@@ -15,12 +15,13 @@
 // import HelloWorld from '@/components/HelloWorld.vue'
 
 import * as Debug from 'debug'
-const debug = Debug('components:wrappers:amchartsWorlCitydMap')
+const debug = Debug('components:wrappers:amchartsWorldCitydMap')
 
 import * as am4core from '@amcharts/amcharts4/core'
 import * as am4maps from '@amcharts/amcharts4/maps'
 import am4geodata_worldLow from '@amcharts/amcharts4-geodata/worldLow'
 import am4themes_animated from '@amcharts/amcharts4/themes/animated'
+import am4themes_dark from '@amcharts/amcharts4/themes/dark'
 
 /* Chart code */
 // Themes begin
@@ -31,13 +32,15 @@ import { countries, continents } from 'src/data/world'
 
 import chartWrapperMixin from '@mixins/chartWrapper.vue'
 
+import dbColors from '@dashblocks/src/components/dbcolors'
+
 export default {
   mixins: [chartWrapperMixin],
 
   name: 'amcharts-worl-map',
 
   _amcharts_worldmap_defaults: {
-    colorSet: new am4core.ColorSet(),
+    // colorSet: new am4core.ColorSet(),
     imageSeries: undefined,
 
     chart: undefined,
@@ -57,16 +60,40 @@ export default {
     cities: {
       type: Array,
       default: function () { return [] }
+    },
+    followColorScheme: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
     return {
       // chart: {}
+      colorSet: new am4core.ColorSet()
     }
   },
   watch: {
     'cities': function (data) {
       this.handle_data(data)
+    },
+    dark: function () {
+      // this.optionsChanged = true
+      if (this.$options['charts'][this.id].chart && typeof (this.$options['charts'][this.id].chart.dispose) === 'function') {
+        this.$options['charts'][this.id].chart.dispose()
+      }
+      this.$options['charts'][this.id].chart = undefined
+      this.create()
+      this.update()
+    },
+    colorScheme: function () {
+      if (this.followColorScheme === true) {
+        if (this.$options['charts'][this.id].chart && typeof (this.$options['charts'][this.id].chart.dispose) === 'function') {
+          this.$options['charts'][this.id].chart.dispose()
+        }
+        this.$options['charts'][this.id].chart = undefined
+        this.create()
+        this.update()
+      }
     }
   },
   // destroyed () {
@@ -82,7 +109,8 @@ export default {
         this.$options['charts'][this.id] = {}
       }
 
-      this.$options['charts'][this.id] = Object.merge(this.$options['charts'][this.id], Object.clone(this.$options['charts'][this.id]._amcharts_worldmap_defaults))
+      // this.$options['charts'][this.id] = Object.merge(this.$options['charts'][this.id], Object.clone(this.$options['charts'][this.id]._amcharts_worldmap_defaults))
+      this.$options['charts'][this.id] = Object.merge(this.$options['charts'][this.id], Object.clone(this.$options._amcharts_worldmap_defaults))
       this.init_chart()
     },
     detroy: function () {
@@ -90,28 +118,61 @@ export default {
         this.$options['charts'][this.id].chart.clear()
       }
     },
-    update: function (data) {
-      debug('update', this.id, data, this.get_data(data).getLast())
-      this.handle_data(this.get_data(data).getLast())
+    get_data: function (data) {
+      data = (data && data.length > 0) ? data : (this.chart_data && this.chart_data.length > 0 && this.chart_data[0][0]) ? this.chart_data : this.$options.charts[this.id].buffered_data
+      data = JSON.parse(JSON.stringify(data))
+      return data
     },
+    update: function (data) {
+      debug('update', this.id, data, this.$options.charts[this.id].buffered_data, this.chart_data, this.get_data(data))
+      this.handle_data(this.get_data(data).getLast())
+      if (data && data.length > 0) {
+        this.$options.charts[this.id].buffered_data = Array.clone(data)
+      }
+    },
+    // update: function (data) {
+    //   debug('update', this.id, data, this.get_data(data).getLast())
+    //   this.handle_data(this.get_data(data).getLast())
+    // },
     handle_data: function (data) {
+      // if (data && data !== null) { // && (newData.length > 0 || Object.getLength(newData) > 0)
       let self = this
       // if (self.$options['charts'][self.id].colorSet) {
       data = JSON.parse(JSON.stringify(data))
       let _data = []
       Array.each(data, function (city) {
-        // city.color = self.$options['charts'][self.id].colorSet.next()
-        city.color = self.$options._amcharts_worldmap_defaults.colorSet.getIndex(16)
-        // debug('cities %o', city, { 'color': self.$options['charts'][self.id].colorSet.next() })
-        _data.push(city)
+        if (city !== undefined && city !== null) {
+          // city.color = self.$options['charts'][self.id].colorSet.next()
+          if (!city.color && self.followColorScheme === true) {
+            city.color = dbColors.getColors(self.dark, self.colorScheme)[0]
+          } else if (!city.color) {
+            city.color = self.colorSet.getIndex(16)
+          }
+          // else{
+          //   city.color = city.color
+          // }
+
+          // debug('cities %o', city, { 'color': self.$options['charts'][self.id].colorSet.next() })
+          _data.push(city)
+        }
       })
-      this.$options['charts'][this.id].chart.invalidateData()
-      this.$options['charts'][this.id].imageSeries.data = _data
+
+      if (_data.length > 0) {
+        this.$options['charts'][this.id].chart.invalidateData()
+        this.$options['charts'][this.id].imageSeries.data = _data
+      }
       debug('cities %o', data)
+      // }
       // }
     },
     init_chart: function () {
       debug('init_chart', this.id)
+      if (this.dark) {
+        am4core.useTheme(am4themes_dark)
+      } else {
+        am4core.unuseTheme(am4themes_dark)
+      }
+
       let chart = am4core.create(this.id, am4maps.MapChart)
       chart.projection = new am4maps.projections.Miller()
       // Create map polygon series for world map
@@ -233,9 +294,15 @@ export default {
     }
   },
   beforeDestroy () {
-    if (this.$options['charts'][this.id].chart) {
+    if (this.$options['charts'][this.id].chart && typeof (this.$options['charts'][this.id].chart.dispose) === 'function') {
       this.$options['charts'][this.id].chart.dispose()
     }
+  },
+  beforeRouteLeave (to, from, next) {
+    if (this.$options['charts'][this.id].chart && typeof (this.$options['charts'][this.id].chart.dispose) === 'function') {
+      this.$options['charts'][this.id].chart.dispose()
+    }
+    next()
   }
 
 }

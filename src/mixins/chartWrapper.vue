@@ -19,6 +19,25 @@ export default {
   },
 
   props: {
+    /**
+     * Enable dark mode
+     *
+     * `true,false`
+     */
+    dark: {
+      type: Boolean,
+      default: false
+    },
+    /**
+     * Color Scheme Name
+     * App may define multiple color schemes for different charts
+     * and use this prop to specify which colorScheme to use
+     * default: "default" - refers to default dashblocks colorScheme which is always defined
+     */
+    colorScheme: {
+      type: String,
+      default: 'default'
+    },
     EventBus: {
       type: [Object],
       default: () => ({})
@@ -106,7 +125,6 @@ export default {
       data = data || Array.clone(this.chart_data)
       return data
     },
-
     update (data) {
       data = this.get_data(data)
     }

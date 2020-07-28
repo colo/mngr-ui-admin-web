@@ -2,6 +2,8 @@
 <div
   class="netdata-container-easypiechart"
   style="margin-right: 10px; width: 100%;"
+  :style="container.style"
+  :class="container.class"
 >
 <!-- {{chart.params.value}} -->
 
@@ -53,6 +55,8 @@ import 'vue-easy-pie-chart/dist/vue-easy-pie-chart.css'
 
 import chartWrapperMixin from '@mixins/chartWrapper.vue'
 
+import dbColors from '@dashblocks/src/components/dbcolors'
+
 export default {
   mixins: [chartWrapperMixin],
 
@@ -65,14 +69,42 @@ export default {
   // chart: null,
   // freezed: false,
 
+  props: {
+    container: {
+      type: Object,
+      default: () => ({
+        class: undefined,
+        style: undefined,
+      })
+    },
+
+  },
+
   data () {
     return {
       ready: true,
       value: undefined,
       percent: undefined,
       max: undefined,
+      params: {}
+    }
+  },
+  computed: {
+    // Augment passed options with defaults for Dygraphs
+    graphOptions: function () {
+      let options = Object.merge(this.defaultOptions, this.chart.params)
 
-      params: {
+      let line = Math.floor(options.size / 22)
+      if (line < 3) {
+        line = 2
+      }
+
+      // this.$set(options, 'line-width', line)
+      options['line-width'] = line
+      return options
+    },
+    defaultOptions: function () {
+      return {
         'unit': '%',
         'scale-length': 5,
         'line-cap': 'round',
@@ -83,16 +115,29 @@ export default {
         // 'animate': {duration: 500, enabled: true},
         'animate': 500,
         'easing': undefined,
-        'track-color': '#f0f0f0', // easypiechart_track
-        'scale-color': '#dfe0e0', // easypiechart_scale
-      },
-
-    }
+        // 'track-color': '#f0f0f0', // easypiechart_track
+        // 'scale-color': '#dfe0e0', // easypiechart_scale
+        'bar-color': dbColors.getColors(this.dark, this.colorScheme).getRandom(),
+        // 'track-color': dbColors.getColors(this.dark, this.colorScheme).getRandom(),
+        'track-color': this.dark ? '#373b40' : '#dfe0e0',
+        'scale-color': this.dark ? '#373b40' : '#dfe0e0',
+      }
+    },
+    // elementClass: function() {
+    //   return this.dark ? 'db-dygraphs db-dark' : 'db-dygraphs';
+    // }
   },
   watch: {
     visible: function (val) {
       this.container_class_helper = (val === false) ? 'invisible' : ''
       // console.log('class visible', val, this.container_class_helper)
+    },
+    dark: function () {
+      // this.optionsChanged = true
+      this.params = Object.merge(this.graphOptions, this.chart.params)
+    },
+    colorScheme: function () {
+      this.params = Object.merge(this.graphOptions, this.chart.params)
     }
   },
 
@@ -108,14 +153,15 @@ export default {
 
   methods: {
     create () {
-      debug('create', this.id)
-      let params = Object.merge(this.params, this.chart.params)
-      let line = Math.floor(params.size / 22)
-      if (line < 3) {
-        line = 2
-      }
-
-      this.$set(this.params, 'line-width', line)
+      // debug('create', this.id)
+      // let params = Object.merge(this.params, this.chart.params)
+      // let line = Math.floor(params.size / 22)
+      // if (line < 3) {
+      //   line = 2
+      // }
+      //
+      // this.$set(this.params, 'line-width', line)
+      this.params = Object.merge(this.graphOptions, this.chart.params)
     },
     format_value: function (percent) {
       let num = Number(percent).toFixed(1)

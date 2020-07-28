@@ -10,14 +10,10 @@
             <q-breadcrumbs-el :label="host" v-if="host" />
           </q-breadcrumbs>
         </q-toolbar>
-        <q-toolbar>
-          <!-- <q-btn flat round dense icon="assignment_ind"/> -->
-          <!-- <q-toolbar-title>Quasar</q-toolbar-title> -->
-
+        <!-- <q-toolbar>
           <q-btn flat class="q-mr-xs" label="Hosts" :to="{name : 'system_hosts'}"/>
           <q-btn flat class="q-mr-xs" label="Categories" :to="{name : 'system_categories'}"/>
-          <!-- <q-btn flat round dense icon="gamepad"/> -->
-        </q-toolbar>
+        </q-toolbar> -->
       </div>
       <template v-if="hosts_data['_ALL_']">
         <system-host-card

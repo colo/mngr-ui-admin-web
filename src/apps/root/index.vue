@@ -12,17 +12,14 @@
             <q-breadcrumbs-el :label="host" v-if="host" /> -->
           </q-breadcrumbs>
         </q-toolbar>
-        <q-toolbar>
-          <!-- <q-btn flat round dense icon="assignment_ind"/> -->
-          <!-- <q-toolbar-title>Quasar</q-toolbar-title> -->
+        <!-- <q-toolbar>
           <q-btn flat class="q-mr-xs" label="Logs" :to="{name : 'logs'}"/>
           <q-btn flat class="q-mr-xs" label="System" :to="{name : 'system'}"/>
           <q-btn flat class="q-mr-xs" label="Munin" :to="{name : 'munin'}"/>
           <q-btn flat class="q-mr-xs" label="Vhosts" :to="{name : 'vhosts'}"/>
           <q-btn flat class="q-mr-xs" label="Checks" :to="{name : 'checks'}"/>
           <q-btn flat class="q-mr-xs" label="Alerts" :to="{name : 'alerts'}"/>
-          <!-- <q-btn flat round dense icon="gamepad"/> -->
-        </q-toolbar>
+        </q-toolbar> -->
       </div>
     </div>
   </q-page>

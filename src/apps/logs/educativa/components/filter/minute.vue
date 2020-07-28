@@ -1,14 +1,11 @@
 <template>
 <div>
-  <q-toolbar class="text-primary">
-    <!-- <q-btn flat round dense icon="menu" /> -->
+  <!-- <q-toolbar class="text-primary">
     <q-toolbar-title>
       From: {{ format_time(minute.range.start) }} - To: {{ format_time(minute.range.end) }} / Updated on: {{ format_time(minute.timestamp) }}
     </q-toolbar-title>
-    <!-- <q-space class="text-primary"/> -->
     <template>
       <div class="q-pa-md">
-
         <q-btn flat dense icon="access_time" />
         <q-popup-proxy v-model="showMinute" ref="qMinuteProxy" transition-show="scale" transition-hide="scale">
             <q-time
@@ -16,21 +13,6 @@
               :options="disabled_minutes"
               now-btn
               />
-              <!-- format24h -->
-            <!-- @input="() => $refs.qDateProxy.hide()"  -->
-          <!-- <q-calendar
-            ref="calendar"
-            v-model="selectedDate"
-            view="month"
-            locale="en-us"
-            mini-mode
-            :selected-start-end-dates="startEndDates"
-            :day-class="classDay"
-            @mousedown:day="onMouseDownDay"
-            @mouseup:day="onMouseUpDay"
-            @mousemove:day="onMouseMoveDay"
-            :disabled-after="disabled_after()"
-          /> -->
         </q-popup-proxy>
 
       </div>
@@ -45,7 +27,9 @@
         categoryY: 'domain',
         valueX: 'hits',
         label: 'Minute Per DOMAIN - CGI count',
-        zoom: apply_zoom
+        zoom: apply_zoom,
+        colorScheme: colorScheme,
+        dark: dark,
       }
     }"
     :always_update="false"
@@ -64,18 +48,6 @@
   >
   </component>
 
-  <!-- <amcharts-bar-race
-    :categoryY="'domain'"
-    :valueX="'hits'"
-    :values="minute.top_per_domain"
-    :label="'Minute Per DOMAIN - CGI count'"
-    :id="'minute_per_domain_sum'"
-    :zoom="apply_zoom"
-    :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute_per_domain_sum'"
-  /> -->
-    <!-- :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute_per_domain_sum'" -->
-  <!-- :zoom="apply_zoom" -->
-
   <component
     :is="'chart-tabular'"
     :wrapper="{
@@ -84,7 +56,9 @@
         categoryY: 'host',
         valueX: 'hits',
         label: 'Minute Per HOST - CGI count',
-        zoom: apply_zoom
+        zoom: apply_zoom,
+        colorScheme: colorScheme,
+        dark: dark,
       }
     }"
     :always_update="false"
@@ -103,18 +77,18 @@
   >
   </component>
 
-  <!-- <amcharts-bar-race
-    :categoryY="'host'"
-    :valueX="'hits'"
-    :values="minute.top_per_host"
-    :label="'Minute Per HOST - CGI count'"
-    :id="'minute_per_host_sum'"
-    :zoom="apply_zoom"
-    :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute_per_host_sum'"
-  /> -->
-  <!-- :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute_per_host_sum'" -->
-  <!-- :zoom="apply_zoom" -->
+   -->
 
+   <div :style="{height: (height + 100) + 'px', 'margin-top': '25px'}">
+     <grid-view
+       v-if="grid.layouts && Object.getLength(components) > 0"
+       :swap_components="true"
+       :id="id+'MinuteGrid'"
+       :components="components"
+       :grid="grid"
+       v-on:height="setHeight"
+     />
+   </div>
 </div>
 </template>
 
@@ -137,6 +111,17 @@ import MinutePipeline from '@apps/logs/educativa/pipelines/filter/minute'
 import * as MinuteSources from '@apps/logs/educativa/sources/filter/minute/index'
 
 import moment from 'moment'
+
+import { mapState } from 'vuex'
+
+import CgiCount from '@apps/logs/educativa/components/cgiCount'
+import DomainCgiCount from '@apps/logs/educativa/components/domainCgiCount'
+import DomainTotalDuration from '@apps/logs/educativa/components/domainTotalDuration'
+import HostTotalDuration from '@apps/logs/educativa/components/hostTotalDuration'
+import HostCgiCount from '@apps/logs/educativa/components/hostCgiCount'
+import Toolbar from '@apps/logs/educativa/components/filter/minute/toolbar'
+
+import GridView from '@components/gridView'
 
 const roundMilliseconds = function (timestamp) {
   let d = new Date(timestamp)
@@ -176,7 +161,16 @@ const WEEK = DAY * 7
 export default {
   mixins: [DataSourcesMixin],
 
-  components: { chartTabular },
+  components: {
+    chartTabular,
+    GridView,
+    CgiCount,
+    DomainCgiCount,
+    DomainTotalDuration,
+    HostTotalDuration,
+    HostCgiCount,
+    Toolbar
+  },
 
   name: 'LogsEducativaFilterMinute',
 
@@ -193,11 +187,12 @@ export default {
     return {
       id: 'logs.educativa.filter.minute',
       path: 'all',
+      height: 0,
 
       current_minute: undefined,
       top: 15,
 
-      selected_minute: date.formatDate(Date.now(), 'HH:mm'),
+      // selected_minute: date.formatDate(Date.now(), 'HH:mm'),
 
       showCalendar: false,
       showMinute: false,
@@ -209,6 +204,8 @@ export default {
         per_host: {},
         range: { start: 0, end: 0},
         timestamp: 0,
+        cgi_count: {},
+        top_cgi_count: {},
         // body_bytes_sent: {},
         // geoip: {},
         // qs: {},
@@ -230,10 +227,308 @@ export default {
         'input.logs.educativa.filter.minute',
       ],
 
+      grid: {
+        layouts: {
+          'lg': [
+            { x: 0, y: 0, w: 24, h: 5, i: 'toolbar', immobile: false },
+            { x: 0, y: 1, w: 12, h: 36, i: 'domainCgiCount', immobile: false },
+            // { x: 12, y: 1, w: 12, h: 36, i: 'domainCgiCountSum', immobile: false },
+            { x: 12, y: 1, w: 12, h: 36, i: 'hostCgiCount', immobile: false },
+            // { x: 12, y: 2, w: 12, h: 36, i: 'hostCgiCountSum', immobile: false },
+            { x: 0, y: 2, w: 12, h: 36, i: 'domainTotalDuration', immobile: false },
+            { x: 12, y: 2, w: 12, h: 36, i: 'hostTotalDuration', immobile: false },
+            // { x: 12, y: 3, w: 12, h: 36, i: 'domainTotalDurationSum', immobile: false },
+            { x: 0, y: 3, w: 12, h: 36, i: 'cgiCount', immobile: false },
+            // { x: 12, y: 4, w: 12, h: 36, i: 'cgiCountSum', immobile: false },
+            // { x: 0, y: 5, w: 24, h: 50, i: 'logs', immobile: false },
+            // { x: 15, y: 0, w: 6, h: 10, i: 'mounts', immobile: false },
+            // { x: 21, y: 0, w: 3, h: 10, i: 'memory', immobile: false },
+            // // { x: 0, y: 1, w: 12, h: 2, i: 'separator' }
+          ],
+          'md': [
+            // { x: 0, y: 0, w: 4, h: 10, i: 'loadavg', immobile: false },
+            // { x: 4, y: 0, w: 4, h: 10, i: 'netOut', immobile: false },
+            // { x: 8, y: 0, w: 4, h: 10, i: 'netIn', immobile: false },
+            // { x: 12, y: 0, w: 4, h: 10, i: 'memory', immobile: false },
+            //
+            // { x: 0, y: 1, w: 8, h: 15, i: 'cpu', immobile: false },
+            // { x: 8, y: 1, w: 8, h: 10, i: 'mounts', immobile: false },
+            //
+            // // { x: 0, y: 1, w: 6, h: 2, i: 'separator' }
+          ],
+          'sm': [
+            // { x: 0, y: 0, w: 3, h: 10, i: 'loadavg', immobile: false },
+            // { x: 3, y: 0, w: 3, h: 10, i: 'netOut', immobile: false },
+            // { x: 6, y: 0, w: 3, h: 10, i: 'netIn', immobile: false },
+            // { x: 9, y: 0, w: 3, h: 10, i: 'memory', immobile: false },
+            //
+            // { x: 0, y: 1, w: 6, h: 15, i: 'cpu', immobile: false },
+            // { x: 6, y: 1, w: 6, h: 10, i: 'mounts', immobile: false },
+            //
+            // // { x: 0, y: 1, w: 6, h: 2, i: 'separator' }
+          ],
+          'xs': [
+            // { x: 0, y: 0, w: 4, h: 10, i: 'loadavg', immobile: false },
+            // { x: 4, y: 0, w: 4, h: 10, i: 'memory', immobile: false },
+            // { x: 0, y: 1, w: 4, h: 10, i: 'netOut', immobile: false },
+            // { x: 4, y: 1, w: 4, h: 10, i: 'netIn', immobile: false },
+            // { x: 0, y: 2, w: 8, h: 15, i: 'cpu', immobile: false },
+            // { x: 0, y: 3, w: 8, h: 10, i: 'mounts', immobile: false },
+            //
+            // // { x: 0, y: 1, w: 6, h: 2, i: 'separator' }
+          ],
+          'xxs': [
+            // { x: 0, y: 0, w: 3, h: 10, i: 'loadavg', immobile: false },
+            // { x: 3, y: 0, w: 3, h: 10, i: 'memory', immobile: false },
+            // { x: 0, y: 1, w: 3, h: 10, i: 'netOut', immobile: false },
+            // { x: 3, y: 1, w: 3, h: 10, i: 'netIn', immobile: false },
+            // { x: 0, y: 2, w: 6, h: 15, i: 'cpu', immobile: false },
+            // { x: 0, y: 3, w: 6, h: 10, i: 'mounts', immobile: false },
+            //
+            // // { x: 0, y: 1, w: 6, h: 2, i: 'separator' }
+          ]
+
+        },
+        breakpoint: 'lg',
+        // slots: [
+        //   '<q-btn round />'
+        // ],
+
+        // cols: 12,
+        // // breakpoints: { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 },
+        // colsAll: { lg: 12, md: 8, sm: 6, xs: 4, xxs: 2 },
+
+        cols: 22,
+        // breakpoints: { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 },
+        colsAll: { lg: 24, md: 16, sm: 12, xs: 8, xxs: 6 },
+
+        isDraggable: true,
+        isResizable: false,
+        preview: true
+      },
+
+      components: {
+        'toolbar': [
+          {
+            component: Toolbar,
+            events: {
+              selected_minute: 'selected_minute'
+            }
+          }
+        ],
+        'domainCgiCount': [
+          {
+            component: DomainCgiCount,
+            props: {
+              type: 'minute',
+              valueX: 'hits'
+            }
+          }
+
+        ],
+        // 'domainCgiCountSum': [
+        //   {
+        //     component: DomainCgiCount,
+        //     props: {
+        //       type: 'minute',
+        //       sum: true
+        //     }
+        //   }
+        //
+        // ],
+        'hostCgiCount': [
+          {
+            component: HostCgiCount,
+            props: {
+              type: 'minute',
+              valueX: 'hits'
+            }
+          }
+
+        ],
+        // 'hostCgiCountSum': [
+        //   {
+        //     component: HostCgiCount,
+        //     props: {
+        //       type: 'minute',
+        //       sum: true
+        //     }
+        //   }
+        //
+        // ],
+        'domainTotalDuration': [
+          {
+            component: DomainTotalDuration,
+            props: {
+              type: 'minute',
+              valueX: 'duration'
+            }
+          }
+
+        ],
+        'hostTotalDuration': [
+          {
+            component: HostTotalDuration,
+            props: {
+              type: 'minute',
+              valueX: 'duration'
+            }
+          }
+
+        ],
+        // 'domainTotalDurationSum': [
+        //   {
+        //     component: DomainTotalDuration,
+        //     props: {
+        //       type: 'minute',
+        //       sum: true
+        //     }
+        //   }
+        //
+        // ],
+        'cgiCount': [
+          {
+            component: CgiCount,
+            props: {
+              type: 'minute',
+            }
+          }
+
+        ],
+        // 'cgiCountSum': [
+        //   {
+        //     component: CgiCount,
+        //     props: {
+        //       type: 'minute',
+        //       sum: true
+        //     }
+        //   }
+        //
+        // ],
+
+        // 'logs': [
+        //   {
+        //     component: LogsTable,
+        //
+        //   }
+        //
+        // ],
+
+      },
     }
   },
 
+  watch: {
+    dark: function () {
+      Object.each(this.components, function (gridItem, name) {
+        Array.each(this.components[name], function (component, index) {
+          this.$set(this.components[name], index, Object.merge(this.components[name][index], {
+            props: {
+              dark: this.dark,
+            }
+
+          }))
+        }.bind(this))
+      }.bind(this))
+    },
+    colorScheme: function () {
+      Object.each(this.components, function (gridItem, name) {
+        Array.each(this.components[name], function (component, index) {
+          this.$set(this.components[name], index, Object.merge(this.components[name][index], {
+            props: {
+              colorScheme: this.colorScheme,
+            }
+
+          }))
+        }.bind(this))
+      }.bind(this))
+    },
+
+    minute: {
+      handler: function (minute) {
+        if (minute && Object.getLength(minute) > 0) {
+          debug('watch minute', minute)
+          this.$set(this.components.toolbar[0].props, 'range', minute.range)
+          this.$set(this.components.toolbar[0].props, 'timestamp', minute.timestamp)
+
+          this.$set(this.components.domainCgiCount[0].props, 'top_per_domain', minute.top_per_domain)
+          // this.$set(this.components.domainCgiCountSum[0].props, 'top_per_domain', minute.top_per_domain)
+
+          this.$set(this.components.hostCgiCount[0].props, 'top_per_host', minute.top_per_host)
+          // this.$set(this.components.hostCgiCountSum[0].props, 'top_per_host', minute.top_per_host)
+
+          this.$set(this.components.domainTotalDuration[0].props, 'top_per_domain', minute.top_per_domain)
+          this.$set(this.components.hostTotalDuration[0].props, 'top_per_host', minute.top_per_host)
+          // this.$set(this.components.domainTotalDurationSum[0].props, 'top_per_domain', minute.top_per_domain)
+
+          this.$set(this.components.cgiCount[0].props, 'top_cgi_count', minute.top_cgi_count)
+
+          // this.$set(this.components.cgiCountSum[0].props, 'top_cgi_count', minute.top_cgi_count)
+
+          // this.$set(this.components.hostCgiCount[0].props, 'top_per_host', minute.top_per_host)
+
+          //   Array.each(minute.top_world_map_cities, function (value) {
+          //     if (value !== undefined) {
+          //       let city = value.title.substring(0, value.title.indexOf('(')).trim()
+          //
+          //       if (!this.cities_color[city]) {
+          //         let index = 0
+          //
+          //         // debug('watch minute', colorSet.list)
+          //
+          //         Object.each(minute.top_city_counter, function (value, city) {
+          //           this.cities_color[city] = colorSet.getIndex(index).rgba
+          //
+          //           index++
+          //           if (index > colorSet.list.length) { index = 0 }
+          //         }.bind(this))
+          //       }
+          //
+          //       value.color = this.cities_color[city]
+          //     }
+          //   }.bind(this))
+          //
+          //   this.$set(this.components.worldCitiesMap[0].props, 'world_map_cities', minute.top_world_map_cities)
+          //
+          //   Array.each(minute.top_world_map_countries, function (value) {
+          //     if (value !== undefined) {
+          //       let country = value.name.trim()
+          //
+          //       if (!this.countries_color[country]) {
+          //         let index = 0
+          //
+          //         // debug('watch minute', colorSet.list)
+          //
+          //         Object.each(minute.top_country_counter, function (value, country) {
+          //           this.countries_color[country] = colorSet.getIndex(index).rgba
+          //
+          //           index++
+          //           if (index > colorSet.list.length) { index = 0 }
+          //         }.bind(this))
+          //       }
+          //
+          //       value.color = this.countries_color[country]
+          //     }
+          //   }.bind(this))
+          //
+          //   this.$set(this.components.worldCountriesMap[0].props, 'world_map_countries', minute.top_world_map_countries)
+          //
+          //
+          //   this.$set(this.components.topCity[0].props, 'top_city_counter', minute.top_city_counter)
+          //   this.$set(this.components.topCitySum[0].props, 'top_city_counter', minute.top_city_counter)
+          //
+          // this.$set(this.components.logs[0].props, 'logs', minute.logs)
+          // this.$set(this.components.logs[0].props, 'loading_logs', this.loading_logs)
+        }
+      },
+      deep: true
+    }
+  },
   computed: {
+    ...mapState({
+      dark: state => state.layout.dark,
+      colorScheme: state => state.layout.dashboardColorScheme
+    }),
     'filter': function () {
       // return (this.$route && this.$route.params && this.$route.params.web) ? this.$route.params.web : undefined
       return (this.$route && this.$route.query)
@@ -245,39 +540,60 @@ export default {
     },
     'web': function () {
       return (this.filter && this.type) ? this.filter[this.type] : undefined
-    },
-
+    }
   },
 
-  watch: {
+  created: function () {
+    debug('created')
+    // this.$on('grid.' + this.id + ':height', this.setHeight.bind(this))
+  },
 
-    selected_minute () {
-      debug('selected_minute %s', new Date(moment(this.selected_minute, 'hh:mm').unix() * 1000))
-      if (roundSeconds(moment(this.selected_minute, 'hh:mm').unix() * 1000) === roundSeconds(Date.now())) {
+  mounted: function () {
+    debug('mounted', this.$refs)
+    this.$on('grid.' + this.id + ':height', this.setHeight.bind(this))
+    // this.$on('grid.' + this.id + ':destroy_pipelines', function () {
+    //   debug('event')
+    // })
+
+    Object.each(this.components, function (gridItem, name) {
+      Array.each(this.components[name], function (component, index) {
+        this.$set(this.components[name], index, Object.merge(this.components[name][index], {
+          id: this.id + '.minute.' + name + '.component',
+          props: {
+            dark: this.dark,
+            colorScheme: this.colorScheme,
+          }
+        }))
+      }.bind(this))
+    }.bind(this))
+  },
+
+  methods: {
+    selected_minute: function (selected_minute) {
+      debug('selected_minute %s', new Date(moment(selected_minute, 'hh:mm').unix() * 1000))
+      if (roundSeconds(moment(selected_minute, 'hh:mm').unix() * 1000) === roundSeconds(Date.now())) {
         this.current_minute = undefined
       } else {
-        this.current_minute = (moment(this.selected_minute, 'hh:mm').unix() * 1000) + MINUTE
+        this.current_minute = (moment(selected_minute, 'hh:mm').unix() * 1000) + MINUTE
       }
       // this.$nextTick(function () {
       this.destroy_pipelines('input.logs.educativa.filter.minute')
       this.create_pipelines('input.logs.educativa.filter.minute')
       this.resume_pipelines('input.logs.educativa.filter.minute')
-      // }.bind(this))
-
-      // this.convertedDates = `${start} - ${end}`
-      // debug('startEndDates', this.end)
-    }
-    /** calendar **/
-
-  },
-  methods: {
-    end: function () {
-      // if (this.current_day === undefined) {
-      return Date.now()
-      // } else {
-      // return this.current_day
-      // }
     },
+    setHeight: function (height) {
+      debug('setHeight', height)
+      // this.height = height + 200 + 'px'
+      this.height = height
+    },
+
+    // end: function () {
+    //   // if (this.current_day === undefined) {
+    //   return Date.now()
+    //   // } else {
+    //   // return this.current_day
+    //   // }
+    // },
     end_minute: function () {
       if (this.current_minute === undefined) {
         return Date.now()
@@ -286,35 +602,35 @@ export default {
       }
     },
 
-    apply_zoom: function (data, categoryY, valueX) {
-      const min_zoom = 0.5
-      const max_zoom = 1
-      /* const min_length = 8 */
-      const max_length = 15
-      let length = data.length
-      /* let zoom = 1 */
-
-      if (data.length <= max_length) {
-        return max_zoom
-      } else {
-        // let itemsWithNonZero = 0
-        // for (let i = 0; i < max_length; i++) {
-        //   if (data[i][valueX] > 0) {
-        //     itemsWithNonZero++
-        //   }
-        // }
-
-        // let zoom = max_length / data.length
-        // return (zoom > min_zoom) ? zoom : min_zoom
-        return (max_length / data.length < min_zoom) ? min_zoom : max_length / data.length
-      }
-    },
-    format_time: function (timestamp) {
-      return moment(timestamp).format('dddd, MMMM Do YYYY, h:mm:ss a')
-    },
-    format_log: function (log) {
-      return (log.length <= 100) ? log : log.substring(0, 96) + '...'
-    },
+    // apply_zoom: function (data, categoryY, valueX) {
+    //   const min_zoom = 0.5
+    //   const max_zoom = 1
+    //   /* const min_length = 8 */
+    //   const max_length = 15
+    //   let length = data.length
+    //   /* let zoom = 1 */
+    //
+    //   if (data.length <= max_length) {
+    //     return max_zoom
+    //   } else {
+    //     // let itemsWithNonZero = 0
+    //     // for (let i = 0; i < max_length; i++) {
+    //     //   if (data[i][valueX] > 0) {
+    //     //     itemsWithNonZero++
+    //     //   }
+    //     // }
+    //
+    //     // let zoom = max_length / data.length
+    //     // return (zoom > min_zoom) ? zoom : min_zoom
+    //     return (max_length / data.length < min_zoom) ? min_zoom : max_length / data.length
+    //   }
+    // },
+    // format_time: function (timestamp) {
+    //   return moment(timestamp).format('dddd, MMMM Do YYYY, h:mm:ss a')
+    // },
+    // format_log: function (log) {
+    //   return (log.length <= 100) ? log : log.substring(0, 96) + '...'
+    // },
     /**
     * @start pipelines
     **/
@@ -370,20 +686,20 @@ export default {
     //   return date <= moment().format('HH')
     //   // && date <= '2019/02/15'
     // },
-    disabled_minutes (hr, min, sec) {
-      debug('disabled_minutes ', hr, min, sec)
-      if (hr) {
-        if (min !== null) {
-          return min <= moment().format('mm')
-        }
-        return false
-      }
-
-      // if (sec !== null && sec % 10 !== 0) {
-      //   return false
-      // }
-      return true
-    },
+    // disabled_minutes (hr, min, sec) {
+    //   debug('disabled_minutes ', hr, min, sec)
+    //   if (hr) {
+    //     if (min !== null) {
+    //       return min <= moment().format('mm')
+    //     }
+    //     return false
+    //   }
+    //
+    //   // if (sec !== null && sec % 10 !== 0) {
+    //   //   return false
+    //   // }
+    //   return true
+    // },
 
   }
 

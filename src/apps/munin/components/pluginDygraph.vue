@@ -1,6 +1,6 @@
 <template>
   <!-- :class="(show === false) ? 'bg-white hidden': 'bg-white'" -->
-  <q-card v-if="config" class="bg-white">
+  <q-card v-if="config">
     <q-card-section>
       <div class="text-h4">{{title}}</div>
     </q-card-section>
@@ -21,7 +21,11 @@
       <component
         :is="tabular === false ? 'chart' : 'chart-tabular'"
         :wrapper="{
-          type: 'dygraph'
+          type: 'dygraph',
+          props: {
+            colorScheme: $store.state.layout.dashboardColorScheme,
+            dark: $store.state.layout.dark
+          }
         }"
         :always_update="false"
         :ref="id"

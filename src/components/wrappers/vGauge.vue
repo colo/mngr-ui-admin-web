@@ -9,9 +9,10 @@
     >
       <!-- linear-gauge | radial-gauge -->
       <v-gauge
+        :key="id+'.'+dark+'.'+colorScheme"
         :ref="id"
         :id="id"
-        :options="Object.merge(options, chart.options)"
+        :options="graphOptions"
         v-bind="Object.merge(params, chart.params)"
         :value="value || chart.params.value"
       />
@@ -37,6 +38,8 @@ import chartWrapperMixin from '@mixins/chartWrapper.vue'
 
 import netDataColors from '@libs/netdata/colors'
 
+import dbColors from '@dashblocks/src/components/dbcolors'
+
 export default {
   mixins: [chartWrapperMixin],
   name: 'v-gauge-wrapper',
@@ -49,21 +52,28 @@ export default {
     stopColor: 'FF0000',
   },
 
-  data () {
-    return {
-      ready: true,
-      value: undefined,
-
-      params: {
-        gaugeValueClass: 'gaugeChart',
-        height: '200px',
-        width: '334px',
-        unit: '%',
-        minValue: 0.0,
-        maxValue: 100,
-      },
-
-      options: {
+  computed: {
+    // Augment passed options with defaults for Dygraphs
+    graphOptions: function () {
+      let options = Object.merge(this.defaultOptions, this.chart.options)
+      options.percentColors = [
+        [0.0, netDataColors.colorLuminance(options.colorStart, (this.$options['_vgauge_wrapper_defaults'].lum_d * 10) - (this.$options['_vgauge_wrapper_defaults'].lum_d * 0))],
+        [0.1, netDataColors.colorLuminance(options.colorStart, (this.$options['_vgauge_wrapper_defaults'].lum_d * 10) - (this.$options['_vgauge_wrapper_defaults'].lum_d * 1))],
+        [0.2, netDataColors.colorLuminance(options.colorStart, (this.$options['_vgauge_wrapper_defaults'].lum_d * 10) - (this.$options['_vgauge_wrapper_defaults'].lum_d * 2))],
+        [0.3, netDataColors.colorLuminance(options.colorStart, (this.$options['_vgauge_wrapper_defaults'].lum_d * 10) - (this.$options['_vgauge_wrapper_defaults'].lum_d * 3))],
+        [0.4, netDataColors.colorLuminance(options.colorStart, (this.$options['_vgauge_wrapper_defaults'].lum_d * 10) - (this.$options['_vgauge_wrapper_defaults'].lum_d * 4))],
+        [0.5, netDataColors.colorLuminance(options.colorStart, (this.$options['_vgauge_wrapper_defaults'].lum_d * 10) - (this.$options['_vgauge_wrapper_defaults'].lum_d * 5))],
+        [0.6, netDataColors.colorLuminance(options.colorStart, (this.$options['_vgauge_wrapper_defaults'].lum_d * 10) - (this.$options['_vgauge_wrapper_defaults'].lum_d * 6))],
+        [0.7, netDataColors.colorLuminance(options.colorStart, (this.$options['_vgauge_wrapper_defaults'].lum_d * 10) - (this.$options['_vgauge_wrapper_defaults'].lum_d * 7))],
+        [0.8, netDataColors.colorLuminance(options.colorStart, (this.$options['_vgauge_wrapper_defaults'].lum_d * 10) - (this.$options['_vgauge_wrapper_defaults'].lum_d * 8))],
+        [0.9, netDataColors.colorLuminance(options.colorStart, (this.$options['_vgauge_wrapper_defaults'].lum_d * 10) - (this.$options['_vgauge_wrapper_defaults'].lum_d * 9))],
+        [1.0, netDataColors.colorLuminance(options.colorStart, 0.0)]
+      ]
+      return options
+    },
+    defaultOptions: function () {
+      let colorStart = dbColors.getColors(this.dark, this.colorScheme).getRandom()
+      return {
         // barWidth: 20,
         // barShadow: 1,
         // borderShadowWidth: 0,
@@ -94,45 +104,68 @@ export default {
         /* generateGradient: (generateGradient === true), // gmosx: */
         gradientType: 0,
         highDpiSupport: true, // High resolution support
-        colorStart: this.$options['_vgauge_wrapper_defaults'].startColor, // Colors
-        colorStop: this.$options['_vgauge_wrapper_defaults'].stopColor, // just experiment with them
+        // colorStart: this.$options['_vgauge_wrapper_defaults'].startColor, // Colors
+        // colorStop: this.$options['_vgauge_wrapper_defaults'].stopColor, // just experiment with them
+        colorStart: colorStart, // Colors
+        colorStop: dbColors.getColors(this.dark, this.colorScheme).getRandom(), // just experiment with them
         strokeColor: '#F0F0F0', // to see which ones work best for you (gauge_stroke)
         generateGradient: true, // gmosx:
-        colors: '#994499',
+        // colors: '#994499',
+        colors: dbColors.getColors(this.dark, this.colorScheme).getRandom(),
         // after: -540,
         // points: 540,
-        percentColors: [
-          [0.0, netDataColors.colorLuminance(this.$options['_vgauge_wrapper_defaults'].startColor, (this.$options['_vgauge_wrapper_defaults'].lum_d * 10) - (this.$options['_vgauge_wrapper_defaults'].lum_d * 0))],
-          [0.1, netDataColors.colorLuminance(this.$options['_vgauge_wrapper_defaults'].startColor, (this.$options['_vgauge_wrapper_defaults'].lum_d * 10) - (this.$options['_vgauge_wrapper_defaults'].lum_d * 1))],
-          [0.2, netDataColors.colorLuminance(this.$options['_vgauge_wrapper_defaults'].startColor, (this.$options['_vgauge_wrapper_defaults'].lum_d * 10) - (this.$options['_vgauge_wrapper_defaults'].lum_d * 2))],
-          [0.3, netDataColors.colorLuminance(this.$options['_vgauge_wrapper_defaults'].startColor, (this.$options['_vgauge_wrapper_defaults'].lum_d * 10) - (this.$options['_vgauge_wrapper_defaults'].lum_d * 3))],
-          [0.4, netDataColors.colorLuminance(this.$options['_vgauge_wrapper_defaults'].startColor, (this.$options['_vgauge_wrapper_defaults'].lum_d * 10) - (this.$options['_vgauge_wrapper_defaults'].lum_d * 4))],
-          [0.5, netDataColors.colorLuminance(this.$options['_vgauge_wrapper_defaults'].startColor, (this.$options['_vgauge_wrapper_defaults'].lum_d * 10) - (this.$options['_vgauge_wrapper_defaults'].lum_d * 5))],
-          [0.6, netDataColors.colorLuminance(this.$options['_vgauge_wrapper_defaults'].startColor, (this.$options['_vgauge_wrapper_defaults'].lum_d * 10) - (this.$options['_vgauge_wrapper_defaults'].lum_d * 6))],
-          [0.7, netDataColors.colorLuminance(this.$options['_vgauge_wrapper_defaults'].startColor, (this.$options['_vgauge_wrapper_defaults'].lum_d * 10) - (this.$options['_vgauge_wrapper_defaults'].lum_d * 7))],
-          [0.8, netDataColors.colorLuminance(this.$options['_vgauge_wrapper_defaults'].startColor, (this.$options['_vgauge_wrapper_defaults'].lum_d * 10) - (this.$options['_vgauge_wrapper_defaults'].lum_d * 8))],
-          [0.9, netDataColors.colorLuminance(this.$options['_vgauge_wrapper_defaults'].startColor, (this.$options['_vgauge_wrapper_defaults'].lum_d * 10) - (this.$options['_vgauge_wrapper_defaults'].lum_d * 9))],
-          [1.0, netDataColors.colorLuminance(this.$options['_vgauge_wrapper_defaults'].startColor, 0.0)]
-        ]
+
+      }
+    },
+
+  },
+  watch: {
+    visible: function (val) {
+      this.container_class_helper = (val === false) ? 'invisible' : ''
+      // console.log('class visible', val, this.container_class_helper)
+    },
+    // dark: function () {
+    //   // this.optionsChanged = true
+    //   this.options = this.graphOptions
+    // },
+    // colorScheme: function () {
+    //   this.options = this.graphOptions
+    // }
+  },
+
+  data () {
+    return {
+      ready: true,
+      value: undefined,
+
+      params: {
+        gaugeValueClass: 'gaugeChart',
+        height: '200px',
+        width: '334px',
+        unit: '%',
+        minValue: 0.0,
+        maxValue: 100,
+      },
+
+      options: {
+
       }
 
     }
   },
-  // watch: {
-  //   visible: function (val) {
-  //     this.container_class_helper = (val === false) ? 'invisible' : ''
-  //     // console.log('class visible', val, this.container_class_helper)
-  //   }
-  // },
-
-  // created () {
-  //   if (!this.$options['_vgauge_wrapper_defaults'].charts[this.id]) { this.$options['_vgauge_wrapper_defaults'].charts[this.id] = {} }
-  //
-  //   this.$options['_vgauge_wrapper_defaults'].charts[this.id] = Object.merge(this.$options['_vgauge_wrapper_defaults'].charts[this.id], Object.clone(this.$options['_vgauge_wrapper_defaults']._vgauge_wrapper_defaults))
-  // },
 
   methods: {
-
+    create () {
+      // debug('create', this.id)
+      // let params = Object.merge(this.params, this.chart.params)
+      // let line = Math.floor(params.size / 22)
+      // if (line < 3) {
+      //   line = 2
+      // }
+      //
+      // this.$set(this.params, 'line-width', line)
+      this.options = this.graphOptions
+    },
     update (data) {
       debug('update', data, this.get_data(data).getLast())
 

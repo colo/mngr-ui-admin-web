@@ -101,8 +101,8 @@ export default function () {
     //   ],
     //
     //   isDraggable: true,
-    //   isResizable: true,
-    //   preview: false,
+    //   isResizable: false,
+    //   preview: true,
     //   contenteditable: true
     // }
   }

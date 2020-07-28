@@ -154,6 +154,7 @@ const generic_callback = function (data, metadata, key, vm) {
     // let vm_data = {}
     let per_domain = {}
     let per_host = {}
+    let cgi_count = {}
 
     let range = {start: undefined, end: undefined}
     let per_host_range = {start: undefined, end: undefined}
@@ -203,21 +204,37 @@ const generic_callback = function (data, metadata, key, vm) {
     let _top_per_domain = []
     let top_per_host = {}
     let _top_per_host = []
+    let top_cgi_count = {}
+    let _top_cgi_count = []
+
     Object.each(per_domain, function (data, domain) {
       _top_per_domain.push(data.hits)
     })
     Object.each(per_host, function (data, host) {
       _top_per_host.push(data.hits)
+
+      Object.each(data.cgi, function (value, cgi) {
+        if (!cgi_count[cgi]) cgi_count[cgi] = 0
+
+        cgi_count[cgi] += value
+      })
     })
+
+    Object.each(cgi_count, function (data, cgi) {
+      _top_cgi_count.push(data)
+    })
+
     _top_per_domain = _top_per_domain.sort((a, b) => b - a)
     _top_per_host = _top_per_host.sort((a, b) => b - a)
+    _top_cgi_count = _top_cgi_count.sort((a, b) => b - a)
 
     for (let i = 0; i < TOP; i++) {
       let value = _top_per_domain[i]
 
       Object.each(per_domain, function (data, domain) {
         if (data.hits === value) {
-          top_per_domain[domain] = data
+          top_per_domain[domain] = Object.clone(data)
+          top_per_domain[domain].duration = data.duration.sum
         }
       })
     }
@@ -226,16 +243,30 @@ const generic_callback = function (data, metadata, key, vm) {
 
       Object.each(per_host, function (data, host) {
         if (data.hits === value) {
-          top_per_host[host] = data
+          top_per_host[host] = Object.clone(data)
+          top_per_host[host].duration = data.duration.sum
+        }
+      })
+    }
+    for (let i = 0; i < TOP; i++) {
+      let value = _top_cgi_count[i]
+
+      Object.each(cgi_count, function (data, cgi) {
+        if (data === value) {
+          top_cgi_count[cgi] = data
         }
       })
     }
 
-    debug('HISTORICAL HOST CALLBACK data %s %o %o', key, top_per_domain, top_per_host)
+    debug('HISTORICAL HOST CALLBACK data %s %o %o', key, per_domain, per_host, cgi_count)
     vm.$set(vm.minute, 'per_domain', per_domain)
     vm.$set(vm.minute, 'per_host', per_host)
+    vm.$set(vm.minute, 'cgi_count', cgi_count)
+
     vm.$set(vm.minute, 'top_per_domain', top_per_domain)
     vm.$set(vm.minute, 'top_per_host', top_per_host)
+    vm.$set(vm.minute, 'top_cgi_count', top_cgi_count)
+
     vm.$set(vm.minute, 'range', range)
     vm.$set(vm.minute, 'timestamp', timestamp)
 
@@ -369,7 +400,7 @@ const host_once_component = {
                 //     'path'
                 //   ]
                 // },
-                {'data': 'hits'},
+                {'data': ['hits', 'duration', 'cgi']},
                 'metadata'
               ],
               'transformation': [

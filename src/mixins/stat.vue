@@ -292,7 +292,9 @@ export default {
     // this.$options['charts'][this.id].key = undefined
     //
     // this.$options['charts'][this.id].stat_data = []
-    this.$options['charts'][this.id] = Object.merge(this.$options['charts'][this.id], Object.clone(this.$options._stat_mixin_defaults))
+    if (this.$options['charts'][this.id]) {
+      this.$options['charts'][this.id] = Object.merge(this.$options['charts'][this.id], Object.clone(this.$options._stat_mixin_defaults))
+    }
 
     this.$off()
   },

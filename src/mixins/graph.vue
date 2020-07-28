@@ -61,10 +61,14 @@ import { frameDebounce } from 'quasar'
 
 // import vueBarsWrapper from 'components/wrappers/vueBars'
 import dygraphWrapper from '@components/wrappers/dygraph'
+import dygraphBarWrapper from '@components/wrappers/dygraphBar'
+import dygraphDateTimeHistogramWrapper from '@components/wrappers/dygraphDateTimeHistogram'
+import dygraphSparkLineWrapper from '@components/wrappers/dygraphSparkLine'
 import vGaugeWrapper from '@components/wrappers/vGauge'
 import vueEasyPieChartWrapper from '@components/wrappers/vueEasyPieChart'
 import amchartsBarRaceWrapper from '@components/wrappers/amchartsBarRace'
 import amchartsWorldCityMapWrapper from '@components/wrappers/amchartsWorldCityMap'
+import amchartsWorldCountryMapWrapper from '@components/wrappers/amchartsWorldCountryMap'
 
 // // import jqueryKnobWrapper from 'components/wrappers/jqueryKnob'
 // import highchartsVueWrapper from 'components/wrappers/highchartsVue'
@@ -87,10 +91,14 @@ export default {
   components: {
     // vueBarsWrapper,
     dygraphWrapper,
+    dygraphBarWrapper,
+    dygraphDateTimeHistogramWrapper,
+    dygraphSparkLineWrapper,
     vGaugeWrapper,
     vueEasyPieChartWrapper,
     amchartsBarRaceWrapper,
-    amchartsWorldCityMapWrapper
+    amchartsWorldCityMapWrapper,
+    amchartsWorldCountryMapWrapper
     // // jqueryKnobWrapper,
     // highchartsVueWrapper,
     // // easyPieChartWrapper
@@ -240,7 +248,9 @@ export default {
 
     this.destroy()
     // if (this.$options['charts'][this.id]) delete this.$options['charts'][this.id]
-    this.$options['charts'][this.id] = Object.merge(this.$options['charts'][this.id], Object.clone(this.$options._graph_mixin_defaults))
+    if (this.$options['charts'][this.id]) {
+      this.$options['charts'][this.id] = Object.merge(this.$options['charts'][this.id], Object.clone(this.$options._graph_mixin_defaults))
+    }
 
     // this.$delete(this.tabular, 'data')
     this.$off()
@@ -274,16 +284,16 @@ export default {
 
     destroy: function () {
       /// ///////console.log('chart.vue mixing destroy', this.id)
+      if (this.$options['charts'][this.id]) {
+        if (this.$options['charts'][this.id].__data_unwatcher) { this.$options['charts'][this.id].__data_unwatcher() }
 
-      if (this.$options['charts'][this.id].__data_unwatcher) { this.$options['charts'][this.id].__data_unwatcher() }
+        this.$options['charts'][this.id].tabular.data = [[]]
 
-      this.$options['charts'][this.id].tabular.data = [[]]
-
-      this.$set(this.tabular, 'data', [[]])
+        this.$options['charts'][this.id].__chart_init = false
+      }
+      this.$set(this.tabular, 'data', [])
 
       if (this.$refs[this.id] && typeof this.$refs[this.id].destroy === 'function') { this.$refs[this.id].destroy() }
-
-      this.$options['charts'][this.id].__chart_init = false
     },
     __create_watcher: function (name, chart) {},
     update_chart_stat: function (name, data, inmediate) {
@@ -381,6 +391,16 @@ export default {
       // if(this.$options['charts'][this.id].visible === true){
       // debug('inmediate %s %o %o', this.id, inmediate, this.$options['charts'][this.id].visible)
 
+      debug('updating %s - always %o - inmediate %o - focus %o - visible %o - interval %o - data %o',
+        this.id,
+        this.always_update,
+        inmediate,
+        this.$options['charts'][this.id].focus,
+        this.$options['charts'][this.id].visible,
+        this.chart.interval,
+        this.$options['charts'][this.id].tabular.data
+      )
+
       if (
         this.always_update === true ||
         (inmediate && inmediate === true) ||
@@ -407,16 +427,6 @@ export default {
         }
 
         if (this.$refs[name]) {
-          debug('updating %s - always %o - inmediate %o - focus %o - visible %o - interval %o - data %o',
-            this.id,
-            this.always_update,
-            inmediate,
-            this.$options['charts'][this.id].focus,
-            this.$options['charts'][this.id].visible,
-            this.chart.interval,
-            this.$options['charts'][this.id].tabular.data
-          )
-
           let clear_data = true
 
           if (this.$refs[name] && typeof this.$refs[name].update === 'function' && update_data.length > 0) {

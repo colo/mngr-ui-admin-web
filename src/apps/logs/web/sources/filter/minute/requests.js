@@ -201,28 +201,46 @@ const generic_callback = function (data, metadata, key, vm) {
     })
 
     let world_map_city_counter = []
+    let world_map_country_counter = []
     let city_counter = {}
     let country_counter = {}
     let continent_counter = {}
+    let _tmp_world_map_city_counter = {}
+    let _tmp_world_map_country_counter = {}
 
     Object.each(per_domain, function (data, domain) {
       if (data.geoip) {
         Object.each(data.geoip.location, function (row) {
-          world_map_city_counter.push({
-            title: row.city + ' ( hits: ' + row.count.length + ' )',
-            latitude: row.latitude,
-            longitude: row.longitude
-          })
-
           let country = (row.country) ? row.country : undefined
           let continent = (row.continent) ? row.continent : undefined
           let city = (row.city && country) ? row.city + ' - ' + country : undefined
+
+          // world_map_city_counter.push({
+          //   title: city + ' ( hits: ' + row.count.length + ' )',
+          //   latitude: row.latitude,
+          //   longitude: row.longitude,
+          //   count: row.count.length
+          // })
 
           // let world_map_city = (row.location && row.location.latitude && row.location.longitude) ? row.location + ':' + row.location.latitude : undefined
           // let world_map_city_name = (row.city) ? (row.city.names) ? (row.city.names.en) ? row.city.names.en + ' - ' + country : row.city.names.es + ' - ' + country : undefined : undefined
 
           if (city !== undefined && !city_counter[city]) city_counter[city] = 0
           if (city !== undefined) city_counter[city] += row.count.length
+
+          if (city !== undefined && !_tmp_world_map_city_counter[city]) {
+            _tmp_world_map_city_counter[city] = Object.clone(row)
+            _tmp_world_map_city_counter[city].count = row.count.length
+          } else if (city !== undefined) {
+            _tmp_world_map_city_counter[city].count += row.count.length
+          }
+
+          if (country !== undefined && !_tmp_world_map_country_counter[country]) {
+            _tmp_world_map_country_counter[country] = Object.clone(row)
+            _tmp_world_map_country_counter[country].count = row.count.length
+          } else if (country !== undefined) {
+            _tmp_world_map_country_counter[country].count += row.count.length
+          }
 
           if (country !== undefined && !country_counter[country]) country_counter[country] = 0
           if (country !== undefined) country_counter[country] += row.count.length
@@ -231,6 +249,25 @@ const generic_callback = function (data, metadata, key, vm) {
           if (continent !== undefined) continent_counter[continent] += row.count.length
         })
       }
+    })
+
+    debug('_tmp_world_map_city_counter', _tmp_world_map_city_counter)
+
+    Object.each(_tmp_world_map_city_counter, function (row, city) {
+      world_map_city_counter.push({
+        title: city + ' ( hits: ' + row.count + ' )',
+        latitude: row.latitude,
+        longitude: row.longitude,
+        count: row.count
+      })
+    })
+
+    Object.each(_tmp_world_map_country_counter, function (row, country) {
+      world_map_country_counter.push({
+        title: country + ' ( hits: ' + row.count + ' )',
+        name: country,
+        count: row.count
+      })
     })
 
     let top_city_counter = {}
@@ -269,6 +306,26 @@ const generic_callback = function (data, metadata, key, vm) {
       })
     }
 
+    world_map_city_counter = world_map_city_counter.sort((a, b) => (a.count < b.count) ? 1 : ((b.count < a.count) ? -1 : 0))
+
+    let top_world_map_city_counter = []
+
+    for (let i = 0; i < TOP; i++) {
+      let data = world_map_city_counter[i]
+
+      top_world_map_city_counter.push(data)
+    }
+
+    world_map_country_counter = world_map_country_counter.sort((a, b) => (a.count < b.count) ? 1 : ((b.count < a.count) ? -1 : 0))
+
+    let top_world_map_country_counter = []
+
+    for (let i = 0; i < TOP; i++) {
+      let data = world_map_country_counter[i]
+
+      top_world_map_country_counter.push(data)
+    }
+
     debug('HISTORICAL HOST CALLBACK data %s %o %o', key, top_city_counter, top_country_counter)
 
     vm.$set(vm.minute, 'per_domain', per_domain)
@@ -276,6 +333,10 @@ const generic_callback = function (data, metadata, key, vm) {
     vm.$set(vm.minute, 'range', range)
     vm.$set(vm.minute, 'timestamp', timestamp)
     vm.$set(vm.minute, 'world_map_cities', world_map_city_counter)
+    vm.$set(vm.minute, 'top_world_map_cities', top_world_map_city_counter)
+
+    vm.$set(vm.minute, 'world_map_countries', world_map_country_counter)
+    vm.$set(vm.minute, 'top_world_map_countries', top_world_map_country_counter)
 
     vm.$set(vm.minute, 'city_counter', city_counter)
     vm.$set(vm.minute, 'country_counter', country_counter)
@@ -309,7 +370,7 @@ const host_once_component = {
       _key
     ) {
       // const END = 1586055600972 //= > test data
-      const END = vm.end()
+      const END = vm.end_minute()
 
       /**
       * production

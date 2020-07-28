@@ -9,12 +9,8 @@
           </q-breadcrumbs>
         </q-toolbar>
         <q-toolbar>
-          <!-- <q-btn flat round dense icon="assignment_ind"/> -->
-          <!-- <q-toolbar-title>Quasar</q-toolbar-title> -->
-
           <q-btn flat class="q-mr-xs" label="Web" :to="{name : 'logs_web'}"/>
           <q-btn flat class="q-mr-xs" label="Educativa" :to="{name : 'logs_educativa'}"/>
-          <!-- <q-btn flat round dense icon="gamepad"/> -->
         </q-toolbar>
       </div>
 

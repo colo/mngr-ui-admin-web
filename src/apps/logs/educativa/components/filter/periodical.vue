@@ -1,15 +1,12 @@
 <template>
 <div>
-  <q-toolbar class="text-primary">
-    <!-- <q-btn flat round dense icon="menu" /> -->
+  <!-- <q-toolbar class="text-primary">
     <q-toolbar-title>
       From: {{ format_time(periodical.range.start) }} - To: {{ format_time(periodical.range.end) }} / Updated on: {{ format_time(periodical.timestamp) }}
     </q-toolbar-title>
-    <!-- <q-space class="text-primary"/> -->
+  </q-toolbar> -->
 
-  </q-toolbar>
-
-  <component
+  <!-- <component
     :is="'chart-tabular'"
     :wrapper="{
       type: 'amchartsBarRace',
@@ -17,7 +14,9 @@
         categoryY: 'cgi',
         valueX: 'count',
         label: 'Per CGI count (last 5 secs)',
-        zoom: apply_zoom
+        zoom: apply_zoom,
+        colorScheme: colorScheme,
+        dark: dark
       }
     }"
     :always_update="false"
@@ -34,19 +33,9 @@
     :reactive="false"
     :no_buffer="false"
   >
-  </component>
+  </component> -->
 
-  <!-- <amcharts-bar-race
-    :categoryY="'cgi'"
-    :valueX="'count'"
-    :values="periodical.top_cgi_count"
-    :label="'Per CGI count (last 5 secs)'"
-    :id="'cgi_count'"
-    :zoom="apply_zoom"
-    :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.cgi_count'"
-  /> -->
-
-  <component
+  <!-- <component
     :is="'chart-tabular'"
     :wrapper="{
       type: 'amchartsBarRace',
@@ -55,6 +44,8 @@
         valueX: 'count',
         label: 'Per CGI count (sum)',
         zoom: apply_zoom,
+        colorScheme: colorScheme,
+        dark: dark,
         sum: true
       }
     }"
@@ -72,21 +63,9 @@
     :reactive="false"
     :no_buffer="false"
   >
-  </component>
+  </component> -->
 
-  <!-- <amcharts-bar-race
-    :categoryY="'cgi'"
-    :valueX="'count'"
-    :values="periodical.top_cgi_count"
-    :label="'Per CGI count (sum)'"
-    :id="'cgi_count_sum'"
-    :zoom="apply_zoom"
-    :sum="true"
-    :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.cgi_count_sum'"
-  /> -->
-  <!-- :label="format_time(periodical.timestamp)" -->
-
-  <component
+  <!-- <component
     :is="'chart-tabular'"
     :wrapper="{
       type: 'amchartsBarRace',
@@ -94,7 +73,9 @@
         categoryY: 'domain',
         valueX: 'count',
         label: 'Per DOMAIN - CGI count (last 5 secs)',
-        zoom: apply_zoom
+        zoom: apply_zoom,
+        colorScheme: colorScheme,
+        dark: dark
       }
     }"
     :always_update="false"
@@ -111,19 +92,9 @@
     :reactive="false"
     :no_buffer="false"
   >
-  </component>
+  </component> -->
 
-  <!-- <amcharts-bar-race
-    :categoryY="'domain'"
-    :valueX="'count'"
-    :values="periodical.top_per_domain"
-    :label="'Per DOMAIN - CGI count (last 5 secs)'"
-    :id="'per_domain_count'"
-    :zoom="apply_zoom"
-    :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.per_domain_count'"
-  /> -->
-
-  <component
+  <!-- <component
     :is="'chart-tabular'"
     :wrapper="{
       type: 'amchartsBarRace',
@@ -132,6 +103,8 @@
         valueX: 'count',
         label: 'Per DOMAIN - CGI count (sum)',
         zoom: apply_zoom,
+        colorScheme: colorScheme,
+        dark: dark,
         sum: true
       }
     }"
@@ -149,20 +122,9 @@
     :reactive="false"
     :no_buffer="false"
   >
-  </component>
+  </component> -->
 
-  <!-- <amcharts-bar-race
-    :categoryY="'domain'"
-    :valueX="'count'"
-    :values="periodical.top_per_domain"
-    :label="'Per DOMAIN - CGI count (sum)'"
-    :id="'per_domain_count_sum'"
-    :zoom="apply_zoom"
-    :sum="true"
-    :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.per_domain_count_sum'"
-  /> -->
-
-  <component
+  <!-- <component
     :is="'chart-tabular'"
     :wrapper="{
       type: 'amchartsBarRace',
@@ -171,6 +133,8 @@
         valueX: 'count',
         label: 'Per HOST - CGI count (last 5 secs)',
         zoom: apply_zoom,
+        colorScheme: colorScheme,
+        dark: dark,
       }
     }"
     :always_update="false"
@@ -187,19 +151,9 @@
     :reactive="false"
     :no_buffer="false"
   >
-  </component>
+  </component> -->
 
-  <!-- <amcharts-bar-race
-    :categoryY="'host'"
-    :valueX="'count'"
-    :values="periodical.top_per_host"
-    :label="'Per HOST - CGI count (last 5 secs)'"
-    :id="'per_host_count'"
-    :zoom="apply_zoom"
-    :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.per_host_count'"
-  /> -->
-
-  <component
+  <!-- <component
     :is="'chart-tabular'"
     :wrapper="{
       type: 'amchartsBarRace',
@@ -208,7 +162,9 @@
         valueX: 'count',
         label: 'Per HOST - CGI count (sum)',
         zoom: apply_zoom,
-        sum: true
+        colorScheme: colorScheme,
+        dark: dark,
+        sum: true,
       }
     }"
     :always_update="false"
@@ -225,20 +181,9 @@
     :reactive="false"
     :no_buffer="false"
   >
-  </component>
+  </component> -->
 
-  <!-- <amcharts-bar-race
-    :categoryY="'host'"
-    :valueX="'count'"
-    :values="periodical.top_per_host"
-    :label="'Per HOST - CGI count (sum)'"
-    :id="'per_host_count_sum'"
-    :zoom="apply_zoom"
-    :sum="true"
-    :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.per_host_count_sum'"
-  /> -->
-
-  <component
+  <!-- <component
     :is="'chart-tabular'"
     :wrapper="{
       type: 'amchartsBarRace',
@@ -247,6 +192,8 @@
         valueX: 'sum',
         label: 'Per DOMAIN - total duration (last 5 secs)',
         zoom: apply_zoom,
+        colorScheme: colorScheme,
+        dark: dark
       }
     }"
     :always_update="false"
@@ -263,19 +210,18 @@
     :reactive="false"
     :no_buffer="false"
   >
-  </component>
+  </component> -->
 
-  <!-- <amcharts-bar-race
-    :categoryY="'domain'"
-    :valueX="'sum'"
-    :values="periodical.top_per_domain"
-    :label="'Per DOMAIN - total duration (last 5 secs)'"
-    :id="'per_domain_total'"
-    :zoom="apply_zoom"
-    :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.per_domain_total'"
-  /> -->
-
-  <!-- <amcharts-bar-race :categoryY="'host'" :valueX="'sum'" :values="periodical.per_host" :label="'Per HOST - total duration'" :id="'per_host_sum'" :zoom="apply_zoom" :sum="true"/> -->
+  <div :style="{height: (height + 100) + 'px', 'margin-top': '25px'}">
+    <grid-view
+      v-if="grid.layouts && Object.getLength(components) > 0"
+      :swap_components="true"
+      :id="id+'PeriodicalGrid'"
+      :components="components"
+      :grid="grid"
+      v-on:height="setHeight"
+    />
+  </div>
 
   <div v-for="(count, cgi) in periodical.cgi_count" :key="'cgi_count.'+cgi">
     periodical.cgi_count: {{cgi}} - {{count}} <br/>
@@ -295,7 +241,7 @@
 
   <hr>
 
-  <q-table
+  <!-- <q-table
     class="my-sticky-header-table"
     title="Web Logs"
     :data="periodical.logs"
@@ -309,8 +255,6 @@
     :filter="search_filter"
     :key="$route.path +'.'+ JSON.stringify($route.query)+'.table'"
   >
-  <!-- dark
-  color="amber" -->
     <template v-slot:top="props">
       <q-select
         v-if="$q.screen.lt.sm"
@@ -327,15 +271,6 @@
         style="min-width: 150px"
       />
       <q-space />
-      <!-- <div v-if="$q.screen.gt.xs" class="col">
-        <q-toggle v-model="visibleColumns" val="schema" label="Schema" />
-        <q-toggle v-model="visibleColumns" val="uri" label="URI" />
-        <q-toggle v-model="visibleColumns" val="port" label="Port" />
-        <q-toggle v-model="visibleColumns" val="host" label="Host" />
-        <q-toggle v-model="visibleColumns" val="timestamp" label="Last Update" />
-        <q-toggle v-model="visibleColumns" val="path" label="Type" />
-      </div> -->
-
       <q-input borderless dense debounce="100" v-model="search_filter" placeholder="Search">
         <template v-slot:append>
           <q-icon name="search" />
@@ -362,7 +297,6 @@
 
       <q-td key="domain" :props="props">
         {{ props.row.domain }}
-        <!-- <q-btn type="a" :href="props.row.schema+'://'+props.row.uri+':'+props.row.port" target="_blank" flat icon="open_in_new" /> -->
         <q-btn v-on:click="destroy_pipelines()" :to="'/logs/educativa/filter/?domain=' + props.row.domain" flat icon="open_in_new" />
       </q-td>
 
@@ -379,7 +313,7 @@
       </q-td>
     </q-tr>
     </template>
-  </q-table>
+  </q-table> -->
 </div>
 </template>
 
@@ -404,11 +338,19 @@ import * as PeriodicalSources from '@apps/logs/educativa/sources/filter/periodic
 // const MAX_FEED_DATA = 10
 import moment from 'moment'
 
-// import QCalendar from '@quasar/quasar-ui-qcalendar'
+import { mapState } from 'vuex'
 
-// function leftClick (e) {
-//   return e.button === 0
-// }
+import CgiCount from '@apps/logs/educativa/components/cgiCount'
+import DomainCgiCount from '@apps/logs/educativa/components/domainCgiCount'
+import DomainTotalDuration from '@apps/logs/educativa/components/domainTotalDuration'
+import HostCgiCount from '@apps/logs/educativa/components/hostCgiCount'
+import Toolbar from '@apps/logs/educativa/components/filter/periodical/toolbar'
+import LogsTable from '@apps/logs/educativa/components/filter/periodical/logsTable'
+
+import GridView from '@components/gridView'
+
+// import * as am4core from '@amcharts/amcharts4/core'
+// const colorSet = new am4core.ColorSet()
 
 const roundMilliseconds = function (timestamp) {
   let d = new Date(timestamp)
@@ -448,7 +390,16 @@ const WEEK = DAY * 7
 export default {
   mixins: [DataSourcesMixin],
 
-  components: { chartTabular },
+  components: {
+    chartTabular,
+    GridView,
+    CgiCount,
+    DomainCgiCount,
+    DomainTotalDuration,
+    HostCgiCount,
+    LogsTable,
+    Toolbar
+  },
 
   name: 'LogsEducativaFilterPeriodical',
 
@@ -465,6 +416,7 @@ export default {
     return {
       id: 'logs.educativa.filter.periodical',
       path: 'all',
+      height: 0,
 
       top: 15,
 
@@ -486,29 +438,6 @@ export default {
         range: { start: 0, end: 0},
         timestamp: 0,
 
-        // total_bytes_sent: 0,
-        // hits: 0,
-        //
-        // current_bytes_sent: 0,
-        //
-        // status_counter: {},
-        //
-        // city_counter: {},
-        // country_counter: {},
-        // continent_counter: {},
-        // world_map_cities: [],
-        //
-        // addr_counter: {},
-        // user_counter: {},
-        // referer_counter: {},
-        // type_counter: {},
-        //
-        // user_agent_os_counter: {},
-        // user_agent_os_family_counter: {},
-        // user_agent_engine_counter: {},
-        // user_agent_browser_counter: {},
-        // user_agent_device_counter: {}
-
       },
 
       store: false,
@@ -518,55 +447,334 @@ export default {
 
       // logs: [],
 
-      search_filter: '',
+      // search_filter: '',
       loading_logs: true,
-      allColumns: ['date', 'log', 'domain', 'host', 'path'],
-      visibleColumns: ['log'],
-      pagination: {
-        rowsPerPage: 10
+      // allColumns: ['date', 'log', 'domain', 'host', 'path'],
+      // visibleColumns: ['log'],
+      // pagination: {
+      //   rowsPerPage: 10
+      // },
+      //
+      // columns: [
+      //   // { name: 'schema', label: 'Schema', field: 'schema', sortable: true, align: 'left' },
+      //   {
+      //     name: 'date',
+      //     required: true,
+      //     label: 'Date',
+      //     align: 'left',
+      //     field: 'timestamp',
+      //     sortable: true
+      //   },
+      //   {
+      //     name: 'log',
+      //     required: true,
+      //     label: 'Log',
+      //     align: 'left',
+      //     field: 'log',
+      //     sortable: true
+      //   },
+      //   {
+      //     name: 'domain',
+      //     required: true,
+      //     label: 'Domain',
+      //     align: 'left',
+      //     field: 'domain',
+      //     sortable: true
+      //   },
+      //   { name: 'host', align: 'left', label: 'Host', field: 'host', sortable: true },
+      //   // {
+      //   //   name: 'timestamp',
+      //   //   align: 'left',
+      //   //   label: 'Last Update',
+      //   //   field: 'timestamp',
+      //   //   sortable: true
+      //   // },
+      //   { name: 'path', align: 'left', label: 'Type', field: 'path', sortable: true }
+      // ],
+
+      grid: {
+        layouts: {
+          'lg': [
+            { x: 0, y: 0, w: 24, h: 5, i: 'toolbar', immobile: false },
+            { x: 0, y: 1, w: 12, h: 36, i: 'domainCgiCount', immobile: false },
+            { x: 12, y: 1, w: 12, h: 36, i: 'domainCgiCountSum', immobile: false },
+            { x: 0, y: 2, w: 12, h: 36, i: 'hostCgiCount', immobile: false },
+            { x: 12, y: 2, w: 12, h: 36, i: 'hostCgiCountSum', immobile: false },
+            { x: 0, y: 3, w: 12, h: 36, i: 'domainTotalDuration', immobile: false },
+            { x: 12, y: 3, w: 12, h: 36, i: 'domainTotalDurationSum', immobile: false },
+            { x: 0, y: 4, w: 12, h: 36, i: 'cgiCount', immobile: false },
+            { x: 12, y: 4, w: 12, h: 36, i: 'cgiCountSum', immobile: false },
+            { x: 0, y: 5, w: 24, h: 50, i: 'logs', immobile: false },
+            // { x: 15, y: 0, w: 6, h: 10, i: 'mounts', immobile: false },
+            // { x: 21, y: 0, w: 3, h: 10, i: 'memory', immobile: false },
+            // // { x: 0, y: 1, w: 12, h: 2, i: 'separator' }
+          ],
+          'md': [
+            // { x: 0, y: 0, w: 4, h: 10, i: 'loadavg', immobile: false },
+            // { x: 4, y: 0, w: 4, h: 10, i: 'netOut', immobile: false },
+            // { x: 8, y: 0, w: 4, h: 10, i: 'netIn', immobile: false },
+            // { x: 12, y: 0, w: 4, h: 10, i: 'memory', immobile: false },
+            //
+            // { x: 0, y: 1, w: 8, h: 15, i: 'cpu', immobile: false },
+            // { x: 8, y: 1, w: 8, h: 10, i: 'mounts', immobile: false },
+            //
+            // // { x: 0, y: 1, w: 6, h: 2, i: 'separator' }
+          ],
+          'sm': [
+            // { x: 0, y: 0, w: 3, h: 10, i: 'loadavg', immobile: false },
+            // { x: 3, y: 0, w: 3, h: 10, i: 'netOut', immobile: false },
+            // { x: 6, y: 0, w: 3, h: 10, i: 'netIn', immobile: false },
+            // { x: 9, y: 0, w: 3, h: 10, i: 'memory', immobile: false },
+            //
+            // { x: 0, y: 1, w: 6, h: 15, i: 'cpu', immobile: false },
+            // { x: 6, y: 1, w: 6, h: 10, i: 'mounts', immobile: false },
+            //
+            // // { x: 0, y: 1, w: 6, h: 2, i: 'separator' }
+          ],
+          'xs': [
+            // { x: 0, y: 0, w: 4, h: 10, i: 'loadavg', immobile: false },
+            // { x: 4, y: 0, w: 4, h: 10, i: 'memory', immobile: false },
+            // { x: 0, y: 1, w: 4, h: 10, i: 'netOut', immobile: false },
+            // { x: 4, y: 1, w: 4, h: 10, i: 'netIn', immobile: false },
+            // { x: 0, y: 2, w: 8, h: 15, i: 'cpu', immobile: false },
+            // { x: 0, y: 3, w: 8, h: 10, i: 'mounts', immobile: false },
+            //
+            // // { x: 0, y: 1, w: 6, h: 2, i: 'separator' }
+          ],
+          'xxs': [
+            // { x: 0, y: 0, w: 3, h: 10, i: 'loadavg', immobile: false },
+            // { x: 3, y: 0, w: 3, h: 10, i: 'memory', immobile: false },
+            // { x: 0, y: 1, w: 3, h: 10, i: 'netOut', immobile: false },
+            // { x: 3, y: 1, w: 3, h: 10, i: 'netIn', immobile: false },
+            // { x: 0, y: 2, w: 6, h: 15, i: 'cpu', immobile: false },
+            // { x: 0, y: 3, w: 6, h: 10, i: 'mounts', immobile: false },
+            //
+            // // { x: 0, y: 1, w: 6, h: 2, i: 'separator' }
+          ]
+
+        },
+        breakpoint: 'lg',
+        // slots: [
+        //   '<q-btn round />'
+        // ],
+
+        // cols: 12,
+        // // breakpoints: { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 },
+        // colsAll: { lg: 12, md: 8, sm: 6, xs: 4, xxs: 2 },
+
+        cols: 22,
+        // breakpoints: { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 },
+        colsAll: { lg: 24, md: 16, sm: 12, xs: 8, xxs: 6 },
+
+        isDraggable: true,
+        isResizable: false,
+        preview: true
       },
 
-      columns: [
-        // { name: 'schema', label: 'Schema', field: 'schema', sortable: true, align: 'left' },
-        {
-          name: 'date',
-          required: true,
-          label: 'Date',
-          align: 'left',
-          field: 'timestamp',
-          sortable: true
-        },
-        {
-          name: 'log',
-          required: true,
-          label: 'Log',
-          align: 'left',
-          field: 'log',
-          sortable: true
-        },
-        {
-          name: 'domain',
-          required: true,
-          label: 'Domain',
-          align: 'left',
-          field: 'domain',
-          sortable: true
-        },
-        { name: 'host', align: 'left', label: 'Host', field: 'host', sortable: true },
-        // {
-        //   name: 'timestamp',
-        //   align: 'left',
-        //   label: 'Last Update',
-        //   field: 'timestamp',
-        //   sortable: true
-        // },
-        { name: 'path', align: 'left', label: 'Type', field: 'path', sortable: true }
-      ],
+      components: {
+        'toolbar': [
+          {
+            component: Toolbar
+          }
+        ],
+        'domainCgiCount': [
+          {
+            component: DomainCgiCount,
+            props: {
+              type: 'periodical',
+            }
+          }
 
+        ],
+        'domainCgiCountSum': [
+          {
+            component: DomainCgiCount,
+            props: {
+              type: 'periodical',
+              sum: true
+            }
+          }
+
+        ],
+        'hostCgiCount': [
+          {
+            component: HostCgiCount,
+            props: {
+              type: 'periodical',
+            }
+          }
+
+        ],
+        'hostCgiCountSum': [
+          {
+            component: HostCgiCount,
+            props: {
+              type: 'periodical',
+              sum: true
+            }
+          }
+
+        ],
+        'domainTotalDuration': [
+          {
+            component: DomainTotalDuration,
+            props: {
+              type: 'periodical',
+            }
+          }
+
+        ],
+        'domainTotalDurationSum': [
+          {
+            component: DomainTotalDuration,
+            props: {
+              type: 'periodical',
+              sum: true
+            }
+          }
+
+        ],
+        'cgiCount': [
+          {
+            component: CgiCount,
+            props: {
+              type: 'periodical',
+            }
+          }
+
+        ],
+        'cgiCountSum': [
+          {
+            component: CgiCount,
+            props: {
+              type: 'periodical',
+              sum: true
+            }
+          }
+
+        ],
+
+        'logs': [
+          {
+            component: LogsTable,
+
+          }
+
+        ],
+
+      },
     }
   },
 
+  watch: {
+    dark: function () {
+      Object.each(this.components, function (gridItem, name) {
+        Array.each(this.components[name], function (component, index) {
+          this.$set(this.components[name], index, Object.merge(this.components[name][index], {
+            props: {
+              dark: this.dark,
+            }
+
+          }))
+        }.bind(this))
+      }.bind(this))
+    },
+    colorScheme: function () {
+      Object.each(this.components, function (gridItem, name) {
+        Array.each(this.components[name], function (component, index) {
+          this.$set(this.components[name], index, Object.merge(this.components[name][index], {
+            props: {
+              colorScheme: this.colorScheme,
+            }
+
+          }))
+        }.bind(this))
+      }.bind(this))
+    },
+
+    periodical: {
+      handler: function (periodical) {
+        if (periodical && Object.getLength(periodical) > 0) {
+          debug('watch periodical', periodical)
+          this.$set(this.components.toolbar[0].props, 'range', periodical.range)
+          this.$set(this.components.toolbar[0].props, 'timestamp', periodical.timestamp)
+
+          this.$set(this.components.domainCgiCount[0].props, 'top_per_domain', periodical.top_per_domain)
+          this.$set(this.components.domainCgiCountSum[0].props, 'top_per_domain', periodical.top_per_domain)
+
+          this.$set(this.components.hostCgiCount[0].props, 'top_per_host', periodical.top_per_host)
+          this.$set(this.components.hostCgiCountSum[0].props, 'top_per_host', periodical.top_per_host)
+
+          this.$set(this.components.domainTotalDuration[0].props, 'top_per_domain', periodical.top_per_domain)
+          this.$set(this.components.domainTotalDurationSum[0].props, 'top_per_domain', periodical.top_per_domain)
+
+          this.$set(this.components.cgiCount[0].props, 'top_cgi_count', periodical.top_cgi_count)
+          this.$set(this.components.cgiCountSum[0].props, 'top_cgi_count', periodical.top_cgi_count)
+
+          // this.$set(this.components.hostCgiCount[0].props, 'top_per_host', periodical.top_per_host)
+
+          //   Array.each(periodical.top_world_map_cities, function (value) {
+          //     if (value !== undefined) {
+          //       let city = value.title.substring(0, value.title.indexOf('(')).trim()
+          //
+          //       if (!this.cities_color[city]) {
+          //         let index = 0
+          //
+          //         // debug('watch periodical', colorSet.list)
+          //
+          //         Object.each(periodical.top_city_counter, function (value, city) {
+          //           this.cities_color[city] = colorSet.getIndex(index).rgba
+          //
+          //           index++
+          //           if (index > colorSet.list.length) { index = 0 }
+          //         }.bind(this))
+          //       }
+          //
+          //       value.color = this.cities_color[city]
+          //     }
+          //   }.bind(this))
+          //
+          //   this.$set(this.components.worldCitiesMap[0].props, 'world_map_cities', periodical.top_world_map_cities)
+          //
+          //   Array.each(periodical.top_world_map_countries, function (value) {
+          //     if (value !== undefined) {
+          //       let country = value.name.trim()
+          //
+          //       if (!this.countries_color[country]) {
+          //         let index = 0
+          //
+          //         // debug('watch periodical', colorSet.list)
+          //
+          //         Object.each(periodical.top_country_counter, function (value, country) {
+          //           this.countries_color[country] = colorSet.getIndex(index).rgba
+          //
+          //           index++
+          //           if (index > colorSet.list.length) { index = 0 }
+          //         }.bind(this))
+          //       }
+          //
+          //       value.color = this.countries_color[country]
+          //     }
+          //   }.bind(this))
+          //
+          //   this.$set(this.components.worldCountriesMap[0].props, 'world_map_countries', periodical.top_world_map_countries)
+          //
+          //
+          //   this.$set(this.components.topCity[0].props, 'top_city_counter', periodical.top_city_counter)
+          //   this.$set(this.components.topCitySum[0].props, 'top_city_counter', periodical.top_city_counter)
+          //
+          this.$set(this.components.logs[0].props, 'logs', periodical.logs)
+          this.$set(this.components.logs[0].props, 'loading_logs', this.loading_logs)
+        }
+      },
+      deep: true
+    }
+  },
   computed: {
+    ...mapState({
+      dark: state => state.layout.dark,
+      colorScheme: state => state.layout.dashboardColorScheme
+    }),
     'filter': function () {
       // return (this.$route && this.$route.params && this.$route.params.web) ? this.$route.params.web : undefined
       return (this.$route && this.$route.query)
@@ -578,11 +786,41 @@ export default {
     },
     'web': function () {
       return (this.filter && this.type) ? this.filter[this.type] : undefined
-    },
+    }
+  },
 
+  created: function () {
+    debug('created')
+    // this.$on('grid.' + this.id + ':height', this.setHeight.bind(this))
+  },
+
+  mounted: function () {
+    debug('mounted', this.$refs)
+    this.$on('grid.' + this.id + ':height', this.setHeight.bind(this))
+    // this.$on('grid.' + this.id + ':destroy_pipelines', function () {
+    //   debug('event')
+    // })
+
+    Object.each(this.components, function (gridItem, name) {
+      Array.each(this.components[name], function (component, index) {
+        this.$set(this.components[name], index, Object.merge(this.components[name][index], {
+          id: this.id + '.periodical.' + name + '.component',
+          props: {
+            dark: this.dark,
+            colorScheme: this.colorScheme,
+          }
+        }))
+      }.bind(this))
+    }.bind(this))
   },
 
   methods: {
+    setHeight: function (height) {
+      debug('setHeight', height)
+      // this.height = height + 200 + 'px'
+      this.height = height
+    },
+
     end: function () {
       // if (this.current_day === undefined) {
       return Date.now()
@@ -590,35 +828,35 @@ export default {
       // return this.current_day
       // }
     },
-    apply_zoom: function (data, categoryY, valueX) {
-      const min_zoom = 0.5
-      const max_zoom = 1
-      /* const min_length = 8 */
-      const max_length = 15
-      let length = data.length
-      /* let zoom = 1 */
-
-      if (data.length <= max_length) {
-        return max_zoom
-      } else {
-        // let itemsWithNonZero = 0
-        // for (let i = 0; i < max_length; i++) {
-        //   if (data[i][valueX] > 0) {
-        //     itemsWithNonZero++
-        //   }
-        // }
-
-        // let zoom = max_length / data.length
-        // return (zoom > min_zoom) ? zoom : min_zoom
-        return (max_length / data.length < min_zoom) ? min_zoom : max_length / data.length
-      }
-    },
-    format_time: function (timestamp) {
-      return moment(timestamp).format('dddd, MMMM Do YYYY, h:mm:ss a')
-    },
-    format_log: function (log) {
-      return (log.length <= 100) ? log : log.substring(0, 96) + '...'
-    },
+    // apply_zoom: function (data, categoryY, valueX) {
+    //   const min_zoom = 0.5
+    //   const max_zoom = 1
+    //   /* const min_length = 8 */
+    //   const max_length = 15
+    //   let length = data.length
+    //   /* let zoom = 1 */
+    //
+    //   if (data.length <= max_length) {
+    //     return max_zoom
+    //   } else {
+    //     // let itemsWithNonZero = 0
+    //     // for (let i = 0; i < max_length; i++) {
+    //     //   if (data[i][valueX] > 0) {
+    //     //     itemsWithNonZero++
+    //     //   }
+    //     // }
+    //
+    //     // let zoom = max_length / data.length
+    //     // return (zoom > min_zoom) ? zoom : min_zoom
+    //     return (max_length / data.length < min_zoom) ? min_zoom : max_length / data.length
+    //   }
+    // },
+    // format_time: function (timestamp) {
+    //   return moment(timestamp).format('dddd, MMMM Do YYYY, h:mm:ss a')
+    // },
+    // format_log: function (log) {
+    //   return (log.length <= 100) ? log : log.substring(0, 96) + '...'
+    // },
     /**
     * @start pipelines
     **/
@@ -669,28 +907,3 @@ export default {
 
 }
 </script>
-
-<style lang="sass">
-.my-sticky-header-table
-  /* max height is important */
-  .q-table__middle
-    max-height: 600px
-    // min-height: 600px
-
-  .q-table__top,
-  .q-table__bottom,
-  thead tr:first-child th
-    /* bg color is important for th; just specify one */
-    // background-color: #1d1d1d
-
-  thead tr th
-    position: sticky
-    z-index: 1
-  thead tr:first-child th
-    top: 0
-
-  /* this is when the loading indicator appears */
-  &.q-table--loading thead tr:last-child th
-    /* height of all previous header rows */
-    top: 48px
-</style>

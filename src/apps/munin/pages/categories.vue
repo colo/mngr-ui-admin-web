@@ -10,14 +10,10 @@
             <q-breadcrumbs-el :label="category" v-if="category" />
           </q-breadcrumbs>
         </q-toolbar>
-        <q-toolbar>
-          <!-- <q-btn flat round dense icon="assignment_ind"/> -->
-          <!-- <q-toolbar-title>Quasar</q-toolbar-title> -->
-
+        <!-- <q-toolbar>
           <q-btn flat class="q-mr-xs" label="Hosts" :to="{name : 'munin_hosts'}"/>
           <q-btn flat class="q-mr-xs" label="Categories" :to="{name : 'munin_categories'}"/>
-          <!-- <q-btn flat round dense icon="gamepad"/> -->
-        </q-toolbar>
+        </q-toolbar> -->
       </div>
 
       <template v-for="(category_hosts, category_name) in categories_paths">

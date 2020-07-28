@@ -77,7 +77,7 @@ export default function () {
 
       isDraggable: false,
       isResizable: false,
-      preview: false
+      preview: true
     }
     // _default: {
     //   layout: [
@@ -135,8 +135,8 @@ export default function () {
     //   ],
     //
     //   isDraggable: true,
-    //   isResizable: true,
-    //   preview: false,
+    //   isResizable: false,
+    //   preview: true,
     //   contenteditable: true
     // }
   }

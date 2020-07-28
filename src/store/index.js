@@ -5,6 +5,7 @@ import Vuex from 'vuex'
 import app from './app'
 import grids from './grids'
 import components from './components'
+import layout from '@dashblocks-template/src/store/modules/layout'
 
 Vue.use(Vuex)
 
@@ -20,6 +21,7 @@ Vue.use(Vuex)
 export default function (/* { ssrContext } */) {
   const Store = new Vuex.Store({
     modules: {
+      layout,
       app,
       grids,
       components

@@ -1,179 +1,24 @@
 <template>
   <div>
-    <q-toolbar class="text-primary">
-      <!-- <q-btn flat round dense icon="menu" /> -->
-      <q-toolbar-title>
-        From: {{ format_time(periodical.range.start) }} - To: {{ format_time(periodical.range.end) }} / Updated on: {{ format_time(periodical.timestamp) }}
-      </q-toolbar-title>
-      <!-- <q-space class="text-primary"/> -->
+    <div :style="{height: (height + 100) + 'px', 'margin-top': '25px'}">
+      <grid-view
+        v-if="grid.layouts && Object.getLength(components) > 0"
+        :swap_components="true"
+        :id="id+'PeriodicalGrid'"
+        :components="components"
+        :grid="grid"
+        v-on:height="setHeight"
+      />
+    </div>
+    <!-- <world-cities-map :type="'periodical'" :world_map_cities="periodical.world_map_cities" :dark="dark" :colorScheme="colorScheme"/>
 
-    </q-toolbar>
+    <top-country :type="'periodical'" :top_country_counter="periodical.top_country_counter" :dark="dark" :colorScheme="colorScheme"/>
 
-    <component
-      :is="'chart-tabular'"
-      :wrapper="{
-        type: 'amchartsWorldCityMap',
-      }"
-      :always_update="false"
-      :ref="'periodical.world_map_cities'"
-      :id="'periodical.world_map_cities'"
-      :stat="{
-        data: [
-          periodical.world_map_cities
-        ],
-        length: 1,
-        numeric: false
-      }"
-      :reactive="false"
-      :no_buffer="false"
-    >
-    </component>
+    <top-country :type="'periodical'" :top_country_counter="periodical.top_country_counter" :dark="dark" :colorScheme="colorScheme" :sum="true"/>
 
-    <!-- <amcharts-world-city-map :id="'periodical.world_map_cities'" :cities="periodical.world_map_cities"/> -->
+    <top-city :type="'periodical'" :top_city_counter="periodical.top_city_counter" :dark="dark" :colorScheme="colorScheme"/>
 
-    <component
-      :is="'chart-tabular'"
-      :wrapper="{
-        type: 'amchartsBarRace',
-        props:{
-          categoryY: 'country',
-          label: 'Per COUNTRY count (last 5 secs)',
-          zoom: apply_zoom
-        }
-      }"
-      :always_update="false"
-      :ref="'periodical.top_country_counter'"
-      :id="'periodical.top_country_counter'"
-      :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.top_country_counter'"
-      :stat="{
-        data: [
-          periodical.top_country_counter
-        ],
-        length: 1,
-        numeric: false
-      }"
-      :reactive="false"
-      :no_buffer="false"
-    >
-    </component>
-
-    <!-- <amcharts-bar-race
-      :categoryY="'country'"
-      :values="periodical.top_country_counter"
-      :label="'Per COUNTRY count (last 5 secs)'"
-      :id="'top_country_counter'"
-      :zoom="apply_zoom"
-      :key="$route.path +'.'+ JSON.stringify($route.query)+'.top_country_counter'"
-    /> -->
-
-    <component
-      :is="'chart-tabular'"
-      :wrapper="{
-        type: 'amchartsBarRace',
-        props:{
-          categoryY: 'country',
-          label: 'Per COUNTRY count (sum)',
-          zoom: apply_zoom,
-          sum: true
-        }
-      }"
-      :always_update="false"
-      :ref="'periodical.top_country_counter_sum'"
-      :id="'periodical.top_country_counter_sum'"
-      :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.top_country_counter_sum'"
-      :stat="{
-        data: [
-          periodical.top_country_counter
-        ],
-        length: 1,
-        numeric: false
-      }"
-      :reactive="false"
-      :no_buffer="false"
-    >
-    </component>
-
-    <!-- <amcharts-bar-race
-      :categoryY="'country'"
-      :values="periodical.top_country_counter"
-      :label="'Per COUNTRY count (sum)'"
-      :id="'top_country_counter_sum'"
-      :zoom="apply_zoom"
-      :sum="true"
-      :key="$route.path +'.'+ JSON.stringify($route.query)+'.top_country_counter_sum'"
-    /> -->
-
-    <component
-      :is="'chart-tabular'"
-      :wrapper="{
-        type: 'amchartsBarRace',
-        props:{
-          categoryY: 'city',
-          label: 'Per CITY count (last 5 secs)',
-          zoom: apply_zoom
-        }
-      }"
-      :always_update="false"
-      :ref="'periodical.top_city_counter'"
-      :id="'periodical.top_city_counter'"
-      :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.top_city_counter'"
-      :stat="{
-        data: [
-          periodical.top_city_counter
-        ],
-        length: 1,
-        numeric: false
-      }"
-      :reactive="false"
-      :no_buffer="false"
-    >
-    </component>
-
-    <!-- <amcharts-bar-race
-      :categoryY="'city'"
-      :values="periodical.top_city_counter"
-      :label="'Per CITY count (last 5 secs)'"
-      :id="'top_city_counter'"
-      :zoom="apply_zoom"
-      :key="$route.path +'.'+ JSON.stringify($route.query)+'.top_city_counter'"
-    /> -->
-
-    <component
-      :is="'chart-tabular'"
-      :wrapper="{
-        type: 'amchartsBarRace',
-        props:{
-          categoryY: 'city',
-          label: 'Per CITY count (sum)',
-          zoom: apply_zoom,
-          sum: true
-        }
-      }"
-      :always_update="false"
-      :ref="'periodical.top_city_counter_sum'"
-      :id="'periodical.top_city_counter_sum'"
-      :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical.top_city_counter_sum'"
-      :stat="{
-        data: [
-          periodical.top_city_counter
-        ],
-        length: 1,
-        numeric: false
-      }"
-      :reactive="false"
-      :no_buffer="false"
-    >
-    </component>
-
-    <!-- <amcharts-bar-race
-      :categoryY="'city'"
-      :values="periodical.top_city_counter"
-      :label="'Per CITY count (sum)'"
-      :id="'top_city_counter_sum'"
-      :zoom="apply_zoom"
-      :sum="true"
-      :key="$route.path +'.'+ JSON.stringify($route.query)+'.top_city_counter_sum'"
-    /> -->
+    <top-city :type="'periodical'" :top_city_counter="periodical.top_city_counter" :dark="dark" :colorScheme="colorScheme" :sum="true"/> -->
 
     <!-- <div v-for="(val, prop) in minute" :key="'minute.'+prop">
       minute: {{prop}} - {{val}} <br/>
@@ -275,7 +120,7 @@
       periodical.user_agent_device_counter: {{device}} - {{val}} <br/>
     </div>
 
-    <q-table
+    <!-- <q-table
       class="my-sticky-header-table"
       title="Web Logs"
       :data="periodical.logs"
@@ -288,8 +133,6 @@
       :loading="loading_logs"
       :filter="search_filter"
     >
-    <!-- dark
-    color="amber" -->
       <template v-slot:top="props">
         <q-select
           v-if="$q.screen.lt.sm"
@@ -306,15 +149,6 @@
           style="min-width: 150px"
         />
         <q-space />
-        <!-- <div v-if="$q.screen.gt.xs" class="col">
-          <q-toggle v-model="visibleColumns" val="schema" label="Schema" />
-          <q-toggle v-model="visibleColumns" val="uri" label="URI" />
-          <q-toggle v-model="visibleColumns" val="port" label="Port" />
-          <q-toggle v-model="visibleColumns" val="host" label="Host" />
-          <q-toggle v-model="visibleColumns" val="timestamp" label="Last Update" />
-          <q-toggle v-model="visibleColumns" val="path" label="Type" />
-        </div> -->
-
         <q-input borderless dense debounce="100" v-model="search_filter" placeholder="Search">
           <template v-slot:append>
             <q-icon name="search" />
@@ -341,7 +175,6 @@
 
         <q-td key="domain" :props="props">
           {{ props.row.domain }}
-          <!-- <q-btn type="a" :href="props.row.schema+'://'+props.row.uri+':'+props.row.port" target="_blank" flat icon="open_in_new" /> -->
           <q-btn v-on:click="destroy_pipelines()" :to="'/logs/web/filter/?domain=' + props.row.domain" flat icon="open_in_new" />
         </q-td>
 
@@ -358,7 +191,7 @@
         </q-td>
       </q-tr>
       </template>
-    </q-table>
+    </q-table> -->
   </div>
 </template>
 
@@ -378,6 +211,20 @@ import PeriodicalPipeline from '@apps/logs/web/pipelines/filter/periodical'
 import * as PeriodicalSources from '@apps/logs/web/sources/filter/periodical/index'
 
 import moment from 'moment'
+
+import { mapState } from 'vuex'
+
+import WorldCitiesMap from '@apps/logs/web/components/worldCitiesMap'
+import WorldCountriesMap from '@apps/logs/web/components/worldCountriesMap'
+import TopCountry from '@apps/logs/web/components/topCountry'
+import TopCity from '@apps/logs/web/components/topCity'
+import Toolbar from '@apps/logs/web/components/filter/periodical/toolbar'
+import LogsTable from '@apps/logs/web/components/filter/periodical/logsTable'
+
+import GridView from '@components/gridView'
+
+import * as am4core from '@amcharts/amcharts4/core'
+const colorSet = new am4core.ColorSet()
 
 const roundMilliseconds = function (timestamp) {
   let d = new Date(timestamp)
@@ -417,7 +264,15 @@ const WEEK = DAY * 7
 export default {
   mixins: [DataSourcesMixin],
 
-  components: { chartTabular },
+  components: {
+    chartTabular,
+    GridView,
+    WorldCitiesMap,
+    TopCountry,
+    TopCity,
+    LogsTable,
+    Toolbar
+  },
 
   name: 'LogsWebFilterPeriodical',
 
@@ -434,6 +289,7 @@ export default {
     return {
       id: 'logs.web.filter.periodical',
       path: 'all',
+      height: 0,
 
       top: 15,
 
@@ -456,6 +312,10 @@ export default {
         country_counter: {},
         continent_counter: {},
         world_map_cities: [],
+        top_world_map_cities: [],
+
+        world_map_countries: [],
+        top_world_map_countries: [],
 
         addr_counter: {},
         user_counter: {},
@@ -476,57 +336,419 @@ export default {
         'input.logs.web.filter.periodical',
       ],
 
+      cities_color: {},
+      countries_color: {},
       // logs: [],
 
-      search_filter: '',
+      // search_filter: '',
       loading_logs: true,
-      allColumns: ['date', 'log', 'domain', 'host', 'path'],
-      visibleColumns: ['log'],
-      pagination: {
-        rowsPerPage: 10
+      // allColumns: ['date', 'log', 'domain', 'host', 'path'],
+      // visibleColumns: ['log'],
+      // pagination: {
+      //   rowsPerPage: 10
+      // },
+      //
+      // columns: [
+      //   // { name: 'schema', label: 'Schema', field: 'schema', sortable: true, align: 'left' },
+      //   {
+      //     name: 'date',
+      //     required: true,
+      //     label: 'Date',
+      //     align: 'left',
+      //     field: 'timestamp',
+      //     sortable: true
+      //   },
+      //   {
+      //     name: 'log',
+      //     required: true,
+      //     label: 'Log',
+      //     align: 'left',
+      //     field: 'log',
+      //     sortable: true
+      //   },
+      //   {
+      //     name: 'domain',
+      //     required: true,
+      //     label: 'Domain',
+      //     align: 'left',
+      //     field: 'domain',
+      //     sortable: true
+      //   },
+      //   { name: 'host', align: 'left', label: 'Host', field: 'host', sortable: true },
+      //   // {
+      //   //   name: 'timestamp',
+      //   //   align: 'left',
+      //   //   label: 'Last Update',
+      //   //   field: 'timestamp',
+      //   //   sortable: true
+      //   // },
+      //   { name: 'path', align: 'left', label: 'Type', field: 'path', sortable: true }
+      // ],
+
+      grid: {
+        layouts: {
+          'lg': [
+            { x: 0, y: 0, w: 24, h: 5, i: 'toolbar', immobile: false },
+            { x: 0, y: 1, w: 12, h: 36, i: 'topCountry', immobile: false },
+            { x: 12, y: 1, w: 12, h: 36, i: 'worldCountriesMap', immobile: false },
+            { x: 0, y: 2, w: 12, h: 36, i: 'worldCitiesMap', immobile: false },
+            { x: 12, y: 2, w: 12, h: 36, i: 'topCity', immobile: false },
+            { x: 0, y: 3, w: 12, h: 36, i: 'topCountrySum', immobile: false },
+            { x: 12, y: 3, w: 12, h: 36, i: 'topCitySum', immobile: false },
+            { x: 0, y: 4, w: 24, h: 50, i: 'logs', immobile: false },
+            // { x: 15, y: 0, w: 6, h: 10, i: 'mounts', immobile: false },
+            // { x: 21, y: 0, w: 3, h: 10, i: 'memory', immobile: false },
+            // // { x: 0, y: 1, w: 12, h: 2, i: 'separator' }
+          ],
+          'md': [
+            // { x: 0, y: 0, w: 4, h: 10, i: 'loadavg', immobile: false },
+            // { x: 4, y: 0, w: 4, h: 10, i: 'netOut', immobile: false },
+            // { x: 8, y: 0, w: 4, h: 10, i: 'netIn', immobile: false },
+            // { x: 12, y: 0, w: 4, h: 10, i: 'memory', immobile: false },
+            //
+            // { x: 0, y: 1, w: 8, h: 15, i: 'cpu', immobile: false },
+            // { x: 8, y: 1, w: 8, h: 10, i: 'mounts', immobile: false },
+            //
+            // // { x: 0, y: 1, w: 6, h: 2, i: 'separator' }
+          ],
+          'sm': [
+            // { x: 0, y: 0, w: 3, h: 10, i: 'loadavg', immobile: false },
+            // { x: 3, y: 0, w: 3, h: 10, i: 'netOut', immobile: false },
+            // { x: 6, y: 0, w: 3, h: 10, i: 'netIn', immobile: false },
+            // { x: 9, y: 0, w: 3, h: 10, i: 'memory', immobile: false },
+            //
+            // { x: 0, y: 1, w: 6, h: 15, i: 'cpu', immobile: false },
+            // { x: 6, y: 1, w: 6, h: 10, i: 'mounts', immobile: false },
+            //
+            // // { x: 0, y: 1, w: 6, h: 2, i: 'separator' }
+          ],
+          'xs': [
+            // { x: 0, y: 0, w: 4, h: 10, i: 'loadavg', immobile: false },
+            // { x: 4, y: 0, w: 4, h: 10, i: 'memory', immobile: false },
+            // { x: 0, y: 1, w: 4, h: 10, i: 'netOut', immobile: false },
+            // { x: 4, y: 1, w: 4, h: 10, i: 'netIn', immobile: false },
+            // { x: 0, y: 2, w: 8, h: 15, i: 'cpu', immobile: false },
+            // { x: 0, y: 3, w: 8, h: 10, i: 'mounts', immobile: false },
+            //
+            // // { x: 0, y: 1, w: 6, h: 2, i: 'separator' }
+          ],
+          'xxs': [
+            // { x: 0, y: 0, w: 3, h: 10, i: 'loadavg', immobile: false },
+            // { x: 3, y: 0, w: 3, h: 10, i: 'memory', immobile: false },
+            // { x: 0, y: 1, w: 3, h: 10, i: 'netOut', immobile: false },
+            // { x: 3, y: 1, w: 3, h: 10, i: 'netIn', immobile: false },
+            // { x: 0, y: 2, w: 6, h: 15, i: 'cpu', immobile: false },
+            // { x: 0, y: 3, w: 6, h: 10, i: 'mounts', immobile: false },
+            //
+            // // { x: 0, y: 1, w: 6, h: 2, i: 'separator' }
+          ]
+
+        },
+        breakpoint: 'lg',
+        // slots: [
+        //   '<q-btn round />'
+        // ],
+
+        // cols: 12,
+        // // breakpoints: { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 },
+        // colsAll: { lg: 12, md: 8, sm: 6, xs: 4, xxs: 2 },
+
+        cols: 22,
+        // breakpoints: { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 },
+        colsAll: { lg: 24, md: 16, sm: 12, xs: 8, xxs: 6 },
+
+        isDraggable: true,
+        isResizable: false,
+        preview: true
       },
 
-      columns: [
-        // { name: 'schema', label: 'Schema', field: 'schema', sortable: true, align: 'left' },
-        {
-          name: 'date',
-          required: true,
-          label: 'Date',
-          align: 'left',
-          field: 'timestamp',
-          sortable: true
-        },
-        {
-          name: 'log',
-          required: true,
-          label: 'Log',
-          align: 'left',
-          field: 'log',
-          sortable: true
-        },
-        {
-          name: 'domain',
-          required: true,
-          label: 'Domain',
-          align: 'left',
-          field: 'domain',
-          sortable: true
-        },
-        { name: 'host', align: 'left', label: 'Host', field: 'host', sortable: true },
-        // {
-        //   name: 'timestamp',
-        //   align: 'left',
-        //   label: 'Last Update',
-        //   field: 'timestamp',
-        //   sortable: true
-        // },
-        { name: 'path', align: 'left', label: 'Type', field: 'path', sortable: true }
-      ],
+      components: {
+        'toolbar': [
+          {
+            component: Toolbar
+          }
+        ],
+        'topCountry': [
+          {
+            component: TopCountry,
+            props: {
+              type: 'periodical',
+              // // top_country_counter: {},
+              // dark: this.dark,
+              // colorScheme: this.colorScheme
+            }
+          }
+
+        ],
+        'worldCountriesMap': [
+          {
+            component: WorldCountriesMap,
+            props: {
+              type: 'periodical',
+            }
+          }
+
+        ],
+        'worldCitiesMap': [
+          {
+            component: WorldCitiesMap,
+            props: {
+              type: 'periodical',
+              // world_map_cities: [],
+              // dark: this.dark,
+              // colorScheme: this.colorScheme
+            }
+          }
+
+        ],
+        'topCity': [
+          {
+            component: TopCity,
+            props: {
+              type: 'periodical',
+              // // top_city_counter: {},
+              // dark: this.dark,
+              // colorScheme: this.colorScheme
+            }
+          }
+
+        ],
+        'logs': [
+          {
+            component: LogsTable,
+            // events: {
+            //   // destroy_pipelines: 'proxyEvent'
+            //   update: 'update'
+            // },
+          }
+
+        ],
+        'topCountrySum': [
+          {
+            component: TopCountry,
+            props: {
+              type: 'periodical',
+              sum: true
+              // // top_country_counter: {},
+              // dark: this.dark,
+              // colorScheme: this.colorScheme
+            }
+          }
+
+        ],
+        'topCitySum': [
+          {
+            component: TopCity,
+            props: {
+              type: 'periodical',
+              sum: true
+              // // top_city_counter: {},
+              // dark: this.dark,
+              // colorScheme: this.colorScheme
+            }
+          }
+
+        ],
+
+      },
 
     }
   },
 
+  watch: {
+    dark: function () {
+      Object.each(this.components, function (gridItem, name) {
+        Array.each(this.components[name], function (component, index) {
+          this.$set(this.components[name], index, Object.merge(this.components[name][index], {
+            props: {
+              dark: this.dark,
+            }
+
+          }))
+        }.bind(this))
+      }.bind(this))
+    },
+    colorScheme: function () {
+      Object.each(this.components, function (gridItem, name) {
+        Array.each(this.components[name], function (component, index) {
+          this.$set(this.components[name], index, Object.merge(this.components[name][index], {
+            props: {
+              colorScheme: this.colorScheme,
+            }
+
+          }))
+        }.bind(this))
+      }.bind(this))
+    },
+
+    periodical: {
+      handler: function (periodical) {
+        debug('watch periodical', periodical)
+
+        if (periodical && Object.getLength(periodical) > 0) {
+          this.$set(this.components.toolbar[0].props, 'range', periodical.range)
+          this.$set(this.components.toolbar[0].props, 'timestamp', periodical.timestamp)
+
+          // this.$set(this.components.topCountry, 0, Object.merge(this.components.topCountry[0], {
+          //   id: this.id + '.periodical.topCountry.component',
+          //   props: {
+          //     top_country_counter: periodical.top_country_counter
+          //   }
+          //
+          // }))
+          this.$set(this.components.topCountry[0].props, 'top_country_counter', periodical.top_country_counter)
+          this.$set(this.components.topCountrySum[0].props, 'top_country_counter', periodical.top_country_counter)
+
+          // this.$set(this.components.worldCitiesMap, 0, Object.merge(this.components.worldCitiesMap[0], {
+          //   id: this.id + '.periodical.worldCitiesMap.component',
+          //   props: {
+          //     world_map_cities: periodical.world_map_cities,
+          //   }
+          //
+          // }))
+
+          Array.each(periodical.top_world_map_cities, function (value) {
+            if (value !== undefined) {
+              let city = value.title.substring(0, value.title.indexOf('(')).trim()
+
+              if (!this.cities_color[city]) {
+                let index = 0
+
+                // debug('watch periodical', colorSet.list)
+
+                Object.each(periodical.top_city_counter, function (value, city) {
+                  this.cities_color[city] = colorSet.getIndex(index).rgba
+
+                  index++
+                  if (index > colorSet.list.length) { index = 0 }
+                }.bind(this))
+              }
+
+              value.color = this.cities_color[city]
+            }
+          }.bind(this))
+
+          this.$set(this.components.worldCitiesMap[0].props, 'world_map_cities', periodical.top_world_map_cities)
+
+          Array.each(periodical.top_world_map_countries, function (value) {
+            if (value !== undefined) {
+              let country = value.name.trim()
+
+              if (!this.countries_color[country]) {
+                let index = 0
+
+                // debug('watch periodical', colorSet.list)
+
+                Object.each(periodical.top_country_counter, function (value, country) {
+                  this.countries_color[country] = colorSet.getIndex(index).rgba
+
+                  index++
+                  if (index > colorSet.list.length) { index = 0 }
+                }.bind(this))
+              }
+
+              value.color = this.countries_color[country]
+            }
+          }.bind(this))
+          // Change name => title
+          // Array.each(periodical.top_world_map_countries, function (value) {
+          //   if (value !== undefined) {
+          //     value.name = value.title
+          //   }
+          // })
+
+          this.$set(this.components.worldCountriesMap[0].props, 'world_map_countries', periodical.top_world_map_countries)
+
+          // this.$set(this.components.topCity, 0, Object.merge(this.components.topCity[0], {
+          //   id: this.id + '.periodical.topCity.component',
+          //   props: {
+          //     top_city_counter: periodical.top_city_counter
+          //   }
+          //
+          // }))
+
+          // Object.each(periodical.top_city_counter, function (value, city) {
+          //   if (!this.cities_color[city]) this.cities_color[city] = colorSet.next()
+          // }.bind(this))
+
+          this.$set(this.components.topCity[0].props, 'top_city_counter', periodical.top_city_counter)
+          this.$set(this.components.topCitySum[0].props, 'top_city_counter', periodical.top_city_counter)
+
+          this.$set(this.components.logs[0].props, 'logs', periodical.logs)
+          this.$set(this.components.logs[0].props, 'loading_logs', this.loading_logs)
+
+          // debug('watch periodical', periodical, this.components)
+
+          // this.$set(this.components.netOut, 0, Object.merge(this.components.netOut[0], {
+          //   id: this.host + '.netOut.component',
+          //   props: {
+          //     net: host_data['os.networkInterfaces.out'],
+          //     net_max: host_data['os.networkInterfaces.max.out'],
+          //     host: this.host
+          //   }
+          //
+          // }))
+          //
+          // this.$set(this.components.netIn, 0, Object.merge(this.components.netIn[0], {
+          //   id: this.host + '.netIn.component',
+          //   props: {
+          //     net: host_data['os.networkInterfaces.in'],
+          //     net_max: host_data['os.networkInterfaces.max.in'],
+          //     host: this.host
+          //   }
+          //
+          // }))
+          //
+          // this.$set(this.components.cpu, 0, Object.merge(this.components.cpu[0], {
+          //   id: this.host + '.cpu.component',
+          //   props: {
+          //     used: host_data['os.cpus.percentage'],
+          //     host: this.host
+          //   }
+          // }))
+          //
+          // let index = 0
+          // this.$set(this.components, 'mounts', [])
+          //
+          // Object.each(host_data['os.mounts.used'], function (used, mount) {
+          //   if (index <= 1) {
+          //     this.components.mounts.push({
+          //       style: {
+          //         'width': (Object.getLength(host_data['os.mounts.used']) === 1) ? '100%' : '50%',
+          //         'float': (Object.getLength(host_data['os.mounts.used']) === 1) ? undefined : (index === 0) ? 'left' : 'right'
+          //       },
+          //       id: this.host + '.' + mount + '.used.component',
+          //       props: {
+          //         used: used,
+          //         mount: mount,
+          //         host: this.host
+          //       }
+          //
+          //     })
+          //     this.$set(this.components.mounts[index], 'component', Mount)
+          //   }
+          //
+          //   index++
+          // }.bind(this))
+          //
+          // this.$set(this.components.memory, 0, Object.merge(this.components.memory[0], {
+          //   id: this.host + '.memory.component',
+          //   props: {
+          //     used: host_data['os.memory.percentage'],
+          //     host: this.host
+          //   }
+          //
+          // }))
+        }
+      },
+      deep: true
+    }
+  },
   computed: {
+    ...mapState({
+      dark: state => state.layout.dark,
+      colorScheme: state => state.layout.dashboardColorScheme
+    }),
     'filter': function () {
       // return (this.$route && this.$route.params && this.$route.params.web) ? this.$route.params.web : undefined
       return (this.$route && this.$route.query)
@@ -541,7 +763,49 @@ export default {
     }
   },
 
+  created: function () {
+    debug('created')
+    // this.$on('grid.' + this.id + ':height', this.setHeight.bind(this))
+  },
+
+  mounted: function () {
+    debug('mounted', this.$refs)
+    this.$on('grid.' + this.id + ':height', this.setHeight.bind(this))
+    // this.$on('grid.' + this.id + ':destroy_pipelines', function () {
+    //   debug('event')
+    // })
+
+    Object.each(this.components, function (gridItem, name) {
+      Array.each(this.components[name], function (component, index) {
+        this.$set(this.components[name], index, Object.merge(this.components[name][index], {
+          id: this.id + '.periodical.' + name + '.component',
+          props: {
+            dark: this.dark,
+            colorScheme: this.colorScheme,
+          }
+        }))
+      }.bind(this))
+    }.bind(this))
+  },
+
   methods: {
+    // onResizeActions: function (size) {
+    //   debug('onResizeActions', size)
+    //   this.actionsSize = size
+    // },
+    // update: function () {
+    //   debug('udpate')
+    //   // this.destroy_pipelines()
+    //   // this.create_pipelines()
+    //   // this.resume_pipelines()
+    //   // this.$forceUpdate()
+    // },
+    setHeight: function (height) {
+      debug('setHeight', height)
+      // this.height = height + 200 + 'px'
+      this.height = height
+    },
+
     end: function () {
       // if (this.current_day === undefined) {
       return Date.now()
@@ -550,36 +814,36 @@ export default {
       // }
     },
 
-    apply_zoom: function (data, categoryY, valueX) {
-      const min_zoom = 0.5
-      const max_zoom = 1
-      /* const min_length = 8 */
-      const max_length = 15
-      let length = data.length
-      /* let zoom = 1 */
+    // apply_zoom: function (data, categoryY, valueX) {
+    //   const min_zoom = 0.5
+    //   const max_zoom = 1
+    //   /* const min_length = 8 */
+    //   const max_length = 15
+    //   let length = data.length
+    //   /* let zoom = 1 */
+    //
+    //   if (data.length <= max_length) {
+    //     return max_zoom
+    //   } else {
+    //     // let itemsWithNonZero = 0
+    //     // for (let i = 0; i < max_length; i++) {
+    //     //   if (data[i][valueX] > 0) {
+    //     //     itemsWithNonZero++
+    //     //   }
+    //     // }
+    //
+    //     // let zoom = max_length / data.length
+    //     // return (zoom > min_zoom) ? zoom : min_zoom
+    //     return (max_length / data.length < min_zoom) ? min_zoom : max_length / data.length
+    //   }
+    // },
 
-      if (data.length <= max_length) {
-        return max_zoom
-      } else {
-        // let itemsWithNonZero = 0
-        // for (let i = 0; i < max_length; i++) {
-        //   if (data[i][valueX] > 0) {
-        //     itemsWithNonZero++
-        //   }
-        // }
-
-        // let zoom = max_length / data.length
-        // return (zoom > min_zoom) ? zoom : min_zoom
-        return (max_length / data.length < min_zoom) ? min_zoom : max_length / data.length
-      }
-    },
-
-    format_time: function (timestamp) {
-      return moment(timestamp).format('dddd, MMMM Do YYYY, h:mm:ss a')
-    },
-    format_log: function (log) {
-      return (log.length <= 100) ? log : log.substring(0, 96) + '...'
-    },
+    // format_time: function (timestamp) {
+    //   return moment(timestamp).format('dddd, MMMM Do YYYY, h:mm:ss a')
+    // },
+    // format_log: function (log) {
+    //   return (log.length <= 100) ? log : log.substring(0, 96) + '...'
+    // },
     /**
     * @start pipelines
     **/

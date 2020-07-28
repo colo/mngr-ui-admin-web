@@ -37,13 +37,15 @@ import 'dygraphs/src/extras/smooth-plotter'
 
 import 'dygraphs/dist/dygraph.css'
 
+import dbColors from '@dashblocks/src/components/dbcolors'
+
 export default {
   mixins: [chartWrapperMixin],
 
   name: 'dygraph-wrapper',
 
   _dygraph_wrapper_defaults: {
-    buffered_data: {},
+    // buffered_data: {},
     chart_options: {},
     __unwatch_options: undefined,
     __unwatch_smooth: undefined,
@@ -60,12 +62,91 @@ export default {
     }
   },
 
+  // data () {
+  //   return {
+  //     // graph: null,
+  //     // needUpdate: false,
+  //     // needOptionsUpdate: false,
+  //     optionsChanged: false
+  //   }
+  // },
+
+  /**
+  * dashblocks DdDygraph.vue with some netdata values
+  **/
+  computed: {
+    // Augment passed options with defaults for Dygraphs
+    graphOptions: function () {
+      // let options = Object.merge(this.defaultOptions, this.chart.options)
+      let options = Object.merge(this.chart.options, this.defaultOptions)// right now force some default options like colours
+      /**
+      * should add an option for general smooth plotting (true | false)
+      **/
+      if (options.fillGraph !== true && this.smoothness === true) { options.plotter = smoothPlotter }
+
+      /**
+      * seting 'ticker' is a really performance improvement
+      **/
+      if (!options.axes || options.axes.x || options.axes.x.ticker) {
+        options = Object.merge(options, {
+          axes: {
+            x: {
+              ticker: Dygraph.dateTicker
+            }
+          }
+        })
+      }
+      return options
+    },
+    defaultOptions: function () {
+      return {
+        colors: dbColors.getColors(this.dark, this.colorScheme),
+        // animatedZooms: true,
+        // labelsDiv: this.$refs.dbdylabels,
+        labelsDiv: 'netdata-chart-legend',
+        // legend: 'follow',
+        legend: 'always', // 'onmouseover',
+        // legendFormatter: this.legendFormatter,
+        // zoomCallback: this.handleZoom,
+        // clickCallback: this.handleClick,
+        // highlightCallback: this.handleHighlight,
+        // unhighlightCallback: this.handleUnHighlight,
+        highlightSeriesBackgroundAlpha: this.dark ? 0.4 : 0.5,
+        highlightSeriesBackgroundColor: this.dark ? 'rgb(0, 0, 0)' : 'rgb(255, 255, 255)',
+        // axisLineColor: this.dark ? 'rgba(255, 255, 255, 0.3)' : 'rgb(0, 0, 0, 0.3)'
+        axisLineColor: this.dark ? '#283236' : '#F0F0F0',
+        strokeBorderColor: this.dark ? '#272b30' : '#FFFFFF',
+        gridLineColor: this.dark ? '#283236' : '#F0F0F0',
+      }
+    },
+    // elementClass: function() {
+    //   return this.dark ? 'db-dygraphs db-dark' : 'db-dygraphs';
+    // }
+  },
+
   watch: {
     'smoothness': function (val, old) {
       debug('smoothness', this.id, val)
       // if (val && Object.getLength(val) > 0 && val.options) {
       this.__chart_destroy()
       this.__chart_create()
+    },
+    // options: {
+    //   handler() {
+    //     this.optionsChanged = true;
+    //     this.scheduleUpdate();
+    //   },
+    //   deep: true
+    // },
+    dark: function () {
+      // this.optionsChanged = true
+      this.$options.charts[this.id].chart_options = this.graphOptions
+      this.update()
+    },
+    colorScheme: function () {
+      // this.optionsChanged = true
+      this.$options.charts[this.id].chart_options = this.graphOptions
+      this.update()
     }
   },
   created () {
@@ -174,7 +255,7 @@ export default {
     create () {
       // console.log('create dygraph', this.id, this.chart)
 
-      if (this.chart && this.chart.options) {
+      if (this.chart) { // && this.chart.options
         // this.create()
         this.__chart_create()
       } else {
@@ -207,7 +288,7 @@ export default {
       //   // }
       //   console.log('dygraph chart.options watcher', val)
       // }, {deep: true})
-      this.$options.charts[this.id].chart_options = Object.clone(this.chart.options)
+      this.$options.charts[this.id].chart_options = this.graphOptions // Object.clone(this.chart.options)
       this.$options.charts[this.id].__unwatch_options = this.$watch('chart.options', function (val) {
         // // if(val && Object.getLength(val) > 0 && val.options){
         // //   this.__chart_create()
@@ -215,7 +296,7 @@ export default {
         // //   unwatch()
         // // }
         // console.log('dygraph chart.options watcher', val.labels)
-        this.$options.charts[this.id].chart_options = Object.clone(val)
+        this.$options.charts[this.id].chart_options = this.graphOptions // Object.clone(val)
       }, { deep: true })
 
       // console.log('__chart_create', this.id, this.$options.charts[this.id].chart_options)
@@ -244,23 +325,10 @@ export default {
 
         // console.log('__chart_create', this.id, this.$options.charts[this.id].chart_options)
 
-        /**
-        * should add an option for general smooth plotting (true | false)
-        **/
-        if (this.$options.charts[this.id].chart_options.fillGraph !== true && this.smoothness === true) { this.$options.charts[this.id].chart_options.plotter = smoothPlotter }
-
-        /**
-        * seting 'ticker' is a really performance improvement
-        **/
-        if (!this.$options.charts[this.id].chart_options.axes || this.$options.charts[this.id].chart_options.axes.x || this.$options.charts[this.id].chart_options.axes.x.ticker) {
-          this.$options.charts[this.id].chart_options = Object.merge(this.$options.charts[this.id].chart_options, {
-            axes: {
-              x: {
-                ticker: Dygraph.dateTicker
-              }
-            }
-          })
-        }
+        // /**
+        // * should add an option for general smooth plotting (true | false)
+        // **/
+        // if (this.$options.charts[this.id].chart_options.fillGraph !== true && this.smoothness === true) { this.$options.charts[this.id].chart_options.plotter = smoothPlotter }
 
         this.$options.charts[this.id].graph = new Dygraph(
           document.getElementById(this.id), // containing div
@@ -355,6 +423,16 @@ export default {
           Object.merge(Object.clone(this.$options.charts[this.id].chart_options), { 'dateWindow': [start, end] }),
           false
         )
+        // if (this.optionsChanged) {
+        //   this.optionsChanged = false
+        //   this.updateOptions(
+        //     data,
+        //     Object.merge(Object.clone(this.$options.charts[this.id].chart_options), { 'dateWindow': [start, end] }),
+        //     false
+        //   )
+        // } else {
+        //   this.updateOptions(data, undefined, false)
+        // }
 
         this.$options.charts[this.id].buffered_data = []
 

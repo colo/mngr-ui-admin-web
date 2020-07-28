@@ -47,9 +47,9 @@ export default function () {
       // breakpoints: { lg: 1919, md: 1439, sm: 1023, xs: 599, xxs: 0 } //quasar
       colsAll: { lg: 12, md: 8, sm: 6, xs: 4, xxs: 2 },
 
-      isDraggable: false,
+      isDraggable: true,
       isResizable: false,
-      preview: false
+      preview: true
     }
 
     // components: {},
@@ -150,8 +150,8 @@ export default function () {
     //   ],
     //
     //   isDraggable: true,
-    //   isResizable: true,
-    //   preview: false,
+    //   isResizable: false,
+    //   preview: true,
     //   contenteditable: true
     // }
   }
