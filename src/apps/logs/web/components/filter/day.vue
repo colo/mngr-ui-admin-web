@@ -357,13 +357,31 @@ export default {
     }),
     'filter': function () {
       // return (this.$route && this.$route.params && this.$route.params.web) ? this.$route.params.web : undefined
-      return (this.$route && this.$route.query)
-        ? this.$route.query
-        : undefined
+      debug('computed filter QUERY', this.$route.query)
+      const allowed_filters = ['domain', 'path', 'host']
+      let filter = {}
+      if (this.$route && this.$route.query) {
+        Object.each(this.$route.query, function (value, prop) {
+          // if (allowed_filters.indexOf(prop) > -1 && filter === undefined) filter = {}
+          if (allowed_filters.indexOf(prop) > -1) filter[prop] = value
+        })
+      }
+      debug('computed filter', filter)
+      return filter
     },
     'type': function () {
-      return (this.filter) ? Object.keys(this.filter)[0] : undefined
+      debug('computed type', Object.keys(this.filter))
+      return (this.filter && Object.getLength(this.filter) > 0) ? Object.keys(this.filter)[0] : undefined
     },
+    // 'filter': function () {
+    //   // return (this.$route && this.$route.params && this.$route.params.web) ? this.$route.params.web : undefined
+    //   return (this.$route && this.$route.query)
+    //     ? this.$route.query
+    //     : undefined
+    // },
+    // 'type': function () {
+    //   return (this.filter) ? Object.keys(this.filter)[0] : undefined
+    // },
     'web': function () {
       return (this.filter && this.type) ? this.filter[this.type] : undefined
     }

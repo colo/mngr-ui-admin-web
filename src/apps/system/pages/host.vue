@@ -46,6 +46,8 @@
 </template>
 
 <script>
+/* eslint handle-callback-err: "off" */
+
 import * as Debug from 'debug'
 const debug = Debug('apps:system:pages:host')
 
@@ -119,7 +121,21 @@ export default {
 
     }
   },
+  created () {
+    // init the default selected tab
+    const tab = this.$route.query.tab
+    if (tab) {
+      this.range_tab = tab
+    }
+  },
+  watch: {
 
+    range_tab: function (val) {
+      this.$router.push({ path: this.$route.path, query: Object.merge(Object.clone(this.$route.query), { tab: val }) }).catch(err => {})// catch 'NavigationDuplicated' error
+      // this.$router.push(`${this.$route.path}?tab=${val}`).catch(err => {})// catch 'NavigationDuplicated' error
+    },
+
+  },
   computed: {
     'host': function () {
       return (this.$route && this.$route.params && this.$route.params.host) ? this.$route.params.host : undefined

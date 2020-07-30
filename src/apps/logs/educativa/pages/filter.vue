@@ -68,6 +68,7 @@
 </template>
 
 <script>
+/* eslint handle-callback-err: "off" */
 import * as Debug from 'debug'
 const debug = Debug('apps:logs:educativa:pages:filter')
 
@@ -138,15 +139,40 @@ export default {
     }
   },
 
+  created () {
+    // init the default selected tab
+    const tab = this.$route.query.tab
+    if (tab) {
+      this.range_tab = tab
+    }
+  },
+  watch: {
+
+    range_tab: function (val) {
+      this.$router.push({ path: this.$route.path, query: Object.merge(Object.clone(this.$route.query), { tab: val }) }).catch(err => {})// catch 'NavigationDuplicated' error
+      // this.$router.push(`${this.$route.path}?tab=${val}`).catch(err => {})// catch 'NavigationDuplicated' error
+    },
+
+  },
+
   computed: {
     'filter': function () {
       // return (this.$route && this.$route.params && this.$route.params.web) ? this.$route.params.web : undefined
-      return (this.$route && this.$route.query)
-        ? this.$route.query
-        : undefined
+      debug('computed filter QUERY', this.$route.query)
+      const allowed_filters = ['domain', 'path', 'host']
+      let filter = {}
+      if (this.$route && this.$route.query) {
+        Object.each(this.$route.query, function (value, prop) {
+          // if (allowed_filters.indexOf(prop) > -1 && filter === undefined) filter = {}
+          if (allowed_filters.indexOf(prop) > -1) filter[prop] = value
+        })
+      }
+      debug('computed filter', filter)
+      return filter
     },
     'type': function () {
-      return (this.filter) ? Object.keys(this.filter)[0] : undefined
+      debug('computed type', Object.keys(this.filter))
+      return (this.filter && Object.getLength(this.filter) > 0) ? Object.keys(this.filter)[0] : undefined
     },
     'web': function () {
       return (this.filter && this.type) ? this.filter[this.type] : undefined

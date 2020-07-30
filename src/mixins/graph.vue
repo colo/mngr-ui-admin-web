@@ -69,7 +69,8 @@ import vueEasyPieChartWrapper from '@components/wrappers/vueEasyPieChart'
 import amchartsBarRaceWrapper from '@components/wrappers/amchartsBarRace'
 import amchartsWorldCityMapWrapper from '@components/wrappers/amchartsWorldCityMap'
 import amchartsWorldCountryMapWrapper from '@components/wrappers/amchartsWorldCountryMap'
-
+import vueTrendWrapper from '@components/wrappers/vueTrend'
+import vueBarsWrapper from '@components/wrappers/vueBars'
 // // import jqueryKnobWrapper from 'components/wrappers/jqueryKnob'
 // import highchartsVueWrapper from 'components/wrappers/highchartsVue'
 // import vueOdometerWrapper from 'components/wrappers/vueOdometer'
@@ -98,7 +99,9 @@ export default {
     vueEasyPieChartWrapper,
     amchartsBarRaceWrapper,
     amchartsWorldCityMapWrapper,
-    amchartsWorldCountryMapWrapper
+    amchartsWorldCountryMapWrapper,
+    vueTrendWrapper,
+    vueBarsWrapper
     // // jqueryKnobWrapper,
     // highchartsVueWrapper,
     // // easyPieChartWrapper

@@ -29,7 +29,6 @@
 <script>
 
 import * as Debug from 'debug'
-
 const debug = Debug('components:wrappers:vGauge')
 
 import VGauge from 'vgauge'

@@ -32,8 +32,10 @@
     "vue-i18n": "^8.0.0",
     "vue-observe-visibility": "^0.4.6",
     "vue-responsive-grid-layout": "^1.2.0",
+    "vuebars": "^0.1.6",
     "vuedraggable": "^2.24.0",
-    "vuequery": "^2.1.1"
+    "vuequery": "^2.1.1",
+    "vuetrend": "^0.3.4"
   },
   "devDependencies": {
     "@quasar/app": "^1.9.6",

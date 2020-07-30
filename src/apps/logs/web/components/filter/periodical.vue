@@ -35,20 +35,20 @@
     </div>
     <hr> -->
 
-    periodical.total_bytes_sent: {{ periodical.total_bytes_sent }} <br/>
-    periodical.hits: {{ periodical.hits }} <br/>
+    <!-- periodical.total_bytes_sent: {{ periodical.total_bytes_sent }} <br/>
+    periodical.total_requests: {{ periodical.total_requests }} <br/> -->
 
-    <hr>
+    <!-- <hr>
 
-    periodical.current_bytes_sent: {{ periodical.current_bytes_sent }}
+    periodical.current_bytes_sent: {{ periodical.current_bytes_sent }} -->
 
-    <hr>
+    <!-- <hr>
 
     <div v-for="(val, status) in periodical.status_counter" :key="'status.'+status">
       periodical.status_counter: {{status}} - {{val}} <br/>
     </div>
 
-    <hr>
+    <hr> -->
 
     <!-- <div v-for="(val, city) in periodical.city_counter" :key="'city.'+city">
       periodical.city_counter: {{city}} - {{val}} <br/>
@@ -72,6 +72,21 @@
       periodical.addr_counter: {{addr}} - {{val}} <br/>
     </div> -->
 
+    <!-- <div v-for="(val, addr) in periodical.unique_visitors_by_ip" :key="'addr.'+addr">
+      periodical.unique_visitors_by_ip: {{addr}} - {{val}} <br/>
+    </div> -->
+    <hr>
+
+    <div v-for="(val, host) in periodical.top_host_counter" :key="'host.'+host">
+      periodical.top_host_counter: {{host}} - {{val}} <br/>
+    </div>
+
+    <hr>
+
+    <div v-for="(val, domain) in periodical.top_domain_counter" :key="'domain.'+domain">
+      periodical.top_domain_counter: {{domain}} - {{val}} <br/>
+    </div>
+
     <hr>
 
     <div v-for="(val, user) in periodical.user_counter" :key="'user.'+user">
@@ -86,11 +101,11 @@
 
     <hr>
 
-    <div v-for="(val, type) in periodical.type_counter" :key="'type.'+type">
+    <!-- <div v-for="(val, type) in periodical.type_counter" :key="'type.'+type">
       periodical.type_counter: {{type}} - {{val}} <br/>
     </div>
 
-    <hr>
+    <hr> -->
 
     <div v-for="(val, os) in periodical.user_agent_os_counter" :key="'os.'+os">
       periodical.user_agent_os_counter: {{os}} - {{val}} <br/>
@@ -220,6 +235,12 @@ import TopCountry from '@apps/logs/web/components/topCountry'
 import TopCity from '@apps/logs/web/components/topCity'
 import Toolbar from '@apps/logs/web/components/filter/periodical/toolbar'
 import LogsTable from '@apps/logs/web/components/filter/periodical/logsTable'
+// import BytesTrend from '@apps/logs/web/components/bytesTrend'
+import TopHost from '@apps/logs/web/components/topHost'
+import TopDomain from '@apps/logs/web/components/topDomain'
+
+import SmallWidgetBars from '@components/smallWidgetBars'
+import MiniWidget from '@components/miniWidget'
 
 import GridView from '@components/gridView'
 
@@ -271,7 +292,10 @@ export default {
     TopCountry,
     TopCity,
     LogsTable,
-    Toolbar
+    Toolbar,
+    // BytesTrend,
+    SmallWidgetBars,
+    MiniWidget
   },
 
   name: 'LogsWebFilterPeriodical',
@@ -296,13 +320,19 @@ export default {
       periodical: {
         range: { start: 0, end: 0},
 
+        top_host_counter: {},
+        top_domain_counter: {},
+
+        host_counter: {},
+        domain_counter: {},
+
         top_city_counter: {},
         top_country_counter: {},
 
         logs: [],
 
         total_bytes_sent: 0,
-        hits: 0,
+        total_requests: 0,
 
         current_bytes_sent: 0,
 
@@ -342,60 +372,30 @@ export default {
 
       // search_filter: '',
       loading_logs: true,
-      // allColumns: ['date', 'log', 'domain', 'host', 'path'],
-      // visibleColumns: ['log'],
-      // pagination: {
-      //   rowsPerPage: 10
-      // },
-      //
-      // columns: [
-      //   // { name: 'schema', label: 'Schema', field: 'schema', sortable: true, align: 'left' },
-      //   {
-      //     name: 'date',
-      //     required: true,
-      //     label: 'Date',
-      //     align: 'left',
-      //     field: 'timestamp',
-      //     sortable: true
-      //   },
-      //   {
-      //     name: 'log',
-      //     required: true,
-      //     label: 'Log',
-      //     align: 'left',
-      //     field: 'log',
-      //     sortable: true
-      //   },
-      //   {
-      //     name: 'domain',
-      //     required: true,
-      //     label: 'Domain',
-      //     align: 'left',
-      //     field: 'domain',
-      //     sortable: true
-      //   },
-      //   { name: 'host', align: 'left', label: 'Host', field: 'host', sortable: true },
-      //   // {
-      //   //   name: 'timestamp',
-      //   //   align: 'left',
-      //   //   label: 'Last Update',
-      //   //   field: 'timestamp',
-      //   //   sortable: true
-      //   // },
-      //   { name: 'path', align: 'left', label: 'Type', field: 'path', sortable: true }
-      // ],
 
       grid: {
         layouts: {
           'lg': [
             { x: 0, y: 0, w: 24, h: 5, i: 'toolbar', immobile: false },
-            { x: 0, y: 1, w: 12, h: 36, i: 'topCountry', immobile: false },
-            { x: 12, y: 1, w: 12, h: 36, i: 'worldCountriesMap', immobile: false },
-            { x: 0, y: 2, w: 12, h: 36, i: 'worldCitiesMap', immobile: false },
-            { x: 12, y: 2, w: 12, h: 36, i: 'topCity', immobile: false },
-            { x: 0, y: 3, w: 12, h: 36, i: 'topCountrySum', immobile: false },
-            { x: 12, y: 3, w: 12, h: 36, i: 'topCitySum', immobile: false },
-            { x: 0, y: 4, w: 24, h: 50, i: 'logs', immobile: false },
+            { x: 0, y: 1, w: 3, h: 8, i: 'requestsBars', immobile: false },
+            { x: 3, y: 1, w: 3, h: 8, i: 'bytesBars', immobile: false },
+            { x: 6, y: 1, w: 3, h: 4, i: 'visitorsMini', immobile: false },
+            { x: 6, y: 2, w: 3, h: 4, i: '3', immobile: false },
+            { x: 9, y: 1, w: 3, h: 4, i: 'staticMini', immobile: false },
+            { x: 9, y: 2, w: 3, h: 4, i: 'dynamicMini', immobile: false },
+            { x: 21, y: 1, w: 3, h: 4, i: 'validMini', immobile: false },
+            { x: 21, y: 2, w: 3, h: 4, i: 'failedMini', immobile: false },
+            // { x: 12, y: 1, w: 3, h: 5, i: '4', immobile: false },
+            { x: 0, y: 3, w: 12, h: 36, i: 'topHost', immobile: false },
+            { x: 12, y: 3, w: 12, h: 36, i: 'topDomain', immobile: false },
+
+            { x: 0, y: 4, w: 12, h: 36, i: 'topCountry', immobile: false },
+            { x: 12, y: 4, w: 12, h: 36, i: 'worldCountriesMap', immobile: false },
+            { x: 0, y: 5, w: 12, h: 36, i: 'worldCitiesMap', immobile: false },
+            { x: 12, y: 5, w: 12, h: 36, i: 'topCity', immobile: false },
+            { x: 0, y: 6, w: 12, h: 36, i: 'topCountrySum', immobile: false },
+            { x: 12, y: 6, w: 12, h: 36, i: 'topCitySum', immobile: false },
+            { x: 0, y: 7, w: 24, h: 50, i: 'logs', immobile: false },
             // { x: 15, y: 0, w: 6, h: 10, i: 'mounts', immobile: false },
             // { x: 21, y: 0, w: 3, h: 10, i: 'memory', immobile: false },
             // // { x: 0, y: 1, w: 12, h: 2, i: 'separator' }
@@ -459,13 +459,104 @@ export default {
 
         isDraggable: true,
         isResizable: false,
-        preview: true
+        preview: false
       },
 
       components: {
         'toolbar': [
           {
             component: Toolbar
+          }
+        ],
+        'requestsBars': [
+          {
+            component: SmallWidgetBars,
+            props: {
+              type: 'periodical',
+              info: 'Reqs.',
+            }
+          }
+
+        ],
+        'bytesBars': [
+          {
+            component: SmallWidgetBars,
+            props: {
+              type: 'periodical',
+              info: 'MBytes',
+            }
+          }
+
+        ],
+        'visitorsMini': [
+          {
+            component: MiniWidget,
+            props: {
+              type: 'periodical',
+              info: 'Unique visitors',
+              // bgClass: 'bg-indigo-5'
+            }
+          }
+
+        ],
+        'staticMini': [
+          {
+            component: MiniWidget,
+            props: {
+              type: 'periodical',
+              info: 'Static requests',
+              // bgClass: 'bg-indigo-5'
+            }
+          }
+
+        ],
+        'dynamicMini': [
+          {
+            component: MiniWidget,
+            props: {
+              type: 'periodical',
+              info: 'Dynamic requests',
+              // bgClass: 'bg-indigo-5'
+            }
+          }
+
+        ],
+        'validMini': [
+          {
+            component: MiniWidget,
+            props: {
+              type: 'periodical',
+              info: 'Valid requests',
+              bgClass: 'bg-positive'
+            }
+          }
+
+        ],
+        'failedMini': [
+          {
+            component: MiniWidget,
+            props: {
+              type: 'periodical',
+              info: 'Failed requests',
+              bgClass: 'bg-negative'
+            }
+          }
+
+        ],
+        'topHost': [
+          {
+            component: TopHost,
+            props: {
+              type: 'periodical',
+            }
+          }
+        ],
+        'topDomain': [
+          {
+            component: TopDomain,
+            props: {
+              type: 'periodical',
+            }
           }
         ],
         'topCountry': [
@@ -588,6 +679,38 @@ export default {
         if (periodical && Object.getLength(periodical) > 0) {
           this.$set(this.components.toolbar[0].props, 'range', periodical.range)
           this.$set(this.components.toolbar[0].props, 'timestamp', periodical.timestamp)
+
+          // this.$set(this.components.bytesTrend[0].props, 'bytes', periodical.total_bytes_sent)
+
+          this.$set(this.components.requestsBars[0].props, 'value', {
+            value: periodical.total_requests,
+            title: periodical.total_requests + ' - ' + this.format_timestmap_standar(periodical.timestamp)
+          })
+
+          this.$set(this.components.bytesBars[0].props, 'value', {
+            value: (periodical.total_bytes_sent / 1024 / 1024).toFixed(0),
+            title: (periodical.total_bytes_sent / 1024 / 1024).toFixed(0) + 'Mb -' + this.format_timestmap_standar(periodical.timestamp)
+          })
+
+          this.$set(this.components.visitorsMini[0].props, 'value', periodical.unique_visitors)
+
+          this.$set(this.components.staticMini[0].props, 'value', periodical.type_counter.static)
+          this.$set(this.components.dynamicMini[0].props, 'value', periodical.type_counter.dynamic)
+
+          let valid = 0, failed = 0
+          Object.each(periodical.status_counter, function (val, status) {
+            status *= 1
+            if (status < 400) {
+              valid += val
+            } else {
+              failed += val
+            }
+          })
+          this.$set(this.components.validMini[0].props, 'value', valid)
+          this.$set(this.components.failedMini[0].props, 'value', failed)
+
+          this.$set(this.components.topHost[0].props, 'top_host_counter', periodical.top_host_counter)
+          this.$set(this.components.topDomain[0].props, 'top_domain_counter', periodical.top_domain_counter)
 
           // this.$set(this.components.topCountry, 0, Object.merge(this.components.topCountry[0], {
           //   id: this.id + '.periodical.topCountry.component',
@@ -751,13 +874,31 @@ export default {
     }),
     'filter': function () {
       // return (this.$route && this.$route.params && this.$route.params.web) ? this.$route.params.web : undefined
-      return (this.$route && this.$route.query)
-        ? this.$route.query
-        : undefined
+      debug('computed filter QUERY', this.$route.query)
+      const allowed_filters = ['domain', 'path', 'host']
+      let filter = {}
+      if (this.$route && this.$route.query) {
+        Object.each(this.$route.query, function (value, prop) {
+          // if (allowed_filters.indexOf(prop) > -1 && filter === undefined) filter = {}
+          if (allowed_filters.indexOf(prop) > -1) filter[prop] = value
+        })
+      }
+      debug('computed filter', filter)
+      return filter
     },
     'type': function () {
-      return (this.filter) ? Object.keys(this.filter)[0] : undefined
+      debug('computed type', Object.keys(this.filter))
+      return (this.filter && Object.getLength(this.filter) > 0) ? Object.keys(this.filter)[0] : undefined
     },
+    // 'filter': function () {
+    //   // return (this.$route && this.$route.params && this.$route.params.web) ? this.$route.params.web : undefined
+    //   return (this.$route && this.$route.query)
+    //     ? this.$route.query
+    //     : undefined
+    // },
+    // 'type': function () {
+    //   return (this.filter) ? Object.keys(this.filter)[0] : undefined
+    // },
     'web': function () {
       return (this.filter && this.type) ? this.filter[this.type] : undefined
     }
@@ -837,7 +978,9 @@ export default {
     //     return (max_length / data.length < min_zoom) ? min_zoom : max_length / data.length
     //   }
     // },
-
+    format_timestmap_standar: function (timestamp) {
+      return moment(timestamp).format('h:mm:ss')
+    },
     // format_time: function (timestamp) {
     //   return moment(timestamp).format('dddd, MMMM Do YYYY, h:mm:ss a')
     // },

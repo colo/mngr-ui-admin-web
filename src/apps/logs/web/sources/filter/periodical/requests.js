@@ -196,7 +196,7 @@ const generic_callback = function (data, metadata, key, vm) {
     * removed from global
     **/
     let total_bytes_sent = {}
-    let hits = {}
+    let total_requests = {}
 
     let user_agent_os_counter = {}
     let user_agent_os_family_counter = {}
@@ -216,6 +216,8 @@ const generic_callback = function (data, metadata, key, vm) {
     let user_counter = {}
     let referer_counter = {}
 
+    let unique_visitors_ip_uas = {}
+
     let type_counter = {}
     /**
     * removed from global
@@ -226,6 +228,10 @@ const generic_callback = function (data, metadata, key, vm) {
     **/
 
     let logs = []
+
+    let host_counter = {}
+    let domain_counter = {}
+
     let current_bytes_sent = 0
     let smallest_start_index = 0
     let _tmp_periodical_world_map_city_counter = {}
@@ -242,14 +248,25 @@ const generic_callback = function (data, metadata, key, vm) {
     Array.each(_data, function (row, index) {
       let start = row.metadata.timestamp
       let end = row.metadata.timestamp
+
       if (start >= smallest_start) { // discard any document that is previous to our smallest_start timestamp
         if (range.start === undefined || range.start > start) { range.start = start }
 
         if (range.end === undefined || range.end < end) { range.end = end }
+
+        let host = row.metadata.host
+        let domain = row.metadata.domain
+
+        if (!host_counter[host]) host_counter[host] = 0
+        if (!domain_counter[domain]) domain_counter[domain] = 0
+
+        host_counter[host] += 1
+        domain_counter[domain] += 1
+
         logs.push(Object.merge(Object.clone(row.metadata), { log: row.data.log }))
 
-        if (!hits[row.metadata.timestamp]) hits[row.metadata.timestamp] = 0
-        hits[row.metadata.timestamp] += 1
+        if (!total_requests[row.metadata.timestamp]) total_requests[row.metadata.timestamp] = 0
+        total_requests[row.metadata.timestamp] += 1
 
         if (row.data.body_bytes_sent) {
           if (smallest_start_index === 0) {
@@ -266,30 +283,17 @@ const generic_callback = function (data, metadata, key, vm) {
           status_counter[row.metadata.timestamp][row.data.status] += 1
         }
 
+        /**
+        * UNIQUE VISITORS are calculated with remote_addr + user_agent
+        **/
         if (row.data.remote_addr) {
+          let ip = row.data.remote_addr
           if (!addr_counter[row.metadata.timestamp]) addr_counter[row.metadata.timestamp] = {}
-          if (!addr_counter[row.metadata.timestamp][row.value]) addr_counter[row.metadata.timestamp][row.data.remote_addr] = 0
-          addr_counter[row.metadata.timestamp][row.data.remote_addr] += 1
-        }
+          if (!addr_counter[row.metadata.timestamp][ip]) addr_counter[row.metadata.timestamp][ip] = 0
+          addr_counter[row.metadata.timestamp][ip] += 1
 
-        if (row.data.remote_user) {
-          if (!user_counter[row.metadata.timestamp]) user_counter[row.metadata.timestamp] = {}
-          if (!user_counter[row.metadata.timestamp][row.value]) user_counter[row.metadata.timestamp][row.data.remote_user] = 0
-          user_counter[row.metadata.timestamp][row.data.remote_user] += 1
-        }
-        if (row.data.pathname) {
-          let value = (static_types.test(row.data.pathname)) ? 'static' : 'dynamic'
-          if (!type_counter[row.metadata.timestamp]) type_counter[row.metadata.timestamp] = {}
-          if (!type_counter[row.metadata.timestamp][value]) type_counter[row.metadata.timestamp][value] = 0
-          type_counter[row.metadata.timestamp][value] += 1
-        }
-
-        if (row.data.referer || row.data.medium) {
-          debug('PERIODICAL HOST CALLBACK referer %o', row.data.referer, row.data.medium)
-          let value = (row.data.referer) ? row.data.referer + ' - ' + row.data.medium : row.data.medium
-          if (!referer_counter[row.metadata.timestamp]) referer_counter[row.metadata.timestamp] = {}
-          if (!referer_counter[row.metadata.timestamp][value]) referer_counter[row.metadata.timestamp][value] = 0
-          referer_counter[row.metadata.timestamp][value] += 1
+          if (!unique_visitors_ip_uas[ip]) unique_visitors_ip_uas[ip] = []
+          if (row.data.remote_user) unique_visitors_ip_uas[ip].combine([JSON.stringify(row.data.user_agent)])
         }
 
         /** user_agent **/
@@ -329,6 +333,27 @@ const generic_callback = function (data, metadata, key, vm) {
           device = (row.data.user_agent.device.type) ? device + ' - ' + row.data.user_agent.device.type : device
 
           user_agent_device_counter[row.metadata.timestamp] = device
+        }
+
+        if (row.data.remote_user) {
+          if (!user_counter[row.metadata.timestamp]) user_counter[row.metadata.timestamp] = {}
+          if (!user_counter[row.metadata.timestamp][row.value]) user_counter[row.metadata.timestamp][row.data.remote_user] = 0
+          user_counter[row.metadata.timestamp][row.data.remote_user] += 1
+        }
+
+        if (row.data.pathname) {
+          let value = (static_types.test(row.data.pathname)) ? 'static' : 'dynamic'
+          if (!type_counter[row.metadata.timestamp]) type_counter[row.metadata.timestamp] = {}
+          if (!type_counter[row.metadata.timestamp][value]) type_counter[row.metadata.timestamp][value] = 0
+          type_counter[row.metadata.timestamp][value] += 1
+        }
+
+        if (row.data.referer.referer || row.data.referer.medium) {
+          debug('PERIODICAL HOST CALLBACK referer %o', row.data.referer.referer, row.data.referer.medium)
+          let value = (row.data.referer.referer) ? row.data.referer.referer + ' - ' + row.data.referer.medium : row.data.referer.medium
+          if (!referer_counter[row.metadata.timestamp]) referer_counter[row.metadata.timestamp] = {}
+          if (!referer_counter[row.metadata.timestamp][value]) referer_counter[row.metadata.timestamp][value] = 0
+          referer_counter[row.metadata.timestamp][value] += 1
         }
 
         /** geoip **/
@@ -382,7 +407,7 @@ const generic_callback = function (data, metadata, key, vm) {
     debug('PERIODICAL HOST CALLBACK COUNTRY data %s %o %o', key, country_counter, JSON.parse(JSON.stringify(world_map_country_counter)))
 
     /**
-    * bytes & hits
+    * bytes & total_requests
     **/
     // let current_bytes_sent = 0
     // Array.each(_data[0].data.body_bytes_sent, function (row, index) {
@@ -390,23 +415,23 @@ const generic_callback = function (data, metadata, key, vm) {
     //     current_bytes_sent = row.value
     //   }
     //
-    //   if (!hits[row.timestamp]) hits[row.timestamp] = 0
-    //   hits[row.timestamp] += 1
+    //   if (!total_requests[row.timestamp]) total_requests[row.timestamp] = 0
+    //   total_requests[row.timestamp] += 1
     //
     //   if (!total_bytes_sent[row.timestamp]) total_bytes_sent[row.timestamp] = 0
     //   total_bytes_sent[row.timestamp] += row.value
     // })
 
     let periodical_total_bytes_sent = 0
-    let periodical_hits = 0
+    let periodical_total_requests = 0
     Object.each(total_bytes_sent, function (val, ts) {
       if (ts < smallest_start) {
         delete total_bytes_sent[ts]
-        delete hits[ts]
+        delete total_requests[ts]
       } else {
-        let hit = hits[ts]
+        let hit = total_requests[ts]
         periodical_total_bytes_sent += val
-        periodical_hits += hit
+        periodical_total_requests += hit
       }
     })
 
@@ -723,12 +748,6 @@ const generic_callback = function (data, metadata, key, vm) {
 
     // vm.periodical = {}
 
-    if (logs.length > 0) {
-      // vm.logs = logs
-      vm.$set(vm.periodical, 'logs', logs)
-      vm.loading_logs = false
-    }
-
     let top_city_counter = {}
     let _top_city_counter = []
     Object.each(periodical_city_counter, function (data, city) {
@@ -765,12 +784,69 @@ const generic_callback = function (data, metadata, key, vm) {
       })
     }
 
-    // debug('PERIODICAL HOST CALLBACK data %s %o %o', key, top_city_counter, top_country_counter)
+    let top_host_counter = {}
+    let _top_host_counter = []
+    Object.each(host_counter, function (data, host) {
+      _top_host_counter.push(data)
+    })
+
+    _top_host_counter = _top_host_counter.sort((a, b) => b - a)
+
+    for (let i = 0; i < TOP; i++) {
+      let value = _top_host_counter[i]
+
+      Object.each(host_counter, function (data, host) {
+        if (data === value) {
+          top_host_counter[host] = data
+        }
+      })
+    }
+
+    let top_domain_counter = {}
+    let _top_domain_counter = []
+    Object.each(domain_counter, function (data, domain) {
+      _top_domain_counter.push(data)
+    })
+
+    _top_domain_counter = _top_domain_counter.sort((a, b) => b - a)
+
+    for (let i = 0; i < TOP; i++) {
+      let value = _top_domain_counter[i]
+
+      Object.each(domain_counter, function (data, domain) {
+        if (data === value) {
+          top_domain_counter[domain] = data
+        }
+      })
+    }
+
+    let unique_visitors = 0
+    let unique_visitors_by_ip = {}
+    Object.each(unique_visitors_ip_uas, function (uas, ip) {
+      debug('user_agent|remote_addr %s %o', ip, uas)
+      unique_visitors += uas.length
+      unique_visitors_by_ip[ip] = uas.length
+    })
+
+    debug('PERIODICAL HOST CALLBACK data %s %o %o', key, host_counter, domain_counter)
+
+    if (logs.length > 0) {
+      // vm.logs = logs
+      vm.$set(vm.periodical, 'logs', logs)
+      vm.loading_logs = false
+    }
+
+    vm.$set(vm.periodical, 'host_counter', host_counter)
+    vm.$set(vm.periodical, 'domain_counter', domain_counter)
+
+    vm.$set(vm.periodical, 'top_host_counter', top_host_counter)
+    vm.$set(vm.periodical, 'top_domain_counter', top_domain_counter)
+
     vm.$set(vm.periodical, 'timestamp', timestamp)
     vm.$set(vm.periodical, 'range', range)
 
     vm.$set(vm.periodical, 'total_bytes_sent', periodical_total_bytes_sent)
-    vm.$set(vm.periodical, 'hits', periodical_hits)
+    vm.$set(vm.periodical, 'total_requests', periodical_total_requests)
 
     vm.$set(vm.periodical, 'current_bytes_sent', current_bytes_sent)
 
@@ -791,6 +867,10 @@ const generic_callback = function (data, metadata, key, vm) {
     vm.$set(vm.periodical, 'top_world_map_countries', periodical_top_world_map_country_counter)
 
     vm.$set(vm.periodical, 'addr_counter', periodical_addr_counter)
+
+    vm.$set(vm.periodical, 'unique_visitors', unique_visitors)
+    vm.$set(vm.periodical, 'unique_visitors_by_ip', unique_visitors_by_ip)
+
     vm.$set(vm.periodical, 'user_counter', periodical_user_counter)
     vm.$set(vm.periodical, 'referer_counter', periodical_referer_counter)
     vm.$set(vm.periodical, 'type_counter', periodical_type_counter)
