@@ -19,11 +19,12 @@
         :useCSSTransforms="true"
         :breakpoints="viewGrid.breakpoints"
         :colsAll="viewGrid.colsAll"
-        :class="className"
+        :class="gridClass"
+        :style="gridStyle"
     >
     <!-- class="absolute-full" -->
       <template slot-scope="props">
-
+        <!-- {{viewGrid}} -->
         <VueGridItem :key="index" v-for="(item, index) in props.layout"
           :i="item.i"
           :w.sync="item.w"
@@ -39,8 +40,11 @@
           :cols="props.cols"
           :heightFromChildren="false"
           :maxRows="props.maxRows"
-          :class="viewGrid.breakpoint+'-'+viewGrid.colsAll[viewGrid.breakpoint]"
+          :style="(viewGrid.items) ? viewGrid.items.style : undefined"
         >
+        <!-- :style="(viewGrid.items) ? viewGrid.items.style : undefined" -->
+        <!-- :class="viewGrid.breakpoint+'-'+viewGrid.colsAll[viewGrid.breakpoint]" -->
+
         <!-- :class="'bg-secondary col-'+viewGrid.breakpoint+'-'+viewGrid.colsAll[viewGrid.breakpoint]" -->
         <!-- :heightFromChildren="false" -->
 
@@ -143,9 +147,13 @@ export default {
       type: [Boolean],
       default: false
     },
-    className: {
+    gridClass: {
       type: [String],
       default: 'absolute-full'
+    },
+    gridStyle: {
+      type: Object,
+      default: function () { return {} }
     },
     id: {
       type: [String],

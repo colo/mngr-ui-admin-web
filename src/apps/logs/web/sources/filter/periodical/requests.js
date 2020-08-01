@@ -298,46 +298,46 @@ const generic_callback = function (data, metadata, key, vm) {
 
         /** user_agent **/
         if (row.data.user_agent) {
-          // debug('OS %s', row.value.os.family)
+          debug('user_agent %s', row.data.user_agent)
 
           let os = row.data.user_agent.os.family
-
-          user_agent_os_family_counter[row.metadata.timestamp] = os
-
           os = (row.data.user_agent.os.major) ? os + ' ' + row.data.user_agent.os.major : os
-          // os = (row.data.user_agent.os.minor) ? os + '.' + row.data.user_agent.os.minor : os
-          user_agent_os_counter[row.metadata.timestamp] = os
 
           let engine = row.data.user_agent.engine.family
-          engine = (row.data.user_agent.engine.major) ? engine + ' ' + row.data.user_agent.engine.major : engine
-          engine = (row.data.user_agent.engine.minor) ? engine + '.' + row.data.user_agent.engine.minor : engine
-          engine = (row.data.user_agent.engine.patch) ? engine + '.' + row.data.user_agent.engine.patch : engine
-
-          user_agent_engine_counter[row.metadata.timestamp] = engine
+          // engine = (row.data.user_agent.engine.major) ? engine + ' ' + row.data.user_agent.engine.major : engine
+          // engine = (row.data.user_agent.engine.minor) ? engine + '.' + row.data.user_agent.engine.minor : engine
+          // engine = (row.data.user_agent.engine.patch) ? engine + '.' + row.data.user_agent.engine.patch : engine
 
           let browser = row.data.user_agent.ua.family
-          browser = (row.data.user_agent.ua.major) ? browser + ' ' + row.data.user_agent.ua.major : browser
-          browser = (row.data.user_agent.ua.minor) ? browser + '.' + row.data.user_agent.ua.minor : browser
-          browser = (row.data.user_agent.ua.patch) ? browser + '.' + row.data.user_agent.ua.patch : browser
-          browser = (row.data.user_agent.ua.type) ? browser + ' ' + row.data.user_agent.ua.type : browser
-
-          user_agent_browser_counter[row.metadata.timestamp] = browser
-
-          // let device = row.data.user_agent.device.family
-          // device = (row.data.user_agent.device.brand) ? device + ' ' + row.data.user_agent.device.brand : device
-          // device = (row.data.user_agent.device.model) ? device + '.' + row.data.user_agent.device.model : device
-          // device = (row.data.user_agent.device.type) ? device + '.' + row.data.user_agent.device.type : device
+          // browser = (row.data.user_agent.ua.major) ? browser + ' ' + row.data.user_agent.ua.major : browser
+          // browser = (row.data.user_agent.ua.minor) ? browser + '.' + row.data.user_agent.ua.minor : browser
+          // browser = (row.data.user_agent.ua.patch) ? browser + '.' + row.data.user_agent.ua.patch : browser
+          // browser = (row.data.user_agent.ua.type) ? browser + ' ' + row.data.user_agent.ua.type : browser
 
           let device = (row.data.user_agent.device.brand) ? row.data.user_agent.device.brand : row.data.user_agent.device.family
           device = (row.data.user_agent.device.model) ? device + ' ' + row.data.user_agent.device.model : device
           device = (row.data.user_agent.device.type) ? device + ' - ' + row.data.user_agent.device.type : device
 
-          user_agent_device_counter[row.metadata.timestamp] = device
+          if (!user_agent_os_counter[row.metadata.timestamp]) user_agent_os_counter[row.metadata.timestamp] = {}
+          if (!user_agent_os_counter[row.metadata.timestamp][os]) user_agent_os_counter[row.metadata.timestamp][os] = 0
+          user_agent_os_counter[row.metadata.timestamp][os] += 1
+
+          if (!user_agent_engine_counter[row.metadata.timestamp]) user_agent_engine_counter[row.metadata.timestamp] = {}
+          if (!user_agent_engine_counter[row.metadata.timestamp][engine]) user_agent_engine_counter[row.metadata.timestamp][engine] = 0
+          user_agent_engine_counter[row.metadata.timestamp][engine] += 1
+
+          if (!user_agent_browser_counter[row.metadata.timestamp]) user_agent_browser_counter[row.metadata.timestamp] = {}
+          if (!user_agent_browser_counter[row.metadata.timestamp][browser]) user_agent_browser_counter[row.metadata.timestamp][browser] = 0
+          user_agent_browser_counter[row.metadata.timestamp][browser] += 1
+
+          if (!user_agent_device_counter[row.metadata.timestamp]) user_agent_device_counter[row.metadata.timestamp] = {}
+          if (!user_agent_device_counter[row.metadata.timestamp][device]) user_agent_device_counter[row.metadata.timestamp][device] = 0
+          user_agent_device_counter[row.metadata.timestamp][device] += 1
         }
 
         if (row.data.remote_user) {
           if (!user_counter[row.metadata.timestamp]) user_counter[row.metadata.timestamp] = {}
-          if (!user_counter[row.metadata.timestamp][row.value]) user_counter[row.metadata.timestamp][row.data.remote_user] = 0
+          if (!user_counter[row.metadata.timestamp][row.data.remote_user]) user_counter[row.metadata.timestamp][row.data.remote_user] = 0
           user_counter[row.metadata.timestamp][row.data.remote_user] += 1
         }
 
@@ -716,8 +716,38 @@ const generic_callback = function (data, metadata, key, vm) {
     //   user_agent_device_counter[row.timestamp] = device
     // })
 
+    // let periodical_user_agent_os_counter = {}
+    // let periodical_user_agent_os_family_counter = {}
+    // let periodical_user_agent_engine_counter = {}
+    // let periodical_user_agent_browser_counter = {}
+    // let periodical_user_agent_device_counter = {}
+
+    // Object.each(user_agent_os_family_counter, function (val, ts) {
+    //   if (ts < smallest_start) {
+    //     // delete user_agent_os_counter[ts]
+    //     delete user_agent_os_family_counter[ts]
+    //   } else {
+    //     let family = user_agent_os_family_counter[ts]
+    //     let engine = user_agent_engine_counter[ts]
+    //     let browser = user_agent_browser_counter[ts]
+    //     let device = user_agent_device_counter[ts]
+    //
+    //     if (!periodical_user_agent_os_counter[val]) periodical_user_agent_os_counter[val] = 0
+    //     if (!periodical_user_agent_os_family_counter[family]) periodical_user_agent_os_family_counter[family] = 0
+    //     if (!periodical_user_agent_engine_counter[engine]) periodical_user_agent_engine_counter[engine] = 0
+    //     if (!periodical_user_agent_browser_counter[browser]) periodical_user_agent_browser_counter[browser] = 0
+    //     if (!periodical_user_agent_device_counter[device]) periodical_user_agent_device_counter[device] = 0
+    //
+    //     // periodical_user_agent_os_counter[val] += 1
+    //     periodical_user_agent_os_family_counter[family] += 1
+    //     periodical_user_agent_engine_counter[engine] += 1
+    //     periodical_user_agent_browser_counter[browser] += 1
+    //     periodical_user_agent_device_counter[device] += 1
+    //   }
+    // })
+
     let periodical_user_agent_os_counter = {}
-    let periodical_user_agent_os_family_counter = {}
+    // let periodical_user_agent_os_family_counter = {}
     let periodical_user_agent_engine_counter = {}
     let periodical_user_agent_browser_counter = {}
     let periodical_user_agent_device_counter = {}
@@ -725,28 +755,46 @@ const generic_callback = function (data, metadata, key, vm) {
     Object.each(user_agent_os_counter, function (val, ts) {
       if (ts < smallest_start) {
         delete user_agent_os_counter[ts]
-        delete user_agent_os_family_counter[ts]
       } else {
-        let family = user_agent_os_family_counter[ts]
-        let engine = user_agent_engine_counter[ts]
-        let browser = user_agent_browser_counter[ts]
-        let device = user_agent_device_counter[ts]
-
-        if (!periodical_user_agent_os_counter[val]) periodical_user_agent_os_counter[val] = 0
-        if (!periodical_user_agent_os_family_counter[family]) periodical_user_agent_os_family_counter[family] = 0
-        if (!periodical_user_agent_engine_counter[engine]) periodical_user_agent_engine_counter[engine] = 0
-        if (!periodical_user_agent_browser_counter[browser]) periodical_user_agent_browser_counter[browser] = 0
-        if (!periodical_user_agent_device_counter[device]) periodical_user_agent_device_counter[device] = 0
-
-        periodical_user_agent_os_counter[val] += 1
-        periodical_user_agent_os_family_counter[family] += 1
-        periodical_user_agent_engine_counter[engine] += 1
-        periodical_user_agent_browser_counter[browser] += 1
-        periodical_user_agent_device_counter[device] += 1
+        Object.each(val, function (data, os) {
+          if (!periodical_user_agent_os_counter[os]) periodical_user_agent_os_counter[os] = 0
+          periodical_user_agent_os_counter[os] += data
+        })
       }
     })
 
-    // vm.periodical = {}
+    Object.each(user_agent_engine_counter, function (val, ts) {
+      if (ts < smallest_start) {
+        delete user_agent_engine_counter[ts]
+      } else {
+        Object.each(val, function (data, engine) {
+          if (!periodical_user_agent_engine_counter[engine]) periodical_user_agent_engine_counter[engine] = 0
+          periodical_user_agent_engine_counter[engine] += data
+        })
+      }
+    })
+
+    Object.each(user_agent_device_counter, function (val, ts) {
+      if (ts < smallest_start) {
+        delete user_agent_device_counter[ts]
+      } else {
+        Object.each(val, function (data, device) {
+          if (!periodical_user_agent_device_counter[device]) periodical_user_agent_device_counter[device] = 0
+          periodical_user_agent_device_counter[device] += data
+        })
+      }
+    })
+
+    Object.each(user_agent_browser_counter, function (val, ts) {
+      if (ts < smallest_start) {
+        delete user_agent_browser_counter[ts]
+      } else {
+        Object.each(val, function (data, browser) {
+          if (!periodical_user_agent_browser_counter[browser]) periodical_user_agent_browser_counter[browser] = 0
+          periodical_user_agent_browser_counter[browser] += data
+        })
+      }
+    })
 
     let top_city_counter = {}
     let _top_city_counter = []
@@ -876,7 +924,7 @@ const generic_callback = function (data, metadata, key, vm) {
     vm.$set(vm.periodical, 'type_counter', periodical_type_counter)
 
     vm.$set(vm.periodical, 'user_agent_os_counter', periodical_user_agent_os_counter)
-    vm.$set(vm.periodical, 'user_agent_os_family_counter', periodical_user_agent_os_family_counter)
+    // vm.$set(vm.periodical, 'user_agent_os_family_counter', periodical_user_agent_os_family_counter)
     vm.$set(vm.periodical, 'user_agent_engine_counter', periodical_user_agent_engine_counter)
     vm.$set(vm.periodical, 'user_agent_browser_counter', periodical_user_agent_browser_counter)
     vm.$set(vm.periodical, 'user_agent_device_counter', periodical_user_agent_device_counter)

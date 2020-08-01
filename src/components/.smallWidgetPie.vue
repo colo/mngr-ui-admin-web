@@ -3,42 +3,86 @@
     <q-card-section> -->
     <!-- <div class="container"> -->
       <div class="widget">
-
         <div class="section section-graph" :class="bgClass">
+          <span class="section-info">{{info}}</span>
           <div class="graph-info">
-            <!-- <i class="graph-arrow"></i> -->
             <q-icon :name="'mdi-menu-'+trend" />
-            <span class="graph-info-big">{{ info_value || value.value}}</span>
-            <span class="graph-info-small">{{info}}</span>
+            <span class="graph-info-big">{{info_value}}</span>
           </div>
-        </div>
-        <div class="section section-graph" :class="bgClass">
           <chart-tabular
             :wrapper="{
-              type: 'vueBars',
+              type: 'frappeCharts',
             }"
             :always_update="false"
-            :ref="type+'.'+id+'Bar'"
-            :id="type+'.'+id+'Bar'"
+            :ref="type+'.'+id+'Pie'"
+            :id="type+'.'+id+'Pie'"
             :chart="{
               options: {
-                gradient: ['#FFFFFF'],
-                /* width: 240 */
+                /* type: 'percentage', */
+                height: 175,
+                /* maxSlices: 5, */
+                /* style: {
+                  'margin-top': '0px',
+                  height: '100%',
+                  width: '100%',
+                } */
               }
             }"
             :stat="{
               data: [
                 value
               ],
-              length: 20,
+              length: 1,
+              numeric: false
+            }"
+            :reactive="false"
+            :no_buffer="false"
+          >
+
+          </chart-tabular>
+          <!-- :chart="{
+            options: {
+              height: 180,
+              style: {
+                'z-index': 1000,
+                float: 'left',
+                'margin-top': '0px',
+                height: '100%',
+                width: '100%',
+              }
+            }
+          }" -->
+          <!-- <div class="graph-chart"> -->
+
+          <!-- </div> -->
+
+        </div>
+        <!-- <div class="section section-graph" :class="bgClass">
+          <chart-tabular
+            :wrapper="{
+              type: 'frappeCharts',
+            }"
+            :always_update="false"
+            :ref="type+'.'+id+'Pie'"
+            :id="type+'.'+id+'Pie'"
+            :chart="{
+              options: {
+                height: 10,
+              }
+            }"
+            :stat="{
+              data: [
+                value
+              ],
+              length: 1,
               /* numeric: false */
             }"
             :reactive="false"
             :no_buffer="false"
           >
+
           </chart-tabular>
-      <!-- :key="$route.path +'.'+ JSON.stringify($route.query)+'.'+type+'.'+info+'Bar'" -->
-        </div>
+        </div> -->
 
         <!-- <div class="section section-info">
           <span class="info-time">Today 2:25 PM</span>
@@ -88,7 +132,7 @@
 
 <script>
 import * as Debug from 'debug'
-const debug = Debug('components:smallWidgetBars')
+const debug = Debug('components:smallWidgetPies')
 
 import chartTabular from '@components/chart.tabular'
 
@@ -96,14 +140,15 @@ export default {
 
   components: { chartTabular },
 
-  name: 'smallWidgetBars',
+  name: 'smallWidgetPies',
 
   data () {
     return {
-      // id: 'smallWidgetBars',
-      prev: {
-        value: 0,
-      },
+      // id: 'smallWidgetPies',
+      // prev: {
+      //   value: 0,
+      // },
+      prev: 0,
       trend: 'up',
     }
   },
@@ -128,7 +173,8 @@ export default {
     value: {
       type: Object,
       default: function () {
-        return { value: 0, title: ''}
+        // return { value: 0, title: ''}
+        return { labels: [], datasets: [] }
       }
     },
     type: {
@@ -138,8 +184,8 @@ export default {
 
   },
   watch: {
-    value: function (data) {
-      if (this.prev.value < data.value) {
+    'info_value': function (data) {
+      if (this.prev < data) {
         this.trend = 'up'
       } else {
         this.trend = 'down'
@@ -152,6 +198,10 @@ export default {
 }
 </script>
 <style scoped lang="scss">
+.frappe-chart .legend {
+  display: none;
+}
+
 // .container {
 // width: 283px;
 // margin: 0 auto;
@@ -164,13 +214,25 @@ border-radius: 5px;
 box-shadow: 0 3px 5px rgba(0, 0, 0, .2);
 }
 
-.section:first-child {
-border-radius: 5px 5px 0 0;
+.section {
+  border-radius: 5px 5px 5px 5px;
+  .section-info {
+    // margin-top: 20px;
+    font-size: 14px;
+    font-weight: normal;
+    color: rgba(255, 255, 255, .5);
+    clear: left;
+    margin-left: 10px;
+  }
 }
 
-.section:last-child {
-border-radius: 0 0 5px 5px;
-}
+// .section:first-child {
+// border-radius: 5px 5px 0 0;
+// }
+//
+// .section:last-child {
+// border-radius: 0 0 5px 5px;
+// }
 
 /*
 * Graph section
@@ -178,44 +240,55 @@ border-radius: 0 0 5px 5px;
 .section-graph {
 position: relative;
 // height: 151px;
-height: 58px;
+height: 116px;
 color: #fff;
 background: #55bc75;
 background-image: linear-gradient(color-stops(#55bc75, #55bc75 50%, #4daf7c 50%));
 
-.graph-info {
-  z-index: 99;
-  position: absolute;
-  font-weight: bold;
-  margin-top: 18px;
-  margin-left: 21px;
-  width: 100px;
+  .graph-info {
+    z-index: 99;
+    position: absolute;
+    font-weight: bold;
+    margin-top: 0px;
+    margin-left: 21px;
+    // width: 100px;
 
-  // .graph-arrow {
-  //   width: 0;
-  //   height: 0;
-  //   margin-top: 18px;
-  //   border-left: 4px solid transparent;
-  //   border-right: 4px solid transparent;
-  //   border-bottom: 4px solid white;
-  //   float: left;
-  // }
+    // .graph-arrow {
+    //   width: 0;
+    //   height: 0;
+    //   margin-top: 18px;
+    //   border-left: 4px solid transparent;
+    //   border-right: 4px solid transparent;
+    //   border-bottom: 4px solid white;
+    //   float: left;
+    // }
 
-  .graph-info-big {
-    font-size: 24px;
-    float: left;
-    margin-left: 3px;
+    .graph-info-big {
+      font-size: 24px;
+      float: left;
+      margin-left: 0px;
+    }
+
+    .graph-info-small {
+      margin-left: 3px;
+      font-size: 12px;
+      font-weight: normal;
+      color: rgba(255, 255, 255, .5);
+      clear: left;
+      margin-left: 8px;
+    }
   }
 
-  .graph-info-small {
-    margin-left: 3px;
-    font-size: 12px;
-    font-weight: normal;
-    color: rgba(255, 255, 255, .5);
-    clear: left;
-    margin-left: 8px;
+  .graph-chart {
+    // z-index: 99;
+    // position: relative;
+    // font-weight: bold;
+    // clear: both;
+    // float: right;
+    // margin-top: 0px;
+    // margin-left: 40px;
+
   }
-}
 }
 
 /*

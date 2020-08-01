@@ -1,32 +1,95 @@
 <template>
-  <q-card flat>
-    <!-- :style="{height: (height + actionsSize.height + 100) + 'px'}" -->
-    <!-- {{height + actionsSize.height}} -->
-    <q-card-section>
-      <!-- <q-resize-observer @resize="onResizeActions" /> -->
-      <tool-bar :range="periodical.range" :timestamp="periodical.timestamp" :type="'periodical'"/>
-    </q-card-section>
-    <q-card-section>
-      <!-- <q-resize-observer @resize="onResizeActions" /> -->
-      <info-bar :values="infoBarValues" :type="'periodical'"/>
-    </q-card-section>
+  <div>
+    <div :style="{height: (height + 100) + 'px', 'margin-top': '25px'}">
+      <grid-view
+        v-if="grid.layouts && Object.getLength(components) > 0"
+        :swap_components="true"
+        :id="id+'PeriodicalGrid'"
+        :components="components"
+        :grid="grid"
+        v-on:height="setHeight"
+      />
+    </div>
+    <!-- <world-cities-map :type="'periodical'" :world_map_cities="periodical.world_map_cities" :dark="dark" :colorScheme="colorScheme"/>
 
-    <q-card-section>
-      <div :style="{height: (height) + 'px'}">
-        <!-- , 'margin-top': '25px' -->
-        <grid-view
-          v-if="grid.layouts && Object.getLength(components) > 0"
-          :swap_components="true"
-          :id="id+'PeriodicalGrid'"
-          :components="components"
-          :grid="grid"
-          v-on:height="setHeight"
-        />
-      </div>
-    </q-card-section>
+    <top-country :type="'periodical'" :top_country_counter="periodical.top_country_counter" :dark="dark" :colorScheme="colorScheme"/>
 
-    <q-card-section>
-    <!-- <div v-for="(val, user) in periodical.user_counter" :key="'user.'+user">
+    <top-country :type="'periodical'" :top_country_counter="periodical.top_country_counter" :dark="dark" :colorScheme="colorScheme" :sum="true"/>
+
+    <top-city :type="'periodical'" :top_city_counter="periodical.top_city_counter" :dark="dark" :colorScheme="colorScheme"/>
+
+    <top-city :type="'periodical'" :top_city_counter="periodical.top_city_counter" :dark="dark" :colorScheme="colorScheme" :sum="true"/> -->
+
+    <!-- <div v-for="(val, prop) in minute" :key="'minute.'+prop">
+      minute: {{prop}} - {{val}} <br/>
+    </div>
+    <hr>
+
+    <div v-for="(val, prop) in hour" :key="'hour.'+prop">
+      hour: {{prop}} - {{val}} <br/>
+    </div>
+    <hr>
+
+    <div v-for="(val, prop) in day" :key="'day.'+prop">
+      day: {{prop}} - {{val}} <br/>
+    </div>
+    <hr> -->
+
+    <!-- periodical.total_bytes_sent: {{ periodical.total_bytes_sent }} <br/>
+    periodical.total_requests: {{ periodical.total_requests }} <br/> -->
+
+    <!-- <hr>
+
+    periodical.current_bytes_sent: {{ periodical.current_bytes_sent }} -->
+
+    <!-- <hr>
+
+    <div v-for="(val, status) in periodical.status_counter" :key="'status.'+status">
+      periodical.status_counter: {{status}} - {{val}} <br/>
+    </div>
+
+    <hr> -->
+
+    <!-- <div v-for="(val, city) in periodical.city_counter" :key="'city.'+city">
+      periodical.city_counter: {{city}} - {{val}} <br/>
+    </div>
+
+    <hr>
+
+    <div v-for="(val, country) in periodical.country_counter" :key="'country.'+country">
+      periodical.country_counter: {{country}} - {{val}} <br/>
+    </div>
+
+    <hr>
+
+    <div v-for="(val, continent) in periodical.continent_counter" :key="'continent.'+continent">
+      periodical.continent_counter: {{continent}} - {{val}} <br/>
+    </div>
+
+    <hr> -->
+
+    <!-- <div v-for="(val, addr) in periodical.addr_counter" :key="'addr.'+addr">
+      periodical.addr_counter: {{addr}} - {{val}} <br/>
+    </div> -->
+
+    <!-- <div v-for="(val, addr) in periodical.unique_visitors_by_ip" :key="'addr.'+addr">
+      periodical.unique_visitors_by_ip: {{addr}} - {{val}} <br/>
+    </div> -->
+    <!-- <hr>
+
+    <div v-for="(val, host) in periodical.top_host_counter" :key="'host.'+host">
+      periodical.top_host_counter: {{host}} - {{val}} <br/>
+    </div>
+
+    <hr>
+
+    <div v-for="(val, domain) in periodical.top_domain_counter" :key="'domain.'+domain">
+      periodical.top_domain_counter: {{domain}} - {{val}} <br/>
+    </div>
+
+    <hr> -->
+
+    <div v-for="(val, user) in periodical.user_counter" :key="'user.'+user">
       periodical.user_counter: {{user}} - {{val}} <br/>
     </div>
 
@@ -38,17 +101,17 @@
 
     <hr>
 
-    <div v-for="(val, type) in periodical.type_counter" :key="'type.'+type">
+    <!-- <div v-for="(val, type) in periodical.type_counter" :key="'type.'+type">
       periodical.type_counter: {{type}} - {{val}} <br/>
     </div>
 
-    <hr>
+    <hr> -->
 
     <div v-for="(val, os) in periodical.user_agent_os_counter" :key="'os.'+os">
       periodical.user_agent_os_counter: {{os}} - {{val}} <br/>
     </div>
 
-    <hr> -->
+    <hr>
 
     <div v-for="(val, os) in periodical.user_agent_os_family_counter" :key="'os_family.'+os+'-'+val">
       periodical.user_agent_os_family_counter: {{os}} - {{val}} <br/>
@@ -71,9 +134,80 @@
     <div v-for="(val, device) in periodical.user_agent_device_counter" :key="'device.'+device+'-'+val">
       periodical.user_agent_device_counter: {{device}} - {{val}} <br/>
     </div>
-    </q-card-section>
 
-  </q-card>
+    <!-- <q-table
+      class="my-sticky-header-table"
+      title="Web Logs"
+      :data="periodical.logs"
+      :columns="columns"
+      :row-key="(row, index) => row.timestamp + row.domain +'.'+ row.host +'.'+ row.path + '.' + index"
+      :pagination.sync="pagination"
+      virtual-scroll
+      :rows-per-page-options="[0]"
+      :visible-columns="($q.screen.lt.sm) ? visibleColumns : allColumns"
+      :loading="loading_logs"
+      :filter="search_filter"
+    >
+      <template v-slot:top="props">
+        <q-select
+          v-if="$q.screen.lt.sm"
+          v-model="visibleColumns"
+          multiple
+          borderless
+          dense
+          options-dense
+          :display-value="$q.lang.table.columns"
+          emit-value
+          map-options
+          :options="columns"
+          option-value="name"
+          style="min-width: 150px"
+        />
+        <q-space />
+        <q-input borderless dense debounce="100" v-model="search_filter" placeholder="Search">
+          <template v-slot:append>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+        <q-btn
+        flat round dense
+        :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'"
+        @click="props.toggleFullscreen"
+        class="q-ml-md"
+      />
+      </template>
+
+      <template v-slot:body="props">
+      <q-tr :props="props">
+
+        <q-td key="date" :props="props">
+          {{ format_time(props.row.timestamp) }}
+        </q-td>
+
+        <q-td key="log" :props="props">
+          {{ format_log(props.row.log) }}
+        </q-td>
+
+        <q-td key="domain" :props="props">
+          {{ props.row.domain }}
+          <q-btn v-on:click="destroy_pipelines()" :to="'/logs/web/filter/?domain=' + props.row.domain" flat icon="open_in_new" />
+        </q-td>
+
+        <q-td key="host" :props="props">
+          {{ props.row.host }}
+
+          <q-btn v-on:click="destroy_pipelines()" :to="'/logs/web/filter/?host=' + props.row.host" flat icon="open_in_new" />
+        </q-td>
+
+        <q-td key="path" :props="props">
+          {{ props.row.path }}
+
+          <q-btn v-on:click="destroy_pipelines()" :to="'/logs/web/filter/?path=' + props.row.path" flat icon="open_in_new" />
+        </q-td>
+      </q-tr>
+      </template>
+    </q-table> -->
+  </div>
 </template>
 
 <script>
@@ -99,15 +233,14 @@ import WorldCitiesMap from '@apps/logs/web/components/worldCitiesMap'
 import WorldCountriesMap from '@apps/logs/web/components/worldCountriesMap'
 import TopCountry from '@apps/logs/web/components/topCountry'
 import TopCity from '@apps/logs/web/components/topCity'
-import ToolBar from '@apps/logs/web/components/filter/periodical/toolbar'
+import Toolbar from '@apps/logs/web/components/filter/periodical/toolbar'
 import LogsTable from '@apps/logs/web/components/filter/periodical/logsTable'
 // import BytesTrend from '@apps/logs/web/components/bytesTrend'
 import TopHost from '@apps/logs/web/components/topHost'
 import TopDomain from '@apps/logs/web/components/topDomain'
-import InfoBar from '@apps/logs/web/components/infoBar'
 
-// import SmallWidgetBars from '@components/smallWidgetBars'
-// import MiniWidget from '@components/miniWidget'
+import SmallWidgetBars from '@components/smallWidgetBars'
+import MiniWidget from '@components/miniWidget'
 
 import GridView from '@components/gridView'
 
@@ -159,11 +292,10 @@ export default {
     TopCountry,
     TopCity,
     LogsTable,
-    ToolBar,
-    InfoBar,
-    // // BytesTrend,
-    // SmallWidgetBars,
-    // MiniWidget
+    Toolbar,
+    // BytesTrend,
+    SmallWidgetBars,
+    MiniWidget
   },
 
   name: 'LogsWebFilterPeriodical',
@@ -183,15 +315,7 @@ export default {
       path: 'all',
       height: 0,
 
-      actionsSize: {
-        height: 0,
-        width: 0,
-      },
-
       top: 15,
-
-      infoBarValues: {},
-      // toolBarValues: {},
 
       periodical: {
         range: { start: 0, end: 0},
@@ -252,17 +376,32 @@ export default {
       grid: {
         layouts: {
           'lg': [
+            { x: 0, y: 0, w: 24, h: 5, i: 'toolbar', immobile: false },
 
-            { x: 0, y: 1, w: 12, h: 36, i: 'topHost', immobile: false },
-            { x: 12, y: 1, w: 12, h: 36, i: 'topDomain', immobile: false },
+            { x: 0, y: 1, w: 3, h: 8, i: 'requestsBars', immobile: false },
+            { x: 3, y: 1, w: 3, h: 8, i: 'bytesBars', immobile: false },
 
-            { x: 0, y: 2, w: 12, h: 36, i: 'topCountry', immobile: false },
-            { x: 12, y: 2, w: 12, h: 36, i: 'worldCountriesMap', immobile: false },
-            { x: 0, y: 3, w: 12, h: 36, i: 'worldCitiesMap', immobile: false },
-            { x: 12, y: 3, w: 12, h: 36, i: 'topCity', immobile: false },
-            { x: 0, y: 4, w: 12, h: 36, i: 'topCountrySum', immobile: false },
-            { x: 12, y: 4, w: 12, h: 36, i: 'topCitySum', immobile: false },
-            { x: 0, y: 5, w: 24, h: 50, i: 'logs', immobile: false },
+            { x: 6, y: 1, w: 3, h: 4, i: 'visitorsMini', immobile: false },
+            { x: 6, y: 2, w: 3, h: 4, i: 'usersMini', immobile: false },
+
+            { x: 9, y: 1, w: 3, h: 4, i: 'staticMini', immobile: false },
+            { x: 9, y: 2, w: 3, h: 4, i: 'dynamicMini', immobile: false },
+
+            { x: 12, y: 1, w: 3, h: 4, i: 'refererMini', immobile: false },
+
+            { x: 21, y: 1, w: 3, h: 4, i: 'validMini', immobile: false },
+            { x: 21, y: 2, w: 3, h: 4, i: 'failedMini', immobile: false },
+            // { x: 12, y: 1, w: 3, h: 5, i: '4', immobile: false },
+            { x: 0, y: 3, w: 12, h: 36, i: 'topHost', immobile: false },
+            { x: 12, y: 3, w: 12, h: 36, i: 'topDomain', immobile: false },
+
+            { x: 0, y: 4, w: 12, h: 36, i: 'topCountry', immobile: false },
+            { x: 12, y: 4, w: 12, h: 36, i: 'worldCountriesMap', immobile: false },
+            { x: 0, y: 5, w: 12, h: 36, i: 'worldCitiesMap', immobile: false },
+            { x: 12, y: 5, w: 12, h: 36, i: 'topCity', immobile: false },
+            { x: 0, y: 6, w: 12, h: 36, i: 'topCountrySum', immobile: false },
+            { x: 12, y: 6, w: 12, h: 36, i: 'topCitySum', immobile: false },
+            { x: 0, y: 7, w: 24, h: 50, i: 'logs', immobile: false },
             // { x: 15, y: 0, w: 6, h: 10, i: 'mounts', immobile: false },
             // { x: 21, y: 0, w: 3, h: 10, i: 'memory', immobile: false },
             // // { x: 0, y: 1, w: 12, h: 2, i: 'separator' }
@@ -330,7 +469,109 @@ export default {
       },
 
       components: {
+        'toolbar': [
+          {
+            component: Toolbar
+          }
+        ],
+        'requestsBars': [
+          {
+            component: SmallWidgetBars,
+            props: {
+              type: 'periodical',
+              info: 'Reqs.',
+            }
+          }
 
+        ],
+        'bytesBars': [
+          {
+            component: SmallWidgetBars,
+            props: {
+              type: 'periodical',
+              info: 'MBytes',
+            }
+          }
+
+        ],
+        'visitorsMini': [
+          {
+            component: MiniWidget,
+            props: {
+              type: 'periodical',
+              info: 'Unique visitors',
+              // bgClass: 'bg-indigo-5'
+            }
+          }
+
+        ],
+        'usersMini': [
+          {
+            component: MiniWidget,
+            props: {
+              type: 'periodical',
+              info: 'Users',
+              // bgClass: 'bg-indigo-5'
+            }
+          }
+
+        ],
+
+        'refererMini': [
+          {
+            component: MiniWidget,
+            props: {
+              type: 'periodical',
+              info: 'External referers',
+              // bgClass: 'bg-indigo-5'
+            }
+          }
+
+        ],
+        'staticMini': [
+          {
+            component: MiniWidget,
+            props: {
+              type: 'periodical',
+              info: 'Static requests',
+              // bgClass: 'bg-indigo-5'
+            }
+          }
+
+        ],
+        'dynamicMini': [
+          {
+            component: MiniWidget,
+            props: {
+              type: 'periodical',
+              info: 'Dynamic requests',
+              // bgClass: 'bg-indigo-5'
+            }
+          }
+
+        ],
+        'validMini': [
+          {
+            component: MiniWidget,
+            props: {
+              type: 'periodical',
+              info: 'Valid requests',
+              bgClass: 'bg-positive'
+            }
+          }
+
+        ],
+        'failedMini': [
+          {
+            component: MiniWidget,
+            props: {
+              type: 'periodical',
+              info: 'Failed requests',
+              bgClass: 'bg-negative'
+            }
+          }
+
+        ],
         'topHost': [
           {
             component: TopHost,
@@ -465,58 +706,55 @@ export default {
         debug('watch periodical', periodical)
 
         if (periodical && Object.getLength(periodical) > 0) {
-          // this.$set(this.components.toolbar[0].props, 'range', periodical.range)
-          // this.$set(this.components.toolbar[0].props, 'timestamp', periodical.timestamp)
-
-          // this.toolBarValues = periodical
-          this.infoBarValues = periodical
+          this.$set(this.components.toolbar[0].props, 'range', periodical.range)
+          this.$set(this.components.toolbar[0].props, 'timestamp', periodical.timestamp)
 
           // this.$set(this.components.bytesTrend[0].props, 'bytes', periodical.total_bytes_sent)
 
-          // this.$set(this.components.requestsBars[0].props, 'value', {
-          //   value: periodical.total_requests,
-          //   title: periodical.total_requests + ' - ' + this.format_timestmap_standar(periodical.timestamp)
-          // })
+          this.$set(this.components.requestsBars[0].props, 'value', {
+            value: periodical.total_requests,
+            title: periodical.total_requests + ' - ' + this.format_timestmap_standar(periodical.timestamp)
+          })
 
-          // this.$set(this.components.bytesBars[0].props, 'value', {
-          //   value: (periodical.total_bytes_sent / 1024 / 1024).toFixed(0),
-          //   title: (periodical.total_bytes_sent / 1024 / 1024).toFixed(0) + 'Mb -' + this.format_timestmap_standar(periodical.timestamp)
-          // })
-          //
-          // this.$set(this.components.visitorsMini[0].props, 'value', periodical.unique_visitors)
-          //
-          // let users = 0
-          // Object.each(periodical.user_counter, function (val, user) {
-          //   if (user !== '-') {
-          //     users += val
-          //   }
-          // })
-          //
-          // this.$set(this.components.usersMini[0].props, 'value', users)
-          //
-          // let referers = 0
-          // Object.each(periodical.referer_counter, function (val, referer) {
-          //   if (referer !== 'internal' && referer !== 'unknown') {
-          //     referers += val
-          //   }
-          // })
-          //
-          // this.$set(this.components.refererMini[0].props, 'value', referers)
-          //
-          // this.$set(this.components.staticMini[0].props, 'value', periodical.type_counter.static)
-          // this.$set(this.components.dynamicMini[0].props, 'value', periodical.type_counter.dynamic)
-          //
-          // let valid = 0, failed = 0
-          // Object.each(periodical.status_counter, function (val, status) {
-          //   status *= 1
-          //   if (status < 400) {
-          //     valid += val
-          //   } else {
-          //     failed += val
-          //   }
-          // })
-          // this.$set(this.components.validMini[0].props, 'value', valid)
-          // this.$set(this.components.failedMini[0].props, 'value', failed)
+          this.$set(this.components.bytesBars[0].props, 'value', {
+            value: (periodical.total_bytes_sent / 1024 / 1024).toFixed(0),
+            title: (periodical.total_bytes_sent / 1024 / 1024).toFixed(0) + 'Mb -' + this.format_timestmap_standar(periodical.timestamp)
+          })
+
+          this.$set(this.components.visitorsMini[0].props, 'value', periodical.unique_visitors)
+
+          let users = 0
+          Object.each(periodical.user_counter, function (val, user) {
+            if (user !== '-') {
+              users += val
+            }
+          })
+
+          this.$set(this.components.usersMini[0].props, 'value', users)
+
+          let referers = 0
+          Object.each(periodical.referer_counter, function (val, referer) {
+            if (referer !== 'internal' && referer !== 'unknown') {
+              referers += val
+            }
+          })
+
+          this.$set(this.components.refererMini[0].props, 'value', referers)
+
+          this.$set(this.components.staticMini[0].props, 'value', periodical.type_counter.static)
+          this.$set(this.components.dynamicMini[0].props, 'value', periodical.type_counter.dynamic)
+
+          let valid = 0, failed = 0
+          Object.each(periodical.status_counter, function (val, status) {
+            status *= 1
+            if (status < 400) {
+              valid += val
+            } else {
+              failed += val
+            }
+          })
+          this.$set(this.components.validMini[0].props, 'value', valid)
+          this.$set(this.components.failedMini[0].props, 'value', failed)
 
           this.$set(this.components.topHost[0].props, 'top_host_counter', periodical.top_host_counter)
           this.$set(this.components.topDomain[0].props, 'top_domain_counter', periodical.top_domain_counter)
@@ -755,10 +993,7 @@ export default {
       // this.height = height + 200 + 'px'
       this.height = height
     },
-    onResizeActions: function (size) {
-      debug('onResizeActions', size)
-      this.actionsSize = size
-    },
+
     end: function () {
       // if (this.current_day === undefined) {
       return Date.now()

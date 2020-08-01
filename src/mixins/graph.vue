@@ -67,10 +67,14 @@ import dygraphSparkLineWrapper from '@components/wrappers/dygraphSparkLine'
 import vGaugeWrapper from '@components/wrappers/vGauge'
 import vueEasyPieChartWrapper from '@components/wrappers/vueEasyPieChart'
 import amchartsBarRaceWrapper from '@components/wrappers/amchartsBarRace'
+import amchartsPieWrapper from '@components/wrappers/amchartsPie'
 import amchartsWorldCityMapWrapper from '@components/wrappers/amchartsWorldCityMap'
 import amchartsWorldCountryMapWrapper from '@components/wrappers/amchartsWorldCountryMap'
 import vueTrendWrapper from '@components/wrappers/vueTrend'
 import vueBarsWrapper from '@components/wrappers/vueBars'
+import frappeChartsWrapper from '@components/wrappers/frappeCharts'
+import dbChartsjsWrapper from '@components/wrappers/dbChartsjs'
+
 // // import jqueryKnobWrapper from 'components/wrappers/jqueryKnob'
 // import highchartsVueWrapper from 'components/wrappers/highchartsVue'
 // import vueOdometerWrapper from 'components/wrappers/vueOdometer'
@@ -98,10 +102,13 @@ export default {
     vGaugeWrapper,
     vueEasyPieChartWrapper,
     amchartsBarRaceWrapper,
+    amchartsPieWrapper,
     amchartsWorldCityMapWrapper,
     amchartsWorldCountryMapWrapper,
     vueTrendWrapper,
-    vueBarsWrapper
+    vueBarsWrapper,
+    frappeChartsWrapper,
+    dbChartsjsWrapper
     // // jqueryKnobWrapper,
     // highchartsVueWrapper,
     // // easyPieChartWrapper

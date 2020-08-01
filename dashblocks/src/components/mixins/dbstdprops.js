@@ -31,4 +31,4 @@ export const dbStdProps = {
       default: 'default'
     }
   }
-};
+}

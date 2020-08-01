@@ -1,42 +1,28 @@
 <template>
-  <div :style="{height: (height + 100) + 'px', 'margin-top': '25px'}">
-    <grid-view
-      v-if="grid.layouts && Object.getLength(components) > 0"
-      :swap_components="true"
-      :id="id+'MinuteGrid'"
-      :components="components"
-      :grid="grid"
-      v-on:height="setHeight"
-    />
-  </div>
-  <!-- <div>
-    <q-toolbar class="text-primary">
-      <q-toolbar-title>
-        From: {{ format_time(minute.range.start) }} - To: {{ format_time(minute.range.end) }} / Updated on: {{ format_time(minute.timestamp) }}
-      </q-toolbar-title>
-      <template>
-        <div class="q-pa-md">
+  <q-card flat>
+    <q-card-section>
+      <tool-bar :range="minute.range" :timestamp="minute.timestamp" :type="'minute'" @selected_minute="selected_minute"/>
+    </q-card-section>
 
-          <q-btn flat dense icon="access_time" />
-          <q-popup-proxy v-model="showMinute" ref="qMinuteProxy" transition-show="scale" transition-hide="scale">
-              <q-time
-                v-model="selected_minute"
-                :options="disabled_minutes"
-                now-btn
-                />
-          </q-popup-proxy>
+    <q-card-section>
+      <info-bar :values="infoBarValues" :type="'minute'"/>
+    </q-card-section>
 
-        </div>
-      </template>
-    </q-toolbar>
+    <q-card-section>
+      <!-- <div :style="{height: (height + 100) + 'px', 'margin-top': '25px'}"> -->
+      <div :style="{height: height  + 'px'}">
+        <grid-view
+          v-if="grid.layouts && Object.getLength(components) > 0"
+          :swap_components="true"
+          :id="id+'MinuteGrid'"
+          :components="components"
+          :grid="grid"
+          v-on:height="setHeight"
+        />
+      </div>
+    </q-card-section>
 
-    <top-country :type="'minute'" :top_country_counter="minute.top_country_counter" :dark="dark" :colorScheme="colorScheme"/>
-
-    <top-city :type="'minute'" :top_city_counter="minute.top_city_counter" :dark="dark" :colorScheme="colorScheme"/>
-
-    <top-continent :type="'minute'" :top_continent_counter="minute.continent_counter" :dark="dark" :colorScheme="colorScheme"/>
-
-  </div> -->
+  </q-card>
 </template>
 
 <script>
@@ -62,7 +48,8 @@ import WorldCountriesMap from '@apps/logs/web/components/worldCountriesMap'
 import TopCountry from '@apps/logs/web/components/topCountry'
 import TopContinent from '@apps/logs/web/components/topContinent'
 import TopCity from '@apps/logs/web/components/topCity'
-import Toolbar from '@apps/logs/web/components/filter/minute/toolbar'
+import ToolBar from '@apps/logs/web/components/filter/minute/toolbar'
+import InfoBar from '@apps/logs/web/components/infoBar'
 // import LogsTable from '@apps/logs/web/components/filter/periodical/logsTable'
 
 import GridView from '@components/gridView'
@@ -116,7 +103,8 @@ export default {
     TopCountry,
     TopContinent,
     TopCity,
-    Toolbar
+    ToolBar,
+    InfoBar,
   },
 
   name: 'LogsWebFilterMinute',
@@ -135,6 +123,9 @@ export default {
       id: 'logs.web.filter.minute',
       path: 'all',
       height: 0,
+
+      infoBarValues: {},
+
       cities_color: {},
       countries_color: {},
 
@@ -150,6 +141,15 @@ export default {
       showMinute: false,
 
       minute: {
+        top_host_counter: {},
+        top_domain_counter: {},
+
+        host_counter: {},
+        domain_counter: {},
+
+        total_bytes_sent: 0,
+        total_requests: 0,
+
         top_city_counter: {},
         top_country_counter: {},
         // top_continent_counter: {},
@@ -193,12 +193,13 @@ export default {
       grid: {
         layouts: {
           'lg': [
-            { x: 0, y: 0, w: 24, h: 5, i: 'toolbar', immobile: false },
-            { x: 0, y: 1, w: 12, h: 36, i: 'topCountry', immobile: false },
-            { x: 12, y: 1, w: 12, h: 36, i: 'worldCountriesMap', immobile: false },
-            { x: 0, y: 2, w: 12, h: 36, i: 'worldCitiesMap', immobile: false },
-            { x: 12, y: 2, w: 12, h: 36, i: 'topCity', immobile: false },
-            { x: 0, y: 3, w: 12, h: 36, i: 'continent', immobile: false },
+            // { x: 0, y: 0, w: 24, h: 5, i: 'toolbar', immobile: false },
+
+            { x: 0, y: 0, w: 12, h: 36, i: 'topCountry', immobile: false },
+            { x: 12, y: 0, w: 12, h: 36, i: 'worldCountriesMap', immobile: false },
+            { x: 0, y: 1, w: 12, h: 36, i: 'worldCitiesMap', immobile: false },
+            { x: 12, y: 1, w: 12, h: 36, i: 'topCity', immobile: false },
+            { x: 0, y: 2, w: 12, h: 36, i: 'continent', immobile: false },
             // { x: 12, y: 3, w: 12, h: 36, i: 'topCitySum', immobile: false },
             // { x: 0, y: 4, w: 24, h: 50, i: 'logs', immobile: false },
             // { x: 15, y: 0, w: 6, h: 10, i: 'mounts', immobile: false },
@@ -268,14 +269,14 @@ export default {
       },
 
       components: {
-        'toolbar': [
-          {
-            component: Toolbar,
-            events: {
-              selected_minute: 'selected_minute'
-            }
-          }
-        ],
+        // 'toolbar': [
+        //   {
+        //     component: Toolbar,
+        //     events: {
+        //       selected_minute: 'selected_minute'
+        //     }
+        //   }
+        // ],
         'topCountry': [
           {
             component: TopCountry,
@@ -381,8 +382,10 @@ export default {
         debug('watch minute', minute)
 
         if (minute && Object.getLength(minute) > 0) {
-          this.$set(this.components.toolbar[0].props, 'range', minute.range)
-          this.$set(this.components.toolbar[0].props, 'timestamp', minute.timestamp)
+          // this.$set(this.components.toolbar[0].props, 'range', minute.range)
+          // this.$set(this.components.toolbar[0].props, 'timestamp', minute.timestamp)
+
+          this.infoBarValues = minute
 
           // this.$set(this.components.topCountry, 0, Object.merge(this.components.topCountry[0], {
           //   id: this.id + '.minute.topCountry.component',
@@ -637,6 +640,7 @@ export default {
   mounted: function () {
     debug('mounted', this.$refs)
     this.$on('grid.' + this.id + ':height', this.setHeight.bind(this))
+
     // this.$on('grid.' + this.id + ':destroy_pipelines', function () {
     //   debug('event')
     // })

@@ -9,7 +9,7 @@ import {
   DbChartjsBubble,
   DbChartjsScatter,
   DbChartjsFunnel
-} from './DbChartjs';
+} from './DbChartjs'
 
 export {
   DbChartjsBar,
@@ -22,4 +22,4 @@ export {
   DbChartjsBubble,
   DbChartjsScatter,
   DbChartjsFunnel
-};
+}

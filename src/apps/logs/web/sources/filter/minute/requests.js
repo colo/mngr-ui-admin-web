@@ -39,6 +39,7 @@ const HOUR = 60 * MINUTE
 const DAY = HOUR * 24
 const WEEK = DAY * 7
 
+import static_types from '../../../data/static_extentions'
 const ss = require('simple-statistics')
 
 // const _merge = function (prop, val1, val2) {
@@ -150,7 +151,7 @@ const generic_callback = function (data, metadata, key, vm) {
 
   if (/historical/.test(key) && data.logs_historical && Object.getLength(data.logs_historical) > 0) {
     data = JSON.parse(JSON.stringify(data))
-    debug('HISTORICAL HOST CALLBACK data %s %o', key, data)
+    // debug('HISTORICAL HOST CALLBACK data %s %o', key, data)
     // let type
     // let vm_data = {}
     let per_domain = {}
@@ -200,6 +201,17 @@ const generic_callback = function (data, metadata, key, vm) {
       // }
     })
 
+    let total_bytes_sent = 0
+    let total_requests = 0
+    let unique_visitors = 0
+    let status_counter = {}
+    let referer_counter = {}
+    let user_counter = {}
+    let type_counter = {}
+    let user_agent_os_counter = {}
+    // let _top_os_counter = 0
+    // let top_os
+
     let world_map_city_counter = []
     let world_map_country_counter = []
     let city_counter = {}
@@ -208,7 +220,57 @@ const generic_callback = function (data, metadata, key, vm) {
     let _tmp_world_map_city_counter = {}
     let _tmp_world_map_country_counter = {}
 
+    debug('HISTORICAL HOST CALLBACK data %s %o', key, per_domain)
+
     Object.each(per_domain, function (data, domain) {
+      total_requests++
+
+      if (data.body_bytes_sent && data.body_bytes_sent.sum) {
+        total_bytes_sent += data.body_bytes_sent.sum
+      }
+
+      if (data.unique_visitors) {
+        unique_visitors += data.unique_visitors
+      }
+
+      if (data.status) {
+        Object.each(data.status, function (value, status) {
+          if (!status_counter[status]) status_counter[status] = 0
+          status_counter[status] += value
+        })
+      }
+
+      if (data.referer && data.referer.medium) {
+        Object.each(data.referer.medium, function (value, medium) {
+          if (!referer_counter[medium]) referer_counter[medium] = 0
+          referer_counter[medium] += value
+        })
+      }
+
+      if (data.remote_user) {
+        Object.each(data.remote_user, function (value, user) {
+          if (!user_counter[user]) user_counter[user] = 0
+          user_counter[user] += value
+        })
+      }
+
+      if (data.pathname) {
+        Object.each(data.pathname, function (value, pathname) {
+          let type = (static_types.test(pathname)) ? 'static' : 'dynamic'
+          if (!type_counter[type]) type_counter[type] = 0
+          type_counter[type] += value
+        })
+      }
+
+      if (data.user_agent) {
+        if (data.user_agent.os && data.user_agent.os.family) {
+          Object.each(data.user_agent.os.family, function (value, os) {
+            if (!user_agent_os_counter[os]) user_agent_os_counter[os] = 0
+            user_agent_os_counter[os] += value
+          })
+        }
+      }
+
       if (data.geoip) {
         Object.each(data.geoip.location, function (row) {
           let country = (row.country) ? row.country : undefined
@@ -250,6 +312,13 @@ const generic_callback = function (data, metadata, key, vm) {
         })
       }
     })
+
+    // Object.each(os_counter, function (value, os) {
+    //   if (value > _top_os_counter) {
+    //     top_os = os
+    //     _top_os_counter = value
+    //   }
+    // })
 
     debug('_tmp_world_map_city_counter', _tmp_world_map_city_counter)
 
@@ -327,6 +396,16 @@ const generic_callback = function (data, metadata, key, vm) {
     }
 
     debug('HISTORICAL HOST CALLBACK data %s %o %o', key, top_city_counter, top_country_counter)
+
+    vm.$set(vm.minute, 'total_bytes_sent', total_bytes_sent)
+    vm.$set(vm.minute, 'total_requests', total_requests)
+    vm.$set(vm.minute, 'unique_visitors', unique_visitors)
+    vm.$set(vm.minute, 'status_counter', status_counter)
+    vm.$set(vm.minute, 'referer_counter', referer_counter)
+    vm.$set(vm.minute, 'user_counter', user_counter)
+    vm.$set(vm.minute, 'type_counter', type_counter)
+    vm.$set(vm.minute, 'user_agent_os_counter', user_agent_os_counter)
+    // vm.$set(vm.minute, 'top_os', top_os)
 
     vm.$set(vm.minute, 'per_domain', per_domain)
     vm.$set(vm.minute, 'per_host', per_host)
@@ -475,7 +554,8 @@ const host_once_component = {
                 //     'path'
                 //   ]
                 // },
-                {'data': 'geoip'},
+                // {'data': 'geoip'},
+                'data',
                 'metadata'
               ],
               'transformation': [
