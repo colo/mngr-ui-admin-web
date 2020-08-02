@@ -238,6 +238,7 @@ export default {
             { x: 9, y: 1, w: 3, h: 4, i: 'dynamicMini', immobile: false },
 
             { x: 12, y: 0, w: 3, h: 4, i: 'refererMini', immobile: false },
+            { x: 12, y: 1, w: 3, h: 4, i: 'topDomainMini', immobile: false },
 
             { x: 15, y: 0, w: 3, h: 8, i: 'osPie', immobile: false },
             { x: 18, y: 0, w: 3, h: 8, i: 'browserPie', immobile: false },
@@ -246,48 +247,47 @@ export default {
             { x: 21, y: 1, w: 3, h: 4, i: 'failedMini', immobile: false },
 
           ],
-          'md': [
-            // { x: 0, y: 0, w: 4, h: 10, i: 'loadavg', immobile: false },
-            // { x: 4, y: 0, w: 4, h: 10, i: 'netOut', immobile: false },
-            // { x: 8, y: 0, w: 4, h: 10, i: 'netIn', immobile: false },
-            // { x: 12, y: 0, w: 4, h: 10, i: 'memory', immobile: false },
-            //
-            // { x: 0, y: 1, w: 8, h: 15, i: 'cpu', immobile: false },
-            // { x: 8, y: 1, w: 8, h: 10, i: 'mounts', immobile: false },
-            //
-            // // { x: 0, y: 1, w: 6, h: 2, i: 'separator' }
-          ],
-          'sm': [
-            // { x: 0, y: 0, w: 3, h: 10, i: 'loadavg', immobile: false },
-            // { x: 3, y: 0, w: 3, h: 10, i: 'netOut', immobile: false },
-            // { x: 6, y: 0, w: 3, h: 10, i: 'netIn', immobile: false },
-            // { x: 9, y: 0, w: 3, h: 10, i: 'memory', immobile: false },
-            //
-            // { x: 0, y: 1, w: 6, h: 15, i: 'cpu', immobile: false },
-            // { x: 6, y: 1, w: 6, h: 10, i: 'mounts', immobile: false },
-            //
-            // // { x: 0, y: 1, w: 6, h: 2, i: 'separator' }
-          ],
-          'xs': [
-            // { x: 0, y: 0, w: 4, h: 10, i: 'loadavg', immobile: false },
-            // { x: 4, y: 0, w: 4, h: 10, i: 'memory', immobile: false },
-            // { x: 0, y: 1, w: 4, h: 10, i: 'netOut', immobile: false },
-            // { x: 4, y: 1, w: 4, h: 10, i: 'netIn', immobile: false },
-            // { x: 0, y: 2, w: 8, h: 15, i: 'cpu', immobile: false },
-            // { x: 0, y: 3, w: 8, h: 10, i: 'mounts', immobile: false },
-            //
-            // // { x: 0, y: 1, w: 6, h: 2, i: 'separator' }
-          ],
-          'xxs': [
-            // { x: 0, y: 0, w: 3, h: 10, i: 'loadavg', immobile: false },
-            // { x: 3, y: 0, w: 3, h: 10, i: 'memory', immobile: false },
-            // { x: 0, y: 1, w: 3, h: 10, i: 'netOut', immobile: false },
-            // { x: 3, y: 1, w: 3, h: 10, i: 'netIn', immobile: false },
-            // { x: 0, y: 2, w: 6, h: 15, i: 'cpu', immobile: false },
-            // { x: 0, y: 3, w: 6, h: 10, i: 'mounts', immobile: false },
-            //
-            // // { x: 0, y: 1, w: 6, h: 2, i: 'separator' }
-          ]
+          // 'md': [
+          //   { x: 0, y: 0, w: 6, h: 8, i: 'requestsBars', immobile: false },
+          //   { x: 6, y: 0, w: 6, h: 8, i: 'bytesBars', immobile: false },
+          //
+          //   { x: 0, y: 1, w: 6, h: 4, i: 'visitorsMini', immobile: false },
+          //   { x: 6, y: 1, w: 6, h: 4, i: 'usersMini', immobile: false },
+          //
+          // ],
+          // 'sm': [
+          //   { x: 0, y: 0, w: 6, h: 8, i: 'requestsBars', immobile: false },
+          //   { x: 3, y: 0, w: 6, h: 8, i: 'bytesBars', immobile: false },
+          //
+          //   { x: 0, y: 1, w: 3, h: 4, i: 'visitorsMini', immobile: false },
+          //   { x: 3, y: 1, w: 3, h: 4, i: 'usersMini', immobile: false },
+          // ],
+          // 'xs': [
+          //   { x: 0, y: 0, w: 4, h: 8, i: 'requestsBars', immobile: false },
+          //   { x: 4, y: 0, w: 4, h: 8, i: 'bytesBars', immobile: false },
+          //
+          //   { x: 0, y: 1, w: 4, h: 4, i: 'visitorsMini', immobile: false },
+          //   { x: 4, y: 1, w: 4, h: 4, i: 'usersMini', immobile: false },
+          //
+          //   // { x: 9, y: 0, w: 3, h: 4, i: 'staticMini', immobile: false },
+          //   // { x: 9, y: 1, w: 3, h: 4, i: 'dynamicMini', immobile: false },
+          //   //
+          //   // { x: 12, y: 0, w: 3, h: 4, i: 'refererMini', immobile: false },
+          //   // { x: 12, y: 1, w: 3, h: 4, i: 'topDomainMini', immobile: false },
+          //   //
+          //   // { x: 15, y: 0, w: 3, h: 8, i: 'osPie', immobile: false },
+          //   // { x: 18, y: 0, w: 3, h: 8, i: 'browserPie', immobile: false },
+          //   //
+          //   // { x: 21, y: 0, w: 3, h: 4, i: 'validMini', immobile: false },
+          //   // { x: 21, y: 1, w: 3, h: 4, i: 'failedMini', immobile: false },
+          // ],
+          // 'xxs': [
+          //   { x: 0, y: 0, w: 6, h: 8, i: 'requestsBars', immobile: false },
+          //   { x: 0, y: 1, w: 6, h: 8, i: 'bytesBars', immobile: false },
+          //
+          //   // { x: 0, y: 1, w: 3, h: 4, i: 'visitorsMini', immobile: false },
+          //   // { x: 3, y: 0, w: 3, h: 4, i: 'usersMini', immobile: false },
+          // ]
 
         },
         breakpoint: 'lg',
@@ -299,13 +299,13 @@ export default {
         // // breakpoints: { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 },
         // colsAll: { lg: 12, md: 8, sm: 6, xs: 4, xxs: 2 },
 
-        cols: 22,
+        cols: 24,
         // breakpoints: { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 },
         colsAll: { lg: 24, md: 16, sm: 12, xs: 8, xxs: 6 },
 
         isDraggable: true,
         isResizable: false,
-        preview: false,
+        preview: true,
 
         // items: {
         //   style: {transform: 'translate(0px, 0px)'}
@@ -385,6 +385,17 @@ export default {
             props: {
               type: this.type,
               info: 'External referers',
+              // bgClass: 'bg-indigo-5'
+            }
+          }
+
+        ],
+        'topDomainMini': [
+          {
+            component: MiniWidget,
+            props: {
+              type: this.type,
+              // info: 'External referers',
               // bgClass: 'bg-indigo-5'
             }
           }
@@ -534,6 +545,11 @@ export default {
           }
 
           this.$set(this.components.refererMini[0].props, 'value', referers)
+
+          if (values.top_domain) {
+            this.$set(this.components.topDomainMini[0].props, 'info', values.top_domain.domain)
+            this.$set(this.components.topDomainMini[0].props, 'value', values.top_domain.value)
+          }
 
           if (values.user_agent_os_counter) {
             let info = ''
@@ -690,6 +706,7 @@ export default {
       debug('setHeight', height)
       // this.height = height + 200 + 'px'
       this.height = height
+      this.$emit('height', height)
     },
 
     // end: function () {

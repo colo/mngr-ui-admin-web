@@ -6,9 +6,9 @@
       <!-- <q-resize-observer @resize="onResizeActions" /> -->
       <tool-bar :range="periodical.range" :timestamp="periodical.timestamp" :type="'periodical'"/>
     </q-card-section>
-    <q-card-section>
+    <q-card-section :style="{height: (infoBarHeight) + 'px'}">
       <!-- <q-resize-observer @resize="onResizeActions" /> -->
-      <info-bar :values="infoBarValues" :type="'periodical'"/>
+      <info-bar :values="infoBarValues" :type="'periodical'" @height="setInfoBarHeight"/>
     </q-card-section>
 
     <q-card-section>
@@ -182,6 +182,7 @@ export default {
       id: 'logs.web.filter.periodical',
       path: 'all',
       height: 0,
+      infoBarHeight: 0,
 
       actionsSize: {
         height: 0,
@@ -326,7 +327,7 @@ export default {
 
         isDraggable: true,
         isResizable: false,
-        preview: false
+        preview: true
       },
 
       components: {
@@ -463,12 +464,26 @@ export default {
     periodical: {
       handler: function (periodical) {
         debug('watch periodical', periodical)
+        periodical = JSON.parse(JSON.stringify(periodical))
 
         if (periodical && Object.getLength(periodical) > 0) {
           // this.$set(this.components.toolbar[0].props, 'range', periodical.range)
           // this.$set(this.components.toolbar[0].props, 'timestamp', periodical.timestamp)
 
           // this.toolBarValues = periodical
+          if (periodical.domain_counter) {
+            let top_domain = {domain: undefined, value: 0}
+            Object.each(periodical.domain_counter, function (value, domain) {
+              if (value > top_domain.value) {
+                top_domain = {
+                  domain: domain,
+                  value: value
+                }
+              }
+            })
+            periodical.top_domain = top_domain
+          }
+
           this.infoBarValues = periodical
 
           // this.$set(this.components.bytesTrend[0].props, 'bytes', periodical.total_bytes_sent)
@@ -563,7 +578,7 @@ export default {
           this.$set(this.components.worldCitiesMap[0].props, 'world_map_cities', periodical.top_world_map_cities)
 
           Array.each(periodical.top_world_map_countries, function (value) {
-            if (value !== undefined) {
+            if (value !== undefined && value !== null) {
               let country = value.name.trim()
 
               if (!this.countries_color[country]) {
@@ -750,6 +765,11 @@ export default {
     //   // this.resume_pipelines()
     //   // this.$forceUpdate()
     // },
+    setInfoBarHeight: function (height) {
+      debug('setInfoBarHeight', height)
+      // this.height = height + 200 + 'px'
+      this.infoBarHeight = height
+    },
     setHeight: function (height) {
       debug('setHeight', height)
       // this.height = height + 200 + 'px'

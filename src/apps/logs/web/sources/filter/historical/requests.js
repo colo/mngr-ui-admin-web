@@ -76,6 +76,7 @@ const generic_callback = function (data, metadata, key, vm) {
     let type_counter = {}
     let user_agent_os_counter = {}
     let user_agent_browser_counter = {}
+    let top_domain = { domain: undefined, value: 0}
     // let _top_os_counter = 0
     // let top_os
 
@@ -86,6 +87,7 @@ const generic_callback = function (data, metadata, key, vm) {
     let continent_counter = {}
     let _tmp_world_map_city_counter = {}
     let _tmp_world_map_country_counter = {}
+    let _tmp_top_per_domain = {}
 
     debug('HISTORICAL HOST CALLBACK data %s %o', key, per_domain)
 
@@ -99,7 +101,7 @@ const generic_callback = function (data, metadata, key, vm) {
       }
 
       /**
-      * use "status" to count "total_requests"
+      * use "status" to count "total_requests" & per_domain "requests"
       **/
       if (data.status) {
         Object.each(data.status, function (value, status) {
@@ -107,6 +109,9 @@ const generic_callback = function (data, metadata, key, vm) {
           status_counter[status] += value
 
           total_requests += value
+
+          if (!_tmp_top_per_domain[domain]) _tmp_top_per_domain[domain] = 0
+          _tmp_top_per_domain[domain] += value
         })
       }
 
@@ -190,12 +195,14 @@ const generic_callback = function (data, metadata, key, vm) {
       }
     })
 
-    // Object.each(os_counter, function (value, os) {
-    //   if (value > _top_os_counter) {
-    //     top_os = os
-    //     _top_os_counter = value
-    //   }
-    // })
+    Object.each(_tmp_top_per_domain, function (value, domain) {
+      if (value > top_domain.value) {
+        top_domain = {
+          domain: domain,
+          value: value
+        }
+      }
+    })
 
     debug('_tmp_world_map_city_counter', _tmp_world_map_city_counter)
 
@@ -274,36 +281,69 @@ const generic_callback = function (data, metadata, key, vm) {
 
     debug('HISTORICAL HOST CALLBACK data %s %o %o', key, top_city_counter, top_country_counter)
 
-    vm.$set(vm.historical, 'total_bytes_sent', total_bytes_sent)
-    vm.$set(vm.historical, 'total_requests', total_requests)
-    vm.$set(vm.historical, 'unique_visitors', unique_visitors)
-    vm.$set(vm.historical, 'status_counter', status_counter)
-    vm.$set(vm.historical, 'referer_counter', referer_counter)
-    vm.$set(vm.historical, 'user_counter', user_counter)
-    vm.$set(vm.historical, 'type_counter', type_counter)
-    vm.$set(vm.historical, 'user_agent_os_counter', user_agent_os_counter)
-    vm.$set(vm.historical, 'user_agent_browser_counter', user_agent_browser_counter)
+    // vm.$set(vm.historical, 'total_bytes_sent', total_bytes_sent)
+    // vm.$set(vm.historical, 'total_requests', total_requests)
+    // vm.$set(vm.historical, 'unique_visitors', unique_visitors)
+    // vm.$set(vm.historical, 'status_counter', status_counter)
+    // vm.$set(vm.historical, 'referer_counter', referer_counter)
+    // vm.$set(vm.historical, 'user_counter', user_counter)
+    // vm.$set(vm.historical, 'type_counter', type_counter)
+    // vm.$set(vm.historical, 'user_agent_os_counter', user_agent_os_counter)
+    // vm.$set(vm.historical, 'user_agent_browser_counter', user_agent_browser_counter)
+    //
+    // // vm.$set(vm.historical, 'top_os', top_os)
+    //
+    // vm.$set(vm.historical, 'per_domain', per_domain)
+    // vm.$set(vm.historical, 'per_host', per_host)
+    // vm.$set(vm.historical, 'range', range)
+    // vm.$set(vm.historical, 'timestamp', timestamp)
+    // vm.$set(vm.historical, 'world_map_cities', world_map_city_counter)
+    // vm.$set(vm.historical, 'top_world_map_cities', top_world_map_city_counter)
+    //
+    // vm.$set(vm.historical, 'world_map_countries', world_map_country_counter)
+    // vm.$set(vm.historical, 'top_world_map_countries', top_world_map_country_counter)
+    //
+    // vm.$set(vm.historical, 'city_counter', city_counter)
+    // vm.$set(vm.historical, 'country_counter', country_counter)
+    // vm.$set(vm.historical, 'top_city_counter', top_city_counter)
+    // vm.$set(vm.historical, 'top_country_counter', top_country_counter)
+    //
+    // vm.$set(vm.historical, 'continent_counter', continent_counter)
 
-    // vm.$set(vm.historical, 'top_os', top_os)
+    vm.set_data({
+      'top_domain': top_domain,
+      'total_bytes_sent': total_bytes_sent,
+      'total_requests': total_requests,
+      'unique_visitors': unique_visitors,
+      'status_counter': status_counter,
+      'referer_counter': referer_counter,
+      'user_counter': user_counter,
+      'type_counter': type_counter,
+      'user_agent_os_counter': user_agent_os_counter,
+      'user_agent_browser_counter': user_agent_browser_counter,
 
-    vm.$set(vm.historical, 'per_domain', per_domain)
-    vm.$set(vm.historical, 'per_host', per_host)
-    vm.$set(vm.historical, 'range', range)
-    vm.$set(vm.historical, 'timestamp', timestamp)
-    vm.$set(vm.historical, 'world_map_cities', world_map_city_counter)
-    vm.$set(vm.historical, 'top_world_map_cities', top_world_map_city_counter)
+      // 'per_domain': per_domain,
+      // 'per_host': per_host,
 
-    vm.$set(vm.historical, 'world_map_countries', world_map_country_counter)
-    vm.$set(vm.historical, 'top_world_map_countries', top_world_map_country_counter)
+      'range': range,
+      'timestamp': timestamp,
+      // 'world_map_cities': world_map_city_counter,
+      'top_world_map_cities': top_world_map_city_counter,
 
-    vm.$set(vm.historical, 'city_counter', city_counter)
-    vm.$set(vm.historical, 'country_counter', country_counter)
-    vm.$set(vm.historical, 'top_city_counter', top_city_counter)
-    vm.$set(vm.historical, 'top_country_counter', top_country_counter)
+      // 'world_map_countries': world_map_country_counter,
+      'top_world_map_countries': top_world_map_country_counter,
 
-    vm.$set(vm.historical, 'continent_counter', continent_counter)
+      // 'city_counter': city_counter,
+      // 'country_counter': country_counter,
+      'top_city_counter': top_city_counter,
+      'top_country_counter': top_country_counter,
 
+      'continent_counter': continent_counter
+    })
     debug('HISTORICAL HOST CALLBACK data %s %o', key, city_counter, country_counter, continent_counter)
+
+    data = undefined
+
     // // data = data.logs_historical[0]
     //
     // // if (/minute/.test(key)){

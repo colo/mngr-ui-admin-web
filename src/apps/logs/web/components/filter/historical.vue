@@ -1,7 +1,7 @@
 <template>
   <q-card flat>
     <q-card-section>
-      <component :is="'tool-bar-'+type" :range="historical.range" :timestamp="historical.timestamp" :type="type" @selected_time="selected_time"/>
+      <component :is="'tool-bar-'+type" :range="range" :timestamp="timestamp" :type="type" @selected_time="selected_time"/>
     </q-card-section>
 
     <q-card-section>
@@ -155,49 +155,51 @@ export default {
       showCalendar: false,
 
       // showMinute: false,
+      range: { start: Date.now(), end: Date.now() },
+      timestamp: Date.now(),
 
       historical: {
-        top_host_counter: {},
-        top_domain_counter: {},
-
-        host_counter: {},
-        domain_counter: {},
-
-        total_bytes_sent: 0,
-        total_requests: 0,
-
-        top_city_counter: {},
-        top_country_counter: {},
-        // top_continent_counter: {},
-
-        per_domain: {},
-        per_host: {},
-        range: { start: 0, end: 0},
-        timestamp: 0,
-        city_counter: {},
-        country_counter: {},
-        continent_counter: {},
-
-        world_map_cities: [],
-        top_world_map_cities: [],
-
-        world_map_countries: [],
-        top_world_map_countries: [],
-
-        // body_bytes_sent: {},
-        // geoip: {},
-        // qs: {},
-        // referer: {},
-        // pathname: {},
-        // method: {},
-        // remote_addr: {},
-        // remote_user: {},
-        // status: {},
-        // unique_visitors: 0,
-        // unique_visitors_by_ip: {},
-        // user_agent: {},
+        // top_host_counter: {},
+        // top_domain_counter: {},
         //
-        // type_counter: {}
+        // host_counter: {},
+        // domain_counter: {},
+        //
+        // total_bytes_sent: 0,
+        // total_requests: 0,
+        //
+        // top_city_counter: {},
+        // top_country_counter: {},
+        // // top_continent_counter: {},
+        //
+        // per_domain: {},
+        // per_host: {},
+        // range: { start: 0, end: 0},
+        // timestamp: 0,
+        // city_counter: {},
+        // country_counter: {},
+        // continent_counter: {},
+        //
+        // world_map_cities: [],
+        // top_world_map_cities: [],
+        //
+        // world_map_countries: [],
+        // top_world_map_countries: [],
+        //
+        // // body_bytes_sent: {},
+        // // geoip: {},
+        // // qs: {},
+        // // referer: {},
+        // // pathname: {},
+        // // method: {},
+        // // remote_addr: {},
+        // // remote_user: {},
+        // // status: {},
+        // // unique_visitors: 0,
+        // // unique_visitors_by_ip: {},
+        // // user_agent: {},
+        // //
+        // // type_counter: {}
       },
 
       store: false,
@@ -396,166 +398,7 @@ export default {
     historical: {
       handler: function (historical) {
         debug('watch historical', historical)
-
-        if (historical && Object.getLength(historical) > 0) {
-          // this.$set(this.components.toolbar[0].props, 'range', historical.range)
-          // this.$set(this.components.toolbar[0].props, 'timestamp', historical.timestamp)
-
-          this.infoBarValues = historical
-
-          // this.$set(this.components.topCountry, 0, Object.merge(this.components.topCountry[0], {
-          //   id: this.id + '.historical.topCountry.component',
-          //   props: {
-          //     top_country_counter: historical.top_country_counter
-          //   }
-          //
-          // }))
-          this.$set(this.components.topCountry[0].props, 'top_country_counter', historical.top_country_counter)
-          // this.$set(this.components.topCountrySum[0].props, 'top_country_counter', historical.top_country_counter)
-
-          // this.$set(this.components.worldCitiesMap, 0, Object.merge(this.components.worldCitiesMap[0], {
-          //   id: this.id + '.historical.worldCitiesMap.component',
-          //   props: {
-          //     world_map_cities: historical.world_map_cities,
-          //   }
-          //
-          // }))
-
-          Array.each(historical.top_world_map_cities, function (value) {
-            if (value !== undefined) {
-              let city = value.title.substring(0, value.title.indexOf('(')).trim()
-
-              if (!this.cities_color[city]) {
-                let index = 0
-
-                // debug('watch historical city', city)
-
-                Object.each(historical.top_city_counter, function (value, city) {
-                  this.cities_color[city] = colorSet.getIndex(index).rgba
-
-                  index++
-                  if (index > colorSet.list.length) { index = 0 }
-                }.bind(this))
-              }
-
-              value.color = this.cities_color[city]
-            }
-          }.bind(this))
-
-          this.$set(this.components.worldCitiesMap[0].props, 'world_map_cities', historical.top_world_map_cities)
-
-          Array.each(historical.top_world_map_countries, function (value) {
-            if (value !== undefined) {
-              let country = value.name.trim()
-
-              if (!this.countries_color[country]) {
-                let index = 0
-
-                // debug('watch historical', colorSet.list)
-
-                Object.each(historical.top_country_counter, function (value, country) {
-                  this.countries_color[country] = colorSet.getIndex(index).rgba
-
-                  index++
-                  if (index > colorSet.list.length) { index = 0 }
-                }.bind(this))
-              }
-
-              value.color = this.countries_color[country]
-            }
-          }.bind(this))
-          // Change name => title
-          // Array.each(historical.top_world_map_countries, function (value) {
-          //   if (value !== undefined) {
-          //     value.name = value.title
-          //   }
-          // })
-
-          this.$set(this.components.worldCountriesMap[0].props, 'world_map_countries', historical.top_world_map_countries)
-
-          // this.$set(this.components.topCity, 0, Object.merge(this.components.topCity[0], {
-          //   id: this.id + '.historical.topCity.component',
-          //   props: {
-          //     top_city_counter: historical.top_city_counter
-          //   }
-          //
-          // }))
-
-          // Object.each(historical.top_city_counter, function (value, city) {
-          //   if (!this.cities_color[city]) this.cities_color[city] = colorSet.next()
-          // }.bind(this))
-
-          this.$set(this.components.topCity[0].props, 'top_city_counter', historical.top_city_counter)
-          // this.$set(this.components.topCitySum[0].props, 'top_city_counter', historical.top_city_counter)
-
-          this.$set(this.components.continent[0].props, 'continent_counter', historical.continent_counter)
-
-          // this.$set(this.components.logs[0].props, 'logs', historical.logs)
-          // this.$set(this.components.logs[0].props, 'loading_logs', this.loading_logs)
-
-          // debug('watch historical', historical, this.components)
-
-          // this.$set(this.components.netOut, 0, Object.merge(this.components.netOut[0], {
-          //   id: this.host + '.netOut.component',
-          //   props: {
-          //     net: host_data['os.networkInterfaces.out'],
-          //     net_max: host_data['os.networkInterfaces.max.out'],
-          //     host: this.host
-          //   }
-          //
-          // }))
-          //
-          // this.$set(this.components.netIn, 0, Object.merge(this.components.netIn[0], {
-          //   id: this.host + '.netIn.component',
-          //   props: {
-          //     net: host_data['os.networkInterfaces.in'],
-          //     net_max: host_data['os.networkInterfaces.max.in'],
-          //     host: this.host
-          //   }
-          //
-          // }))
-          //
-          // this.$set(this.components.cpu, 0, Object.merge(this.components.cpu[0], {
-          //   id: this.host + '.cpu.component',
-          //   props: {
-          //     used: host_data['os.cpus.percentage'],
-          //     host: this.host
-          //   }
-          // }))
-          //
-          // let index = 0
-          // this.$set(this.components, 'mounts', [])
-          //
-          // Object.each(host_data['os.mounts.used'], function (used, mount) {
-          //   if (index <= 1) {
-          //     this.components.mounts.push({
-          //       style: {
-          //         'width': (Object.getLength(host_data['os.mounts.used']) === 1) ? '100%' : '50%',
-          //         'float': (Object.getLength(host_data['os.mounts.used']) === 1) ? undefined : (index === 0) ? 'left' : 'right'
-          //       },
-          //       id: this.host + '.' + mount + '.used.component',
-          //       props: {
-          //         used: used,
-          //         mount: mount,
-          //         host: this.host
-          //       }
-          //
-          //     })
-          //     this.$set(this.components.mounts[index], 'component', Mount)
-          //   }
-          //
-          //   index++
-          // }.bind(this))
-          //
-          // this.$set(this.components.memory, 0, Object.merge(this.components.memory[0], {
-          //   id: this.host + '.memory.component',
-          //   props: {
-          //     used: host_data['os.memory.percentage'],
-          //     host: this.host
-          //   }
-          //
-          // }))
-        }
+        this.set_data(historical)
       },
       deep: true
     },
@@ -675,6 +518,171 @@ export default {
   },
 
   methods: {
+    set_data: function (historical) {
+      debug('set_data', historical)
+      if (historical && Object.getLength(historical) > 0) {
+        // this.$set(this.components.toolbar[0].props, 'range', historical.range)
+        // this.$set(this.components.toolbar[0].props, 'timestamp', historical.timestamp)
+
+        this.range = historical.range
+        this.timestamp = historical.timestamp
+
+        this.infoBarValues = historical
+
+        // this.$set(this.components.topCountry, 0, Object.merge(this.components.topCountry[0], {
+        //   id: this.id + '.historical.topCountry.component',
+        //   props: {
+        //     top_country_counter: historical.top_country_counter
+        //   }
+        //
+        // }))
+        this.$set(this.components.topCountry[0].props, 'top_country_counter', historical.top_country_counter)
+        // this.$set(this.components.topCountrySum[0].props, 'top_country_counter', historical.top_country_counter)
+
+        // this.$set(this.components.worldCitiesMap, 0, Object.merge(this.components.worldCitiesMap[0], {
+        //   id: this.id + '.historical.worldCitiesMap.component',
+        //   props: {
+        //     world_map_cities: historical.world_map_cities,
+        //   }
+        //
+        // }))
+
+        Array.each(historical.top_world_map_cities, function (value) {
+          if (value !== undefined) {
+            let city = value.title.substring(0, value.title.indexOf('(')).trim()
+
+            if (!this.cities_color[city]) {
+              let index = 0
+
+              // debug('watch historical city', city)
+
+              Object.each(historical.top_city_counter, function (value, city) {
+                this.cities_color[city] = colorSet.getIndex(index).rgba
+
+                index++
+                if (index > colorSet.list.length) { index = 0 }
+              }.bind(this))
+            }
+
+            value.color = this.cities_color[city]
+          }
+        }.bind(this))
+
+        this.$set(this.components.worldCitiesMap[0].props, 'world_map_cities', historical.top_world_map_cities)
+
+        Array.each(historical.top_world_map_countries, function (value) {
+          if (value !== undefined) {
+            let country = value.name.trim()
+
+            if (!this.countries_color[country]) {
+              let index = 0
+
+              // debug('watch historical', colorSet.list)
+
+              Object.each(historical.top_country_counter, function (value, country) {
+                this.countries_color[country] = colorSet.getIndex(index).rgba
+
+                index++
+                if (index > colorSet.list.length) { index = 0 }
+              }.bind(this))
+            }
+
+            value.color = this.countries_color[country]
+          }
+        }.bind(this))
+        // Change name => title
+        // Array.each(historical.top_world_map_countries, function (value) {
+        //   if (value !== undefined) {
+        //     value.name = value.title
+        //   }
+        // })
+
+        this.$set(this.components.worldCountriesMap[0].props, 'world_map_countries', historical.top_world_map_countries)
+
+        // this.$set(this.components.topCity, 0, Object.merge(this.components.topCity[0], {
+        //   id: this.id + '.historical.topCity.component',
+        //   props: {
+        //     top_city_counter: historical.top_city_counter
+        //   }
+        //
+        // }))
+
+        // Object.each(historical.top_city_counter, function (value, city) {
+        //   if (!this.cities_color[city]) this.cities_color[city] = colorSet.next()
+        // }.bind(this))
+
+        this.$set(this.components.topCity[0].props, 'top_city_counter', historical.top_city_counter)
+        // this.$set(this.components.topCitySum[0].props, 'top_city_counter', historical.top_city_counter)
+
+        this.$set(this.components.continent[0].props, 'continent_counter', historical.continent_counter)
+
+        // this.$set(this.components.logs[0].props, 'logs', historical.logs)
+        // this.$set(this.components.logs[0].props, 'loading_logs', this.loading_logs)
+
+        // debug('watch historical', historical, this.components)
+
+        // this.$set(this.components.netOut, 0, Object.merge(this.components.netOut[0], {
+        //   id: this.host + '.netOut.component',
+        //   props: {
+        //     net: host_data['os.networkInterfaces.out'],
+        //     net_max: host_data['os.networkInterfaces.max.out'],
+        //     host: this.host
+        //   }
+        //
+        // }))
+        //
+        // this.$set(this.components.netIn, 0, Object.merge(this.components.netIn[0], {
+        //   id: this.host + '.netIn.component',
+        //   props: {
+        //     net: host_data['os.networkInterfaces.in'],
+        //     net_max: host_data['os.networkInterfaces.max.in'],
+        //     host: this.host
+        //   }
+        //
+        // }))
+        //
+        // this.$set(this.components.cpu, 0, Object.merge(this.components.cpu[0], {
+        //   id: this.host + '.cpu.component',
+        //   props: {
+        //     used: host_data['os.cpus.percentage'],
+        //     host: this.host
+        //   }
+        // }))
+        //
+        // let index = 0
+        // this.$set(this.components, 'mounts', [])
+        //
+        // Object.each(host_data['os.mounts.used'], function (used, mount) {
+        //   if (index <= 1) {
+        //     this.components.mounts.push({
+        //       style: {
+        //         'width': (Object.getLength(host_data['os.mounts.used']) === 1) ? '100%' : '50%',
+        //         'float': (Object.getLength(host_data['os.mounts.used']) === 1) ? undefined : (index === 0) ? 'left' : 'right'
+        //       },
+        //       id: this.host + '.' + mount + '.used.component',
+        //       props: {
+        //         used: used,
+        //         mount: mount,
+        //         host: this.host
+        //       }
+        //
+        //     })
+        //     this.$set(this.components.mounts[index], 'component', Mount)
+        //   }
+        //
+        //   index++
+        // }.bind(this))
+        //
+        // this.$set(this.components.memory, 0, Object.merge(this.components.memory[0], {
+        //   id: this.host + '.memory.component',
+        //   props: {
+        //     used: host_data['os.memory.percentage'],
+        //     host: this.host
+        //   }
+        //
+        // }))
+      }
+    },
     selected_time: function (selected_time) {
       debug('selected_time %s', new Date(moment(selected_time, 'hh:mm').unix() * 1000))
 
