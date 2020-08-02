@@ -1,11 +1,11 @@
 <template>
   <q-card flat>
     <q-card-section>
-      <tool-bar :range="minute.range" :timestamp="minute.timestamp" :type="'minute'" @selected_minute="selected_minute"/>
+      <component :is="'tool-bar-'+type" :range="historical.range" :timestamp="historical.timestamp" :type="type" @selected_time="selected_time"/>
     </q-card-section>
 
     <q-card-section>
-      <info-bar :values="infoBarValues" :type="'minute'"/>
+      <info-bar :values="infoBarValues" :type="type"/>
     </q-card-section>
 
     <q-card-section>
@@ -14,7 +14,7 @@
         <grid-view
           v-if="grid.layouts && Object.getLength(components) > 0"
           :swap_components="true"
-          :id="id+'MinuteGrid'"
+          :id="id+'.'+type+'HistoricalGrid'"
           :components="components"
           :grid="grid"
           v-on:height="setHeight"
@@ -27,7 +27,7 @@
 
 <script>
 import * as Debug from 'debug'
-const debug = Debug('apps:logs:web:components:filter:minute')
+const debug = Debug('apps:logs:web:components:filter:historical')
 
 import { date } from 'quasar'
 
@@ -37,7 +37,10 @@ import chartTabular from '@components/chart.tabular'
 import JSPipeline from 'js-pipeline'
 
 import MinutePipeline from '@apps/logs/web/pipelines/filter/minute'
-import * as MinuteSources from '@apps/logs/web/sources/filter/minute/index'
+import HourPipeline from '@apps/logs/web/pipelines/filter/hour'
+import DayPipeline from '@apps/logs/web/pipelines/filter/day'
+
+import * as HistoricalSources from '@apps/logs/web/sources/filter/historical/index'
 
 import moment from 'moment'
 
@@ -48,9 +51,13 @@ import WorldCountriesMap from '@apps/logs/web/components/worldCountriesMap'
 import TopCountry from '@apps/logs/web/components/topCountry'
 import TopContinent from '@apps/logs/web/components/topContinent'
 import TopCity from '@apps/logs/web/components/topCity'
-import ToolBar from '@apps/logs/web/components/filter/minute/toolbar'
+
 import InfoBar from '@apps/logs/web/components/infoBar'
 // import LogsTable from '@apps/logs/web/components/filter/periodical/logsTable'
+
+import ToolBarMinute from '@apps/logs/web/components/filter/minute/toolbar'
+import ToolBarHour from '@apps/logs/web/components/filter/hour/toolbar'
+import ToolBarDay from '@apps/logs/web/components/filter/day/toolbar'
 
 import GridView from '@components/gridView'
 
@@ -103,24 +110,33 @@ export default {
     TopCountry,
     TopContinent,
     TopCity,
-    ToolBar,
     InfoBar,
+    ToolBarMinute,
+    ToolBarHour,
+    ToolBarDay,
   },
 
-  name: 'LogsWebFilterMinute',
+  name: 'LogsWebFilterHistorical',
 
-  _logsWebFilterMinute_components: {
+  _logsWebFilterHistorical_components: {
     range: {
       source: {
-        requests: MinuteSources.requests
+        requests: HistoricalSources.requests
         // store: store
       }
     }
   },
 
+  props: {
+    type: {
+      type: String,
+      default: 'minute'
+    }
+  },
   data () {
     return {
-      id: 'logs.web.filter.minute',
+      // type: 'minute',
+      id: 'logs.web.filter.' + this.type,
       path: 'all',
       height: 0,
 
@@ -129,18 +145,18 @@ export default {
       cities_color: {},
       countries_color: {},
 
-      current_minute: undefined,
+      current_time: undefined,
       top: 15,
 
       /** calendar **/
 
-      // selected_minute: date.formatDate(Date.now(), 'HH:mm'),
+      // selected_time: date.formatDate(Date.now(), 'HH:mm'),
 
       showCalendar: false,
 
-      showMinute: false,
+      // showMinute: false,
 
-      minute: {
+      historical: {
         top_host_counter: {},
         top_domain_counter: {},
 
@@ -187,7 +203,7 @@ export default {
       store: false,
       // pipeline_id: 'input.logs.web.filter',
       pipeline_id: [
-        'input.logs.web.filter.minute',
+        'input.logs.web.filter.' + this.type,
       ],
 
       grid: {
@@ -273,7 +289,7 @@ export default {
         //   {
         //     component: Toolbar,
         //     events: {
-        //       selected_minute: 'selected_minute'
+        //       selected_time: 'selected_time'
         //     }
         //   }
         // ],
@@ -281,7 +297,7 @@ export default {
           {
             component: TopCountry,
             props: {
-              type: 'minute',
+              type: this.type,
               // // top_country_counter: {},
               // dark: this.dark,
               // colorScheme: this.colorScheme
@@ -293,7 +309,7 @@ export default {
           {
             component: WorldCountriesMap,
             props: {
-              type: 'minute',
+              type: this.type,
             }
           }
 
@@ -302,7 +318,7 @@ export default {
           {
             component: WorldCitiesMap,
             props: {
-              type: 'minute',
+              type: this.type,
               // world_map_cities: [],
               // dark: this.dark,
               // colorScheme: this.colorScheme
@@ -314,7 +330,7 @@ export default {
           {
             component: TopCity,
             props: {
-              type: 'minute',
+              type: this.type,
               // // top_city_counter: {},
               // dark: this.dark,
               // colorScheme: this.colorScheme
@@ -327,7 +343,7 @@ export default {
           {
             component: TopContinent,
             props: {
-              type: 'minute',
+              type: this.type,
             }
           }
 
@@ -336,7 +352,7 @@ export default {
         //   {
         //     component: TopCity,
         //     props: {
-        //       type: 'minute',
+        //       type: this.type,
         //       sum: true
         //       // // top_city_counter: {},
         //       // dark: this.dark,
@@ -377,44 +393,44 @@ export default {
       }.bind(this))
     },
 
-    minute: {
-      handler: function (minute) {
-        debug('watch minute', minute)
+    historical: {
+      handler: function (historical) {
+        debug('watch historical', historical)
 
-        if (minute && Object.getLength(minute) > 0) {
-          // this.$set(this.components.toolbar[0].props, 'range', minute.range)
-          // this.$set(this.components.toolbar[0].props, 'timestamp', minute.timestamp)
+        if (historical && Object.getLength(historical) > 0) {
+          // this.$set(this.components.toolbar[0].props, 'range', historical.range)
+          // this.$set(this.components.toolbar[0].props, 'timestamp', historical.timestamp)
 
-          this.infoBarValues = minute
+          this.infoBarValues = historical
 
           // this.$set(this.components.topCountry, 0, Object.merge(this.components.topCountry[0], {
-          //   id: this.id + '.minute.topCountry.component',
+          //   id: this.id + '.historical.topCountry.component',
           //   props: {
-          //     top_country_counter: minute.top_country_counter
+          //     top_country_counter: historical.top_country_counter
           //   }
           //
           // }))
-          this.$set(this.components.topCountry[0].props, 'top_country_counter', minute.top_country_counter)
-          // this.$set(this.components.topCountrySum[0].props, 'top_country_counter', minute.top_country_counter)
+          this.$set(this.components.topCountry[0].props, 'top_country_counter', historical.top_country_counter)
+          // this.$set(this.components.topCountrySum[0].props, 'top_country_counter', historical.top_country_counter)
 
           // this.$set(this.components.worldCitiesMap, 0, Object.merge(this.components.worldCitiesMap[0], {
-          //   id: this.id + '.minute.worldCitiesMap.component',
+          //   id: this.id + '.historical.worldCitiesMap.component',
           //   props: {
-          //     world_map_cities: minute.world_map_cities,
+          //     world_map_cities: historical.world_map_cities,
           //   }
           //
           // }))
 
-          Array.each(minute.top_world_map_cities, function (value) {
+          Array.each(historical.top_world_map_cities, function (value) {
             if (value !== undefined) {
               let city = value.title.substring(0, value.title.indexOf('(')).trim()
 
               if (!this.cities_color[city]) {
                 let index = 0
 
-                // debug('watch minute city', city)
+                // debug('watch historical city', city)
 
-                Object.each(minute.top_city_counter, function (value, city) {
+                Object.each(historical.top_city_counter, function (value, city) {
                   this.cities_color[city] = colorSet.getIndex(index).rgba
 
                   index++
@@ -426,18 +442,18 @@ export default {
             }
           }.bind(this))
 
-          this.$set(this.components.worldCitiesMap[0].props, 'world_map_cities', minute.top_world_map_cities)
+          this.$set(this.components.worldCitiesMap[0].props, 'world_map_cities', historical.top_world_map_cities)
 
-          Array.each(minute.top_world_map_countries, function (value) {
+          Array.each(historical.top_world_map_countries, function (value) {
             if (value !== undefined) {
               let country = value.name.trim()
 
               if (!this.countries_color[country]) {
                 let index = 0
 
-                // debug('watch minute', colorSet.list)
+                // debug('watch historical', colorSet.list)
 
-                Object.each(minute.top_country_counter, function (value, country) {
+                Object.each(historical.top_country_counter, function (value, country) {
                   this.countries_color[country] = colorSet.getIndex(index).rgba
 
                   index++
@@ -449,35 +465,35 @@ export default {
             }
           }.bind(this))
           // Change name => title
-          // Array.each(minute.top_world_map_countries, function (value) {
+          // Array.each(historical.top_world_map_countries, function (value) {
           //   if (value !== undefined) {
           //     value.name = value.title
           //   }
           // })
 
-          this.$set(this.components.worldCountriesMap[0].props, 'world_map_countries', minute.top_world_map_countries)
+          this.$set(this.components.worldCountriesMap[0].props, 'world_map_countries', historical.top_world_map_countries)
 
           // this.$set(this.components.topCity, 0, Object.merge(this.components.topCity[0], {
-          //   id: this.id + '.minute.topCity.component',
+          //   id: this.id + '.historical.topCity.component',
           //   props: {
-          //     top_city_counter: minute.top_city_counter
+          //     top_city_counter: historical.top_city_counter
           //   }
           //
           // }))
 
-          // Object.each(minute.top_city_counter, function (value, city) {
+          // Object.each(historical.top_city_counter, function (value, city) {
           //   if (!this.cities_color[city]) this.cities_color[city] = colorSet.next()
           // }.bind(this))
 
-          this.$set(this.components.topCity[0].props, 'top_city_counter', minute.top_city_counter)
-          // this.$set(this.components.topCitySum[0].props, 'top_city_counter', minute.top_city_counter)
+          this.$set(this.components.topCity[0].props, 'top_city_counter', historical.top_city_counter)
+          // this.$set(this.components.topCitySum[0].props, 'top_city_counter', historical.top_city_counter)
 
-          this.$set(this.components.continent[0].props, 'continent_counter', minute.continent_counter)
+          this.$set(this.components.continent[0].props, 'continent_counter', historical.continent_counter)
 
-          // this.$set(this.components.logs[0].props, 'logs', minute.logs)
+          // this.$set(this.components.logs[0].props, 'logs', historical.logs)
           // this.$set(this.components.logs[0].props, 'loading_logs', this.loading_logs)
 
-          // debug('watch minute', minute, this.components)
+          // debug('watch historical', historical, this.components)
 
           // this.$set(this.components.netOut, 0, Object.merge(this.components.netOut[0], {
           //   id: this.host + '.netOut.component',
@@ -577,12 +593,12 @@ export default {
     //   // this.convertedDates = `${start} - ${end}`
     //   // debug('startEndDates', this.end)
     // },
-    // selected_minute () {
-    //   debug('selected_minute %s', new Date(moment(this.selected_minute, 'hh:mm').unix() * 1000))
-    //   if (roundSeconds(moment(this.selected_minute, 'hh:mm').unix() * 1000) === roundSeconds(Date.now())) {
-    //     this.current_minute = undefined
+    // selected_time () {
+    //   debug('selected_time %s', new Date(moment(this.selected_time, 'hh:mm').unix() * 1000))
+    //   if (roundSeconds(moment(this.selected_time, 'hh:mm').unix() * 1000) === roundSeconds(Date.now())) {
+    //     this.current_time = undefined
     //   } else {
-    //     this.current_minute = (moment(this.selected_minute, 'hh:mm').unix() * 1000) + MINUTE
+    //     this.current_time = (moment(this.selected_time, 'hh:mm').unix() * 1000) + MINUTE
     //   }
     //   // this.$nextTick(function () {
     //   this.destroy_pipelines('input.logs.web.filter.minute')
@@ -615,7 +631,7 @@ export default {
       debug('computed filter', filter)
       return filter
     },
-    'type': function () {
+    'filterType': function () {
       debug('computed type', Object.keys(this.filter))
       return (this.filter && Object.getLength(this.filter) > 0) ? Object.keys(this.filter)[0] : undefined
     },
@@ -629,7 +645,7 @@ export default {
     //   return (this.filter) ? Object.keys(this.filter)[0] : undefined
     // },
     'web': function () {
-      return (this.filter && this.type) ? this.filter[this.type] : undefined
+      return (this.filter && this.filterType) ? this.filter[this.filterType] : undefined
     }
   },
 
@@ -648,7 +664,7 @@ export default {
     Object.each(this.components, function (gridItem, name) {
       Array.each(this.components[name], function (component, index) {
         this.$set(this.components[name], index, Object.merge(this.components[name][index], {
-          id: this.id + '.minute.' + name + '.component',
+          id: this.id + '.' + this.type + '.' + name + '.component',
           props: {
             dark: this.dark,
             colorScheme: this.colorScheme,
@@ -659,38 +675,39 @@ export default {
   },
 
   methods: {
-    selected_minute: function (selected_minute) {
-      debug('selected_minute %s', new Date(moment(selected_minute, 'hh:mm').unix() * 1000))
-      if (roundSeconds(moment(selected_minute, 'hh:mm').unix() * 1000) === roundSeconds(Date.now())) {
-        this.current_minute = undefined
+    selected_time: function (selected_time) {
+      debug('selected_time %s', new Date(moment(selected_time, 'hh:mm').unix() * 1000))
+
+      if (this.type === 'minute') {
+        if (roundSeconds(moment(selected_time, 'hh:mm').unix() * 1000) === roundSeconds(Date.now())) {
+          this.current_time = undefined
+        } else {
+          this.current_time = (moment(selected_time, 'hh:mm').unix() * 1000) + MINUTE
+        }
+      } else if (this.type === 'hour') {
+        if (roundMinutes(moment(selected_time, 'hh:mm').unix() * 1000) === roundMinutes(Date.now())) {
+          this.current_time = undefined
+        } else {
+          this.current_time = (moment(selected_time, 'hh:mm').unix() * 1000) + HOUR
+        }
       } else {
-        this.current_minute = (moment(selected_minute, 'hh:mm').unix() * 1000) + MINUTE
+        if (roundHours(moment(selected_time, 'YYYY/MM/DD').unix() * 1000) === roundHours(Date.now())) {
+          this.current_time = undefined
+        } else {
+          this.current_time = (moment(selected_time, 'YYYY/MM/DD').unix() * 1000) + DAY
+        }
       }
+
       // this.$nextTick(function () {
-      this.destroy_pipelines('input.logs.web.filter.minute')
-      this.create_pipelines('input.logs.web.filter.minute')
-      this.resume_pipelines('input.logs.web.filter.minute')
+      this.destroy_pipelines('input.logs.web.filter.' + this.type)
+      this.create_pipelines('input.logs.web.filter.' + this.type)
+      this.resume_pipelines('input.logs.web.filter.' + this.type)
     },
     setHeight: function (height) {
       debug('setHeight', height)
       // this.height = height + 200 + 'px'
       this.height = height
     },
-    end: function () {
-      // if (this.current_day === undefined) {
-      return Date.now()
-      // } else {
-      // return this.current_day
-      // }
-    },
-    end_minute: function () {
-      if (this.current_minute === undefined) {
-        return Date.now()
-      } else {
-        return this.current_minute
-      }
-    },
-
     apply_zoom: function (data, categoryY, valueX) {
       const min_zoom = 0.5
       const max_zoom = 1
@@ -727,39 +744,40 @@ export default {
     create_pipelines: function (create_id, next) {
       debug('create_pipelines %o', this.$options.pipelines)
 
-      const pipelines = [MinutePipeline]
-      Array.each(pipelines, function (Pipeline) {
-        let template = Object.clone(Pipeline)
+      // const pipelines = [HistoricalPipeline]
+      // Array.each(pipelines, function (Pipeline) {
+      const Pipeline = (this.type === 'minute') ? MinutePipeline : (this.type === 'hour') ? HourPipeline : DayPipeline
+      let template = Object.clone(Pipeline)
 
-        debug('create_pipelines template %o', template)
+      debug('create_pipelines template %o', template)
 
-        let pipeline_id = template.input[0].poll.id
-        if (!create_id || create_id === undefined || create_id === pipeline_id) {
-          // template.input[0].poll.conn[0].requests = this.__components_sources_to_requests(this.components[pipeline_id], pipeline_id)
-          Array.each(template.input[0].poll.conn, function (conn, index) {
-            template.input[0].poll.conn[index].requests = this.__components_sources_to_requests(this.$options._logsWebFilterMinute_components, pipeline_id)
-          }.bind(this))
+      let pipeline_id = template.input[0].poll.id
+      if (!create_id || create_id === undefined || create_id === pipeline_id) {
+        // template.input[0].poll.conn[0].requests = this.__components_sources_to_requests(this.components[pipeline_id], pipeline_id)
+        Array.each(template.input[0].poll.conn, function (conn, index) {
+          template.input[0].poll.conn[index].requests = this.__components_sources_to_requests(this.$options._logsWebFilterHistorical_components, pipeline_id)
+        }.bind(this))
 
-          let pipe = new JSPipeline(template)
+        let pipe = new JSPipeline(template)
 
-          this.$options.__pipelines_cfg[pipeline_id] = {
-            ids: [],
-            connected: [],
-            suspended: pipe.inputs.every(function (input) { return input.options.suspended }, this)
-          }
-
-          // this.__after_connect_inputs(
-          //   pipe,
-          //   this.$options.__pipelines_cfg[pipeline_id],
-          //   this.__resume_pipeline.pass([pipe, this.$options.__pipelines_cfg[pipeline_id], this.id, function () {
-          //     debug('__resume_pipeline CALLBACK')
-          //     pipe.fireEvent('onOnce')
-          //   }], this)
-          // )
-
-          this.$options.pipelines[pipeline_id] = pipe
+        this.$options.__pipelines_cfg[pipeline_id] = {
+          ids: [],
+          connected: [],
+          suspended: pipe.inputs.every(function (input) { return input.options.suspended }, this)
         }
-      }.bind(this))
+
+        // this.__after_connect_inputs(
+        //   pipe,
+        //   this.$options.__pipelines_cfg[pipeline_id],
+        //   this.__resume_pipeline.pass([pipe, this.$options.__pipelines_cfg[pipeline_id], this.id, function () {
+        //     debug('__resume_pipeline CALLBACK')
+        //     pipe.fireEvent('onOnce')
+        //   }], this)
+        // )
+
+        this.$options.pipelines[pipeline_id] = pipe
+      }
+      // }.bind(this))
 
       debug('create_pipelines %o', this.$options.pipelines)
 
@@ -771,21 +789,39 @@ export default {
     * @end pipelines
     **/
 
-    // /** calendar **/
-    // disabled_minutes (hr, min, sec) {
-    //   debug('disabled_minutes ', hr, min, sec)
-    //   if (hr) {
-    //     if (min !== null) {
-    //       return min <= moment().format('mm')
-    //     }
-    //     return false
-    //   }
-    //
-    //   // if (sec !== null && sec % 10 !== 0) {
-    //   //   return false
+    /**
+    * use on requests.callback
+    **/
+    // end: function () {
+    //   // if (this.current_day === undefined) {
+    //   return Date.now()
+    //   // } else {
+    //   // return this.current_day
     //   // }
-    //   return true
     // },
+    // end_minute: function () {
+    //   if (this.current_time === undefined) {
+    //     return Date.now()
+    //   } else {
+    //     return this.current_time
+    //   }
+    // },
+    end: function () {
+      if (this.current_time === undefined) {
+        return Date.now()
+      } else {
+        return this.current_time
+      }
+    },
+    round: function (timestamp) {
+      if (this.type === 'minute') {
+        return roundSeconds(timestamp)
+      } else if (this.type === 'hour') {
+        return roundMinutes(timestamp)
+      } else {
+        return roundHours(timestamp)
+      }
+    }
 
   }
 

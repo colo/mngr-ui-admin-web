@@ -7,7 +7,7 @@
       <div class="q-pa-md">
           <q-btn flat dense icon="calendar_today" />
           <q-popup-proxy v-model="showCalendar" ref="qDateProxy" transition-show="scale" transition-hide="scale">
-              <q-date v-model="selected_day" :options="disabled_days" minimal/>
+              <q-date v-model="selected_time" :options="disabled_days" minimal/>
           </q-popup-proxy>
 
       </div>
@@ -36,7 +36,7 @@ export default {
       //
       // /** calendar **/
       //
-      selected_day: date.formatDate(Date.now(), 'YYYY/MM/DD'),
+      selected_time: date.formatDate(Date.now(), 'YYYY/MM/DD'),
       //
       // showCalendar: false,
 
@@ -96,13 +96,13 @@ export default {
 
   },
   watch: {
-    selected_day () {
-      debug('selected_day %s', new Date(moment(this.selected_day, 'YYYY/MM/DD').unix() * 1000))
-      this.$emit('selected_day', this.selected_day)
-      // if (roundSeconds(moment(this.selected_day, 'hh:mm').unix() * 1000) === roundSeconds(Date.now())) {
+    selected_time (value) {
+      debug('selected_time %s', new Date(moment(value, 'YYYY/MM/DD').unix() * 1000))
+      this.$emit('selected_time', value)
+      // if (roundSeconds(moment(this.selected_time, 'hh:mm').unix() * 1000) === roundSeconds(Date.now())) {
       //   this.current_day = undefined
       // } else {
-      //   this.current_day = (moment(this.selected_day, 'hh:mm').unix() * 1000) + MINUTE
+      //   this.current_day = (moment(this.selected_time, 'hh:mm').unix() * 1000) + MINUTE
       // }
       // // this.$nextTick(function () {
       // this.destroy_pipelines('input.logs.web.filter.day')

@@ -8,8 +8,8 @@
             <q-breadcrumbs-el label="Home" icon="home" to="/"/>
             <q-breadcrumbs-el label="Logs" :to="{name : 'logs'}"/>
             <q-breadcrumbs-el label="Web" :to="{name : 'logs_web'}"/>
-            <q-breadcrumbs-el label="Filter" v-if="type"/>
-            <q-breadcrumbs-el :label="type +':'+ web" v-if="type && web" />
+            <q-breadcrumbs-el label="Filter" v-if="filterType"/>
+            <q-breadcrumbs-el :label="filterType +':'+ web" v-if="filterType && web" />
           </q-breadcrumbs>
         </q-toolbar>
         <q-toolbar>
@@ -46,17 +46,20 @@
 
         <q-tab-panel name="minute">
            <!-- :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute'" -->
-          <logs-web-filter-minute/>
+          <!-- <logs-web-filter-minute/> -->
+          <logs-web-filter-historical :type="'minute'"/>
         </q-tab-panel>
 
         <q-tab-panel name="hour">
            <!-- :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour'" -->
-          <logs-web-filter-hour/>
+          <!-- <logs-web-filter-hour/> -->
+          <logs-web-filter-historical :type="'hour'"/>
         </q-tab-panel>
 
         <q-tab-panel name="day">
           <!-- :key="$route.path +'.'+ JSON.stringify($route.query)+'.day'" -->
-          <logs-web-filter-day/>
+          <!-- <logs-web-filter-day/> -->
+          <logs-web-filter-historical :type="'day'"/>
         </q-tab-panel>
       </q-tab-panels>
 
@@ -85,9 +88,10 @@ const debug = Debug('apps:logs:web:pages:filter')
 // import chartTabular from '@components/chart.tabular'
 
 import LogsWebFilterPeriodical from '@apps/logs/web/components/filter/periodical'
-import LogsWebFilterMinute from '@apps/logs/web/components/filter/minute'
-import LogsWebFilterHour from '@apps/logs/web/components/filter/hour'
-import LogsWebFilterDay from '@apps/logs/web/components/filter/day'
+import LogsWebFilterHistorical from '@apps/logs/web/components/filter/historical'
+// import LogsWebFilterMinute from '@apps/logs/web/components/filter/minute'
+// import LogsWebFilterHour from '@apps/logs/web/components/filter/hour'
+// import LogsWebFilterDay from '@apps/logs/web/components/filter/day'
 
 // import JSPipeline from 'js-pipeline'
 //
@@ -144,7 +148,13 @@ const WEEK = DAY * 7
 export default {
   // mixins: [DataSourcesMixin],
 
-  components: { LogsWebFilterPeriodical, LogsWebFilterMinute, LogsWebFilterHour, LogsWebFilterDay },
+  components: {
+    LogsWebFilterPeriodical,
+    LogsWebFilterHistorical,
+    // LogsWebFilterMinute,
+    // LogsWebFilterHour,
+    // LogsWebFilterDay
+  },
 
   name: 'LogsWebFilter',
 
@@ -198,12 +208,12 @@ export default {
       debug('computed filter', filter)
       return filter
     },
-    'type': function () {
+    'filterType': function () {
       debug('computed type', Object.keys(this.filter))
       return (this.filter && Object.getLength(this.filter) > 0) ? Object.keys(this.filter)[0] : undefined
     },
     'web': function () {
-      return (this.filter && this.type) ? this.filter[this.type] : undefined
+      return (this.filter && this.filterType) ? this.filter[this.filterType] : undefined
     }
   },
 

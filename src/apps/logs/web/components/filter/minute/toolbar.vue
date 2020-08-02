@@ -11,7 +11,7 @@
         <q-btn flat dense icon="access_time" />
         <q-popup-proxy v-model="showMinute" ref="qMinuteProxy" transition-show="scale" transition-hide="scale">
             <q-time
-              v-model="selected_minute"
+              v-model="selected_time"
               :options="disabled_minutes"
               now-btn
               />
@@ -57,7 +57,7 @@ export default {
       //
       // /** calendar **/
       //
-      selected_minute: date.formatDate(Date.now(), 'HH:mm'),
+      selected_time: date.formatDate(Date.now(), 'HH:mm'),
       //
       // showCalendar: false,
 
@@ -116,13 +116,13 @@ export default {
 
   },
   watch: {
-    selected_minute () {
-      debug('selected_minute %s', new Date(moment(this.selected_minute, 'hh:mm').unix() * 1000))
-      this.$emit('selected_minute', this.selected_minute)
-      // if (roundSeconds(moment(this.selected_minute, 'hh:mm').unix() * 1000) === roundSeconds(Date.now())) {
+    selected_time (value) {
+      debug('selected_time %s', new Date(moment(value, 'hh:mm').unix() * 1000))
+      this.$emit('selected_time', value)
+      // if (roundSeconds(moment(this.selected_time, 'hh:mm').unix() * 1000) === roundSeconds(Date.now())) {
       //   this.current_minute = undefined
       // } else {
-      //   this.current_minute = (moment(this.selected_minute, 'hh:mm').unix() * 1000) + MINUTE
+      //   this.current_minute = (moment(this.selected_time, 'hh:mm').unix() * 1000) + MINUTE
       // }
       // // this.$nextTick(function () {
       // this.destroy_pipelines('input.logs.web.filter.minute')

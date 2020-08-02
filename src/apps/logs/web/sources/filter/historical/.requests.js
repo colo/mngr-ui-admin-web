@@ -31,7 +31,7 @@ let referer_counter = {}
 
 let type_counter = {}
 
-import static_types from '../../../data/static_extentions'
+import static_types from '../../../libs/static_extentions'
 const ss = require('simple-statistics')
 
 const _merge = function (prop, val1, val2) {

@@ -52,7 +52,7 @@ import JSPipeline from 'js-pipeline'
 import HourPipeline from '@apps/logs/web/pipelines/filter/hour'
 import DayPipeline from '@apps/logs/web/pipelines/filter/day'
 
-import * as HourSources from '@apps/logs/web/sources/filter/hour/index'
+import * as HourSources from '@apps/logs/web/sources/filter/historical/index'
 
 import moment from 'moment'
 
@@ -132,6 +132,7 @@ export default {
 
   data () {
     return {
+      type: 'hour',
       id: 'logs.web.filter.hour',
       path: 'all',
       height: 0,
@@ -149,7 +150,7 @@ export default {
       showCalendar: false,
       // showHour: false,
 
-      hour: {
+      historical: {
         top_city_counter: {},
         top_country_counter: {},
 
@@ -370,7 +371,7 @@ export default {
       debug('computed filter', filter)
       return filter
     },
-    'type': function () {
+    'filterType': function () {
       debug('computed type', Object.keys(this.filter))
       return (this.filter && Object.getLength(this.filter) > 0) ? Object.keys(this.filter)[0] : undefined
     },
@@ -384,7 +385,7 @@ export default {
     //   return (this.filter) ? Object.keys(this.filter)[0] : undefined
     // },
     'web': function () {
-      return (this.filter && this.type) ? this.filter[this.type] : undefined
+      return (this.filter && this.filterType) ? this.filter[this.filterType] : undefined
     }
   },
 
@@ -434,42 +435,42 @@ export default {
       }.bind(this))
     },
 
-    hour: {
-      handler: function (hour) {
-        debug('watch hour', hour)
+    historical: {
+      handler: function (historical) {
+        debug('watch historical', historical)
 
-        if (hour && Object.getLength(hour) > 0) {
-          this.$set(this.components.toolbar[0].props, 'range', hour.range)
-          this.$set(this.components.toolbar[0].props, 'timestamp', hour.timestamp)
+        if (historical && Object.getLength(historical) > 0) {
+          this.$set(this.components.toolbar[0].props, 'range', historical.range)
+          this.$set(this.components.toolbar[0].props, 'timestamp', historical.timestamp)
 
           // this.$set(this.components.topCountry, 0, Object.merge(this.components.topCountry[0], {
-          //   id: this.id + '.hour.topCountry.component',
+          //   id: this.id + '.historical.topCountry.component',
           //   props: {
-          //     top_country_counter: hour.top_country_counter
+          //     top_country_counter: historical.top_country_counter
           //   }
           //
           // }))
-          this.$set(this.components.topCountry[0].props, 'top_country_counter', hour.top_country_counter)
-          // this.$set(this.components.topCountrySum[0].props, 'top_country_counter', hour.top_country_counter)
+          this.$set(this.components.topCountry[0].props, 'top_country_counter', historical.top_country_counter)
+          // this.$set(this.components.topCountrySum[0].props, 'top_country_counter', historical.top_country_counter)
 
           // this.$set(this.components.worldCitiesMap, 0, Object.merge(this.components.worldCitiesMap[0], {
-          //   id: this.id + '.hour.worldCitiesMap.component',
+          //   id: this.id + '.historical.worldCitiesMap.component',
           //   props: {
-          //     world_map_cities: hour.world_map_cities,
+          //     world_map_cities: historical.world_map_cities,
           //   }
           //
           // }))
 
-          Array.each(hour.top_world_map_cities, function (value) {
+          Array.each(historical.top_world_map_cities, function (value) {
             if (value !== undefined) {
               let city = value.title.substring(0, value.title.indexOf('(')).trim()
 
               if (!this.cities_color[city]) {
                 let index = 0
 
-                // debug('watch hour city', city)
+                // debug('watch historical city', city)
 
-                Object.each(hour.top_city_counter, function (value, city) {
+                Object.each(historical.top_city_counter, function (value, city) {
                   this.cities_color[city] = colorSet.getIndex(index).rgba
 
                   index++
@@ -481,18 +482,18 @@ export default {
             }
           }.bind(this))
 
-          this.$set(this.components.worldCitiesMap[0].props, 'world_map_cities', hour.top_world_map_cities)
+          this.$set(this.components.worldCitiesMap[0].props, 'world_map_cities', historical.top_world_map_cities)
 
-          Array.each(hour.top_world_map_countries, function (value) {
+          Array.each(historical.top_world_map_countries, function (value) {
             if (value !== undefined) {
               let country = value.name.trim()
 
               if (!this.countries_color[country]) {
                 let index = 0
 
-                // debug('watch hour', colorSet.list)
+                // debug('watch historical', colorSet.list)
 
-                Object.each(hour.top_country_counter, function (value, country) {
+                Object.each(historical.top_country_counter, function (value, country) {
                   this.countries_color[country] = colorSet.getIndex(index).rgba
 
                   index++
@@ -504,35 +505,35 @@ export default {
             }
           }.bind(this))
           // Change name => title
-          // Array.each(hour.top_world_map_countries, function (value) {
+          // Array.each(historical.top_world_map_countries, function (value) {
           //   if (value !== undefined) {
           //     value.name = value.title
           //   }
           // })
 
-          this.$set(this.components.worldCountriesMap[0].props, 'world_map_countries', hour.top_world_map_countries)
+          this.$set(this.components.worldCountriesMap[0].props, 'world_map_countries', historical.top_world_map_countries)
 
           // this.$set(this.components.topCity, 0, Object.merge(this.components.topCity[0], {
-          //   id: this.id + '.hour.topCity.component',
+          //   id: this.id + '.historical.topCity.component',
           //   props: {
-          //     top_city_counter: hour.top_city_counter
+          //     top_city_counter: historical.top_city_counter
           //   }
           //
           // }))
 
-          // Object.each(hour.top_city_counter, function (value, city) {
+          // Object.each(historical.top_city_counter, function (value, city) {
           //   if (!this.cities_color[city]) this.cities_color[city] = colorSet.next()
           // }.bind(this))
 
-          this.$set(this.components.topCity[0].props, 'top_city_counter', hour.top_city_counter)
-          // this.$set(this.components.topCitySum[0].props, 'top_city_counter', hour.top_city_counter)
+          this.$set(this.components.topCity[0].props, 'top_city_counter', historical.top_city_counter)
+          // this.$set(this.components.topCitySum[0].props, 'top_city_counter', historical.top_city_counter)
 
-          this.$set(this.components.continent[0].props, 'continent_counter', hour.continent_counter)
+          this.$set(this.components.continent[0].props, 'continent_counter', historical.continent_counter)
 
-          // this.$set(this.components.logs[0].props, 'logs', hour.logs)
+          // this.$set(this.components.logs[0].props, 'logs', historical.logs)
           // this.$set(this.components.logs[0].props, 'loading_logs', this.loading_logs)
 
-          // debug('watch hour', hour, this.components)
+          // debug('watch historical', historical, this.components)
 
           // this.$set(this.components.netOut, 0, Object.merge(this.components.netOut[0], {
           //   id: this.host + '.netOut.component',
@@ -642,22 +643,6 @@ export default {
       // this.height = height + 200 + 'px'
       this.height = height
     },
-    end: function () {
-      // if (this.current_day === undefined) {
-      return Date.now()
-      // } else {
-      // return this.current_day
-      // }
-    },
-
-    end_hour: function () {
-      if (this.current_hour === undefined) {
-        return Date.now()
-      } else {
-        return this.current_hour
-      }
-    },
-
     apply_zoom: function (data, categoryY, valueX) {
       const min_zoom = 0.5
       const max_zoom = 1
@@ -737,24 +722,29 @@ export default {
     /**
     * @end pipelines
     **/
-
-    /** calendar **/
-
-    // disabled_hours (hr, min, sec) {
-    //   debug('disabled_hours ', hr, min, sec)
-    //   if (hr) {
-    //     if (min) {
-    //       return false
-    //     }
-    //     return hr <= moment().format('HH')
-    //   }
-    //
-    //   // if (sec !== null && sec % 10 !== 0) {
-    //   //   return false
+    end: function () {
+      if (this.current_hour === undefined) {
+        return Date.now()
+      } else {
+        return this.current_hour
+      }
+    },
+    // end: function () {
+    //   // if (this.current_day === undefined) {
+    //   return Date.now()
+    //   // } else {
+    //   // return this.current_day
     //   // }
-    //   return true
     // },
-
+    //
+    // end_hour: function () {
+    //   if (this.current_hour === undefined) {
+    //     return Date.now()
+    //   } else {
+    //     return this.current_hour
+    //   }
+    // },
+    round: roundMinutes,
   }
 
 }
