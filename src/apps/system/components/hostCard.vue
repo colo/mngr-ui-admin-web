@@ -145,8 +145,8 @@ export default {
             { x: 8, y: 0, w: 4, h: 10, i: 'netIn', immobile: false },
             { x: 12, y: 0, w: 4, h: 10, i: 'memory', immobile: false },
 
-            { x: 0, y: 1, w: 8, h: 15, i: 'cpu', immobile: false },
-            { x: 8, y: 1, w: 8, h: 10, i: 'mounts', immobile: false },
+            { x: 0, y: 10, w: 8, h: 15, i: 'cpu', immobile: false },
+            { x: 8, y: 10, w: 8, h: 10, i: 'mounts', immobile: false },
 
             // { x: 0, y: 1, w: 6, h: 2, i: 'separator' }
           ],
@@ -156,28 +156,28 @@ export default {
             { x: 6, y: 0, w: 3, h: 10, i: 'netIn', immobile: false },
             { x: 9, y: 0, w: 3, h: 10, i: 'memory', immobile: false },
 
-            { x: 0, y: 1, w: 6, h: 15, i: 'cpu', immobile: false },
-            { x: 6, y: 1, w: 6, h: 10, i: 'mounts', immobile: false },
+            { x: 0, y: 10, w: 6, h: 15, i: 'cpu', immobile: false },
+            { x: 6, y: 10, w: 6, h: 10, i: 'mounts', immobile: false },
 
             // { x: 0, y: 1, w: 6, h: 2, i: 'separator' }
           ],
           'xs': [
             { x: 0, y: 0, w: 4, h: 10, i: 'loadavg', immobile: false },
             { x: 4, y: 0, w: 4, h: 10, i: 'memory', immobile: false },
-            { x: 0, y: 1, w: 4, h: 10, i: 'netOut', immobile: false },
-            { x: 4, y: 1, w: 4, h: 10, i: 'netIn', immobile: false },
-            { x: 0, y: 2, w: 8, h: 15, i: 'cpu', immobile: false },
-            { x: 0, y: 3, w: 8, h: 10, i: 'mounts', immobile: false },
+            { x: 0, y: 10, w: 4, h: 10, i: 'netOut', immobile: false },
+            { x: 4, y: 10, w: 4, h: 10, i: 'netIn', immobile: false },
+            { x: 0, y: 20, w: 8, h: 15, i: 'cpu', immobile: false },
+            { x: 0, y: 35, w: 8, h: 10, i: 'mounts', immobile: false },
 
             // { x: 0, y: 1, w: 6, h: 2, i: 'separator' }
           ],
           'xxs': [
             { x: 0, y: 0, w: 3, h: 10, i: 'loadavg', immobile: false },
             { x: 3, y: 0, w: 3, h: 10, i: 'memory', immobile: false },
-            { x: 0, y: 1, w: 3, h: 10, i: 'netOut', immobile: false },
-            { x: 3, y: 1, w: 3, h: 10, i: 'netIn', immobile: false },
-            { x: 0, y: 2, w: 6, h: 15, i: 'cpu', immobile: false },
-            { x: 0, y: 3, w: 6, h: 10, i: 'mounts', immobile: false },
+            { x: 0, y: 10, w: 3, h: 10, i: 'netOut', immobile: false },
+            { x: 3, y: 10, w: 3, h: 10, i: 'netIn', immobile: false },
+            { x: 0, y: 20, w: 6, h: 15, i: 'cpu', immobile: false },
+            { x: 0, y: 35, w: 6, h: 10, i: 'mounts', immobile: false },
 
             // { x: 0, y: 1, w: 6, h: 2, i: 'separator' }
           ]
@@ -192,7 +192,7 @@ export default {
         // // breakpoints: { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 },
         // colsAll: { lg: 12, md: 8, sm: 6, xs: 4, xxs: 2 },
 
-        cols: 22,
+        cols: 24,
         // breakpoints: { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 },
         colsAll: { lg: 24, md: 16, sm: 12, xs: 8, xxs: 6 },
 

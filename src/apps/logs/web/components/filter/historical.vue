@@ -218,54 +218,55 @@ export default {
             { x: 0, y: 1, w: 12, h: 36, i: 'worldCitiesMap', immobile: false },
             { x: 12, y: 1, w: 12, h: 36, i: 'topCity', immobile: false },
             { x: 0, y: 2, w: 12, h: 36, i: 'continent', immobile: false },
+
             // { x: 12, y: 3, w: 12, h: 36, i: 'topCitySum', immobile: false },
             // { x: 0, y: 4, w: 24, h: 50, i: 'logs', immobile: false },
             // { x: 15, y: 0, w: 6, h: 10, i: 'mounts', immobile: false },
             // { x: 21, y: 0, w: 3, h: 10, i: 'memory', immobile: false },
             // // { x: 0, y: 1, w: 12, h: 2, i: 'separator' }
           ],
-          'md': [
-            // { x: 0, y: 0, w: 4, h: 10, i: 'loadavg', immobile: false },
-            // { x: 4, y: 0, w: 4, h: 10, i: 'netOut', immobile: false },
-            // { x: 8, y: 0, w: 4, h: 10, i: 'netIn', immobile: false },
-            // { x: 12, y: 0, w: 4, h: 10, i: 'memory', immobile: false },
-            //
-            // { x: 0, y: 1, w: 8, h: 15, i: 'cpu', immobile: false },
-            // { x: 8, y: 1, w: 8, h: 10, i: 'mounts', immobile: false },
-            //
-            // // { x: 0, y: 1, w: 6, h: 2, i: 'separator' }
-          ],
-          'sm': [
-            // { x: 0, y: 0, w: 3, h: 10, i: 'loadavg', immobile: false },
-            // { x: 3, y: 0, w: 3, h: 10, i: 'netOut', immobile: false },
-            // { x: 6, y: 0, w: 3, h: 10, i: 'netIn', immobile: false },
-            // { x: 9, y: 0, w: 3, h: 10, i: 'memory', immobile: false },
-            //
-            // { x: 0, y: 1, w: 6, h: 15, i: 'cpu', immobile: false },
-            // { x: 6, y: 1, w: 6, h: 10, i: 'mounts', immobile: false },
-            //
-            // // { x: 0, y: 1, w: 6, h: 2, i: 'separator' }
-          ],
-          'xs': [
-            // { x: 0, y: 0, w: 4, h: 10, i: 'loadavg', immobile: false },
-            // { x: 4, y: 0, w: 4, h: 10, i: 'memory', immobile: false },
-            // { x: 0, y: 1, w: 4, h: 10, i: 'netOut', immobile: false },
-            // { x: 4, y: 1, w: 4, h: 10, i: 'netIn', immobile: false },
-            // { x: 0, y: 2, w: 8, h: 15, i: 'cpu', immobile: false },
-            // { x: 0, y: 3, w: 8, h: 10, i: 'mounts', immobile: false },
-            //
-            // // { x: 0, y: 1, w: 6, h: 2, i: 'separator' }
-          ],
-          'xxs': [
-            // { x: 0, y: 0, w: 3, h: 10, i: 'loadavg', immobile: false },
-            // { x: 3, y: 0, w: 3, h: 10, i: 'memory', immobile: false },
-            // { x: 0, y: 1, w: 3, h: 10, i: 'netOut', immobile: false },
-            // { x: 3, y: 1, w: 3, h: 10, i: 'netIn', immobile: false },
-            // { x: 0, y: 2, w: 6, h: 15, i: 'cpu', immobile: false },
-            // { x: 0, y: 3, w: 6, h: 10, i: 'mounts', immobile: false },
-            //
-            // // { x: 0, y: 1, w: 6, h: 2, i: 'separator' }
-          ]
+          // 'md': [
+          //   // { x: 0, y: 0, w: 4, h: 10, i: 'loadavg', immobile: false },
+          //   // { x: 4, y: 0, w: 4, h: 10, i: 'netOut', immobile: false },
+          //   // { x: 8, y: 0, w: 4, h: 10, i: 'netIn', immobile: false },
+          //   // { x: 12, y: 0, w: 4, h: 10, i: 'memory', immobile: false },
+          //   //
+          //   // { x: 0, y: 1, w: 8, h: 15, i: 'cpu', immobile: false },
+          //   // { x: 8, y: 1, w: 8, h: 10, i: 'mounts', immobile: false },
+          //   //
+          //   // // { x: 0, y: 1, w: 6, h: 2, i: 'separator' }
+          // ],
+          // 'sm': [
+          //   // { x: 0, y: 0, w: 3, h: 10, i: 'loadavg', immobile: false },
+          //   // { x: 3, y: 0, w: 3, h: 10, i: 'netOut', immobile: false },
+          //   // { x: 6, y: 0, w: 3, h: 10, i: 'netIn', immobile: false },
+          //   // { x: 9, y: 0, w: 3, h: 10, i: 'memory', immobile: false },
+          //   //
+          //   // { x: 0, y: 1, w: 6, h: 15, i: 'cpu', immobile: false },
+          //   // { x: 6, y: 1, w: 6, h: 10, i: 'mounts', immobile: false },
+          //   //
+          //   // // { x: 0, y: 1, w: 6, h: 2, i: 'separator' }
+          // ],
+          // 'xs': [
+          //   // { x: 0, y: 0, w: 4, h: 10, i: 'loadavg', immobile: false },
+          //   // { x: 4, y: 0, w: 4, h: 10, i: 'memory', immobile: false },
+          //   // { x: 0, y: 1, w: 4, h: 10, i: 'netOut', immobile: false },
+          //   // { x: 4, y: 1, w: 4, h: 10, i: 'netIn', immobile: false },
+          //   // { x: 0, y: 2, w: 8, h: 15, i: 'cpu', immobile: false },
+          //   // { x: 0, y: 3, w: 8, h: 10, i: 'mounts', immobile: false },
+          //   //
+          //   // // { x: 0, y: 1, w: 6, h: 2, i: 'separator' }
+          // ],
+          // 'xxs': [
+          //   // { x: 0, y: 0, w: 3, h: 10, i: 'loadavg', immobile: false },
+          //   // { x: 3, y: 0, w: 3, h: 10, i: 'memory', immobile: false },
+          //   // { x: 0, y: 1, w: 3, h: 10, i: 'netOut', immobile: false },
+          //   // { x: 3, y: 1, w: 3, h: 10, i: 'netIn', immobile: false },
+          //   // { x: 0, y: 2, w: 6, h: 15, i: 'cpu', immobile: false },
+          //   // { x: 0, y: 3, w: 6, h: 10, i: 'mounts', immobile: false },
+          //   //
+          //   // // { x: 0, y: 1, w: 6, h: 2, i: 'separator' }
+          // ]
 
         },
         breakpoint: 'lg',

@@ -359,7 +359,7 @@ export default {
     },
 
     resolveComponent: function (component, id) {
-      debug('resolveComponent', id, component, this.$options.components, Vue.options)
+      // debug('resolveComponent', id, component, this.$options.components, Vue.options)
       //
       // debug('resolveComponent locals', this.$options.components)
       // debug('resolveComponent globals', Vue.options.components)
@@ -563,10 +563,19 @@ export default {
 
     onLayoutChange (layout, layouts, breakpoint) {
       debug('grid event onLayoutChange', this.id, layout, layouts, breakpoint)
-      // this.$set(this.layouts, breakpoint, layout)
-      let grid = this.viewGrid
-      grid.layouts[breakpoint] = layout
+      //   // this.$set(this.layouts, breakpoint, layout)
+      // let grid = this.viewGrid
+      // grid.layouts[breakpoint] = layout
+      // this.viewGrid = grid
+      let grid = JSON.parse(JSON.stringify(this.viewGrid))
+      grid.breakpoint = breakpoint
+      // if not layout defined for this breakpoint, use responsive...use an empty Array to remove items completly for this breakpoint, ex: sm: []
+      if (!grid.layouts[grid.breakpoint]) {
+        grid.layouts[grid.breakpoint] = layout
+      }
       this.viewGrid = grid
+      // this.$forceUpdate()
+      // this.$forceUpdate()
     },
 
     onLayoutInit (layout, layouts, cols, breakpoint) {
@@ -574,20 +583,23 @@ export default {
       // this.cols = cols
       // this.breakpoint = breakpoint
       // this.$set(this.layouts, breakpoint, layout)
-      let grid = this.viewGrid
+      let grid = JSON.parse(JSON.stringify(this.viewGrid))
       grid.cols = cols
       grid.breakpoint = breakpoint
-      grid.layouts[grid.breakpoint] = layout
+      // if not layout defined for this breakpoint, use responsive...use an empty Array to remove items completly for this breakpoint, ex: sm: []
+      if (!grid.layouts[grid.breakpoint]) {
+        grid.layouts[grid.breakpoint] = layout
+      }
       this.viewGrid = grid
       this.$forceUpdate()
     },
 
     onBreakpointChange (breakpoint) {
-      debug('grid event onBreakpointChange', this.id, breakpoint)
       // this.breakpoint = breakpoint
       let grid = this.viewGrid
       grid.breakpoint = breakpoint
       this.viewGrid = grid
+      debug('grid event onBreakpointChange', this.id, breakpoint, this.viewGrid)
     },
 
     onWidthChange (width, cols) {
@@ -597,10 +609,10 @@ export default {
       grid.cols = cols
       this.viewGrid = grid
     },
-    log: function (evt) {
-      // window.console.log(evt)
-      debug('log %o', evt)
-    }
+    // log: function (evt) {
+    //   // window.console.log(evt)
+    //   debug('log %o', evt)
+    // }
     // gridMode () {
     //   debug('gridMode')
     //   this.$refs.layout.resizeAllItems(2, 'vertical')

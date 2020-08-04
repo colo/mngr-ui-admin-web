@@ -232,62 +232,92 @@ export default {
             { x: 3, y: 0, w: 3, h: 8, i: 'bytesBars', immobile: false },
 
             { x: 6, y: 0, w: 3, h: 4, i: 'visitorsMini', immobile: false },
-            { x: 6, y: 1, w: 3, h: 4, i: 'usersMini', immobile: false },
+            { x: 6, y: 4, w: 3, h: 4, i: 'usersMini', immobile: false },
 
             { x: 9, y: 0, w: 3, h: 4, i: 'staticMini', immobile: false },
-            { x: 9, y: 1, w: 3, h: 4, i: 'dynamicMini', immobile: false },
+            { x: 9, y: 4, w: 3, h: 4, i: 'dynamicMini', immobile: false },
 
             { x: 12, y: 0, w: 3, h: 4, i: 'refererMini', immobile: false },
-            { x: 12, y: 1, w: 3, h: 4, i: 'topDomainMini', immobile: false },
+            { x: 12, y: 4, w: 3, h: 4, i: 'topDomainMini', immobile: false },
 
             { x: 15, y: 0, w: 3, h: 8, i: 'osPie', immobile: false },
             { x: 18, y: 0, w: 3, h: 8, i: 'browserPie', immobile: false },
 
             { x: 21, y: 0, w: 3, h: 4, i: 'validMini', immobile: false },
-            { x: 21, y: 1, w: 3, h: 4, i: 'failedMini', immobile: false },
+            { x: 21, y: 4, w: 3, h: 4, i: 'failedMini', immobile: false },
 
           ],
-          // 'md': [
-          //   { x: 0, y: 0, w: 6, h: 8, i: 'requestsBars', immobile: false },
-          //   { x: 6, y: 0, w: 6, h: 8, i: 'bytesBars', immobile: false },
-          //
-          //   { x: 0, y: 1, w: 6, h: 4, i: 'visitorsMini', immobile: false },
-          //   { x: 6, y: 1, w: 6, h: 4, i: 'usersMini', immobile: false },
-          //
-          // ],
-          // 'sm': [
-          //   { x: 0, y: 0, w: 6, h: 8, i: 'requestsBars', immobile: false },
-          //   { x: 3, y: 0, w: 6, h: 8, i: 'bytesBars', immobile: false },
-          //
-          //   { x: 0, y: 1, w: 3, h: 4, i: 'visitorsMini', immobile: false },
-          //   { x: 3, y: 1, w: 3, h: 4, i: 'usersMini', immobile: false },
-          // ],
-          // 'xs': [
-          //   { x: 0, y: 0, w: 4, h: 8, i: 'requestsBars', immobile: false },
-          //   { x: 4, y: 0, w: 4, h: 8, i: 'bytesBars', immobile: false },
-          //
-          //   { x: 0, y: 1, w: 4, h: 4, i: 'visitorsMini', immobile: false },
-          //   { x: 4, y: 1, w: 4, h: 4, i: 'usersMini', immobile: false },
-          //
-          //   // { x: 9, y: 0, w: 3, h: 4, i: 'staticMini', immobile: false },
-          //   // { x: 9, y: 1, w: 3, h: 4, i: 'dynamicMini', immobile: false },
-          //   //
-          //   // { x: 12, y: 0, w: 3, h: 4, i: 'refererMini', immobile: false },
-          //   // { x: 12, y: 1, w: 3, h: 4, i: 'topDomainMini', immobile: false },
-          //   //
-          //   // { x: 15, y: 0, w: 3, h: 8, i: 'osPie', immobile: false },
-          //   // { x: 18, y: 0, w: 3, h: 8, i: 'browserPie', immobile: false },
-          //   //
-          //   // { x: 21, y: 0, w: 3, h: 4, i: 'validMini', immobile: false },
-          //   // { x: 21, y: 1, w: 3, h: 4, i: 'failedMini', immobile: false },
-          // ],
-          // 'xxs': [
-          //   { x: 0, y: 0, w: 6, h: 8, i: 'requestsBars', immobile: false },
-          //   { x: 0, y: 1, w: 6, h: 8, i: 'bytesBars', immobile: false },
-          //
-          //   // { x: 0, y: 1, w: 3, h: 4, i: 'visitorsMini', immobile: false },
-          //   // { x: 3, y: 0, w: 3, h: 4, i: 'usersMini', immobile: false },
-          // ]
+          'md': [
+            { x: 0, y: 0, w: 4, h: 8, i: 'requestsBars', immobile: false },
+            { x: 4, y: 0, w: 4, h: 8, i: 'bytesBars', immobile: false },
+            { x: 8, y: 0, w: 4, h: 4, i: 'visitorsMini', immobile: false },
+            { x: 8, y: 4, w: 4, h: 4, i: 'usersMini', immobile: false },
+            { x: 12, y: 0, w: 4, h: 4, i: 'staticMini', immobile: false },
+            { x: 12, y: 4, w: 4, h: 4, i: 'dynamicMini', immobile: false },
+
+            { x: 0, y: 8, w: 4, h: 4, i: 'refererMini', immobile: false },
+            { x: 4, y: 8, w: 4, h: 4, i: 'topDomainMini', immobile: false },
+            { x: 8, y: 8, w: 4, h: 4, i: 'validMini', immobile: false },
+            { x: 12, y: 8, w: 4, h: 4, i: 'failedMini', immobile: false },
+
+            { x: 0, y: 12, w: 4, h: 8, i: 'osPie', immobile: false },
+            { x: 4, y: 12, w: 4, h: 8, i: 'browserPie', immobile: false },
+
+          ],
+          'sm': [
+            { x: 0, y: 0, w: 3, h: 8, i: 'requestsBars', immobile: false },
+            { x: 3, y: 0, w: 3, h: 8, i: 'bytesBars', immobile: false },
+            { x: 6, y: 0, w: 3, h: 4, i: 'visitorsMini', immobile: false },
+            { x: 6, y: 4, w: 3, h: 4, i: 'usersMini', immobile: false },
+            { x: 9, y: 0, w: 3, h: 4, i: 'staticMini', immobile: false },
+            { x: 9, y: 4, w: 3, h: 4, i: 'dynamicMini', immobile: false },
+
+            { x: 0, y: 8, w: 3, h: 4, i: 'refererMini', immobile: false },
+            { x: 3, y: 8, w: 3, h: 4, i: 'topDomainMini', immobile: false },
+            { x: 6, y: 8, w: 3, h: 4, i: 'validMini', immobile: false },
+            { x: 9, y: 8, w: 3, h: 4, i: 'failedMini', immobile: false },
+
+            { x: 0, y: 12, w: 6, h: 8, i: 'osPie', immobile: false },
+            { x: 6, y: 12, w: 6, h: 8, i: 'browserPie', immobile: false },
+
+          ],
+          'xs': [
+            { x: 0, y: 0, w: 3, h: 8, i: 'requestsBars', immobile: false },
+            { x: 3, y: 0, w: 3, h: 8, i: 'bytesBars', immobile: false },
+            { x: 6, y: 0, w: 3, h: 4, i: 'visitorsMini', immobile: false },
+            { x: 6, y: 4, w: 3, h: 4, i: 'usersMini', immobile: false },
+
+            { x: 0, y: 8, w: 3, h: 4, i: 'staticMini', immobile: false },
+            { x: 3, y: 8, w: 3, h: 4, i: 'dynamicMini', immobile: false },
+            { x: 6, y: 8, w: 3, h: 4, i: 'refererMini', immobile: false },
+
+            { x: 0, y: 12, w: 3, h: 4, i: 'topDomainMini', immobile: false },
+            { x: 3, y: 12, w: 3, h: 4, i: 'validMini', immobile: false },
+            { x: 6, y: 12, w: 3, h: 4, i: 'failedMini', immobile: false },
+
+            { x: 0, y: 16, w: 4, h: 8, i: 'osPie', immobile: false },
+            { x: 5, y: 16, w: 4, h: 8, i: 'browserPie', immobile: false },
+
+          ],
+          'xxs': [
+            { x: 0, y: 0, w: 3, h: 8, i: 'requestsBars', immobile: false },
+            { x: 3, y: 0, w: 3, h: 8, i: 'bytesBars', immobile: false },
+
+            { x: 0, y: 8, w: 3, h: 4, i: 'visitorsMini', immobile: false },
+            { x: 3, y: 8, w: 3, h: 4, i: 'usersMini', immobile: false },
+
+            { x: 0, y: 12, w: 3, h: 4, i: 'staticMini', immobile: false },
+            { x: 3, y: 12, w: 3, h: 4, i: 'dynamicMini', immobile: false },
+
+            { x: 0, y: 16, w: 3, h: 4, i: 'refererMini', immobile: false },
+            { x: 3, y: 16, w: 3, h: 4, i: 'topDomainMini', immobile: false },
+
+            { x: 0, y: 20, w: 3, h: 8, i: 'osPie', immobile: false },
+            { x: 3, y: 20, w: 3, h: 8, i: 'browserPie', immobile: false },
+
+            { x: 0, y: 28, w: 3, h: 4, i: 'validMini', immobile: false },
+            { x: 3, y: 28, w: 3, h: 4, i: 'failedMini', immobile: false },
+          ]
 
         },
         breakpoint: 'lg',
@@ -301,7 +331,7 @@ export default {
 
         cols: 24,
         // breakpoints: { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 },
-        colsAll: { lg: 24, md: 16, sm: 12, xs: 8, xxs: 6 },
+        colsAll: { lg: 24, md: 16, sm: 12, xs: 9, xxs: 6 },
 
         isDraggable: true,
         isResizable: false,
