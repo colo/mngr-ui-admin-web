@@ -215,9 +215,9 @@ export default {
 
             { x: 0, y: 0, w: 12, h: 36, i: 'topCountry', immobile: false },
             { x: 12, y: 0, w: 12, h: 36, i: 'worldCountriesMap', immobile: false },
-            { x: 0, y: 1, w: 12, h: 36, i: 'worldCitiesMap', immobile: false },
-            { x: 12, y: 1, w: 12, h: 36, i: 'topCity', immobile: false },
-            { x: 0, y: 2, w: 12, h: 36, i: 'continent', immobile: false },
+            { x: 0, y: 36, w: 12, h: 36, i: 'worldCitiesMap', immobile: false },
+            { x: 12, y: 36, w: 12, h: 36, i: 'topCity', immobile: false },
+            { x: 0, y: 72, w: 12, h: 36, i: 'continent', immobile: false },
 
             // { x: 12, y: 3, w: 12, h: 36, i: 'topCitySum', immobile: false },
             // { x: 0, y: 4, w: 24, h: 50, i: 'logs', immobile: false },
