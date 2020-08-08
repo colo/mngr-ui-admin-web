@@ -1,5 +1,8 @@
 <template>
   <q-page>
+    <!-- <ec-card-hover :bgClass="'purple'">
+      <q-icon name="warning" class="slot text-purple-10"  style="font-size: 4rem;" />
+    </ec-card-hover> -->
     <div class="q-pa-md">
       <div class="bg-primary text-white">
         <q-toolbar >
@@ -146,13 +149,13 @@ import Pipeline from '@apps/logs/pipelines//all'
 
 import DataSourcesMixin from '@mixins/dataSources'
 
-// import LogsWebCard from '@apps/logs/components/webCard.vue'
+import ecCardHover from '@components/ecCardHover.vue'
 
 import { requests, store } from '@apps/logs/sources/all/index'
 
 export default {
   mixins: [DataSourcesMixin],
-  // components: { LogsWebCard },
+  components: { ecCardHover },
   // extends: DataSourcesMixin,
 
   name: 'LogsWebsAll',

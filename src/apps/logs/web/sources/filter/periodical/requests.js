@@ -182,7 +182,7 @@ const generic_callback = function (data, metadata, key, vm) {
     if (data.logs) _data = data.logs // comes from 'Range'
     else _data = data // comes from 'register'
 
-    if (!_data.data) _data.data = {}
+    // if (!_data.data) _data.data = {}
 
     debug('PERIODICAL HOST CALLBACK _data %o', _data)
 
@@ -298,7 +298,7 @@ const generic_callback = function (data, metadata, key, vm) {
 
         /** user_agent **/
         if (row.data.user_agent) {
-          debug('user_agent %s', row.data.user_agent)
+          // debug('user_agent %s', row.data.user_agent)
 
           let os = row.data.user_agent.os.family
           os = (row.data.user_agent.os.major) ? os + ' ' + row.data.user_agent.os.major : os
@@ -349,7 +349,7 @@ const generic_callback = function (data, metadata, key, vm) {
         }
 
         if (row.data.referer.referer || row.data.referer.medium) {
-          debug('PERIODICAL HOST CALLBACK referer %o', row.data.referer.referer, row.data.referer.medium)
+          // debug('PERIODICAL HOST CALLBACK referer %o', row.data.referer.referer, row.data.referer.medium)
           let value = (row.data.referer.referer) ? row.data.referer.referer + ' - ' + row.data.referer.medium : row.data.referer.medium
           if (!referer_counter[row.metadata.timestamp]) referer_counter[row.metadata.timestamp] = {}
           if (!referer_counter[row.metadata.timestamp][value]) referer_counter[row.metadata.timestamp][value] = 0
@@ -871,7 +871,7 @@ const generic_callback = function (data, metadata, key, vm) {
     let unique_visitors = 0
     let unique_visitors_by_ip = {}
     Object.each(unique_visitors_ip_uas, function (uas, ip) {
-      debug('user_agent|remote_addr %s %o', ip, uas)
+      // debug('user_agent|remote_addr %s %o', ip, uas)
       unique_visitors += uas.length
       unique_visitors_by_ip[ip] = uas.length
     })
@@ -991,7 +991,17 @@ const host_once_component = {
       let filter = "this.r.row('metadata')('tag').contains('web').and("
 
       Object.each(vm.filter, function (value, prop) {
-        filter += "this.r.row('metadata')('" + prop + "').eq('" + value + "').and("
+        let _prop = prop.split('.', 2)
+        let row = (_prop.length > 1) ? _prop[0] : 'metadata'
+        let real_prop = (_prop.length > 1) ? _prop[1] : _prop[0]
+
+        let _value = value.split(':')
+        let operation = (_value.length > 1) ? _value[0] : 'eq'
+        let real_value = (_value.length > 1) ? _value[1] : _value[0]
+        real_value = (isNaN(real_value * 1)) ? "'" + real_value + "'" : real_value * 1
+        debug('FILTER STRING SPLIT %s %s', row, real_prop, operation, real_value)
+
+        filter += "this.r.row('" + row + "')('" + real_prop + "')." + operation + '(' + real_value + ').and('
       })
 
       debug('FILTER STRING %s', filter)

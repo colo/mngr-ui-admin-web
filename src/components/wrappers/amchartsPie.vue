@@ -273,7 +273,7 @@ export default {
           this.$options['charts'][this.id].chart.data = newData
           debug('this.$options[charts][this.id].chart.data', this.$options['charts'][this.id].chart.data)
           this.$options['charts'][this.id].chart.invalidateRawData()
-          this.$options['charts'][this.id].label.text = this.label
+          // this.$options['charts'][this.id].label.text = this.label
 
           // debug('ZOOM %s ', this.id, this.$options['charts'][this.id].chart.data.length, (typeof this.zoom === 'function') ? this.zoom(this.$options['charts'][this.id].chart.data, this.categoryY, this.valueX) : this.zoom)
           // this.$options['charts'][this.id].categoryAxis.zoom({ start: 0, end: (typeof this.zoom === 'function') ? this.zoom(this.$options['charts'][this.id].chart.data, this.categoryY, this.valueX) : (this.zoom > 0) ? this.zoom : 1 })

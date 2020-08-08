@@ -555,7 +555,7 @@ export default {
           // }))
 
           Array.each(periodical.top_world_map_cities, function (value) {
-            if (value !== undefined) {
+            if (value !== undefined && value !== null) {
               let city = value.title.substring(0, value.title.indexOf('(')).trim()
 
               if (!this.cities_color[city]) {
@@ -699,12 +699,12 @@ export default {
     'filter': function () {
       // return (this.$route && this.$route.params && this.$route.params.web) ? this.$route.params.web : undefined
       debug('computed filter QUERY', this.$route.query)
-      const allowed_filters = ['domain', 'path', 'host']
+      const allowed_filters = ['domain', 'path', 'host', /^metadata/, /^data/]
       let filter = {}
       if (this.$route && this.$route.query) {
         Object.each(this.$route.query, function (value, prop) {
           // if (allowed_filters.indexOf(prop) > -1 && filter === undefined) filter = {}
-          if (allowed_filters.indexOf(prop) > -1) filter[prop] = value
+          if (allowed_filters.indexOf(prop) > -1 || allowed_filters.some(function (item) { return (item instanceof RegExp) ? item.test(prop) : false })) filter[prop] = value
         })
       }
       debug('computed filter', filter)

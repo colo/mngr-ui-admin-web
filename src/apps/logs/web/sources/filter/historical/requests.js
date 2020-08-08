@@ -375,8 +375,15 @@ const host_once_component = {
       let filter = ["r.row('metadata')('tag').contains('web')"]
 
       Object.each(vm.filter, function (value, prop) {
+        // debug('FILTER STRING SPLIT %o', prop.split('.'))
+        let _prop = prop.split('.', 2)
+        let row = (_prop.length > 1) ? _prop[0] : 'metadata'
+        let real_prop = (_prop.length > 1) ? _prop[1] : _prop[0]
+
+        debug('FILTER STRING SPLIT %s %s', row, real_prop)
+
         filter.push('function:' +
-        "row('metadata')('" + prop + "').do(function(val) {" +
+        "row('" + row + "')('" + real_prop + "').do(function(val) {" +
         "  return this.r.branch(val.typeOf().eq('ARRAY'), val.contains('" + value + "'), val.eq('" + value + "'))" +
         '}.bind(this))'
         )

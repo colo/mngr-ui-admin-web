@@ -8,8 +8,4 @@
   },
   "author": "Luciano Bueno",
   "license": "ISC",
-  "dependencies": {
-    "vgauge": "^1.2.11",
-    "vue-easy-pie-chart": "^1.0.3"
-  }
 }

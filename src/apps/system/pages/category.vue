@@ -26,7 +26,7 @@ const debug = Debug('apps:system:pages:category')
 
 // let moment = require('moment')
 
-import OsPluginDygraph from '@apps/system/components/pluginDygraph'
+import SystemPluginDygraph from '@apps/system/components/pluginDygraph'
 
 import DataSourcesMixin from '@mixins/dataSources'
 
@@ -40,7 +40,7 @@ import { requests, store } from '@apps/system/sources/category/periodical/index'
 export default {
   mixins: [DataSourcesMixin],
 
-  components: { OsPluginDygraph },
+  components: { SystemPluginDygraph },
 
   name: 'SystemHost',
 
