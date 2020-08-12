@@ -250,6 +250,7 @@ const generic_callback = function (data, metadata, key, vm) {
       let end = row.metadata.timestamp
 
       if (start >= smallest_start) { // discard any document that is previous to our smallest_start timestamp
+        // debug('PERIODICAL HOST CALLBACK _data %o', _data)
         if (range.start === undefined || range.start > start) { range.start = start }
 
         if (range.end === undefined || range.end < end) { range.end = end }
@@ -990,18 +991,36 @@ const host_once_component = {
 
       let filter = "this.r.row('metadata')('tag').contains('web').and("
 
+      let count_close_filter = 0
       Object.each(vm.filter, function (value, prop) {
+        debug('FILTER STRING SPLIT %s %o', prop, value)
         let _prop = prop.split('.', 2)
         let row = (_prop.length > 1) ? _prop[0] : 'metadata'
         let real_prop = (_prop.length > 1) ? _prop[1] : _prop[0]
 
-        let _value = value.split(':')
-        let operation = (_value.length > 1) ? _value[0] : 'eq'
-        let real_value = (_value.length > 1) ? _value[1] : _value[0]
-        real_value = (isNaN(real_value * 1)) ? "'" + real_value + "'" : real_value * 1
-        debug('FILTER STRING SPLIT %s %s', row, real_prop, operation, real_value)
+        if (!Array.isArray(value)) { value = [value] }
 
-        filter += "this.r.row('" + row + "')('" + real_prop + "')." + operation + '(' + real_value + ').and('
+        Array.each(value, function (single_value, index) {
+          let _value = single_value.split(':')
+          let operation = (_value.length > 1) ? _value[0] : 'eq'
+          let real_value = (_value.length > 1) ? _value[1] : _value[0]
+
+          // real_value = (isNaN(real_value * 1)) ? "'" + real_value + "'" : real_value * 1
+          let type = (_value.length > 2) ? _value[2] : 'string'
+          // real_value = (isNaN(real_value * 1)) ? "'" + real_value + "'" : real_value * 1
+          real_value = (type === 'string') ? "'" + real_value + "'" : real_value * 1
+
+          debug('FILTER STRING SPLIT %s %s', row, real_prop, operation, real_value)
+
+          filter += "this.r.row('" + row + "')('" + real_prop + "')." + operation + '(' + real_value
+          if (index === value.length - 1) {
+            filter += ').and('
+          } else {
+            filter += ').or('
+          }
+
+          count_close_filter++
+        })
       })
 
       debug('FILTER STRING %s', filter)
@@ -1013,9 +1032,12 @@ const host_once_component = {
           START = (END - (5 * SECOND) >= 0) ? END - (5 * SECOND) : 0
 
           filter += "this.r.row('metadata')('type').eq('periodical')"
-          Object.each(vm.filter, function (value, prop) {
+          // Object.each(vm.filter, function (value, prop) {
+          //   filter += ')'
+          // })
+          for (let i = 0; i < count_close_filter; i++) {
             filter += ')'
-          })
+          }
 
           filter += ')' // -> this.r.row('metadata')('tag').contains('web').and(
 

@@ -45,6 +45,7 @@ const generic_callback = function (data, metadata, key, vm) {
         } else {
           let host = row.metadata.host
           if (!per_host[host]) per_host[host] = row.data
+          debug('HISTORICAL HOST CALLBACK data per_host %s %o', host, row)
         }
       }
       // if (!type) type = row.metadata.type
@@ -89,9 +90,16 @@ const generic_callback = function (data, metadata, key, vm) {
     let _tmp_world_map_country_counter = {}
     let _tmp_top_per_domain = {}
 
-    debug('HISTORICAL HOST CALLBACK data %s %o', key, per_domain)
+    debug('HISTORICAL HOST CALLBACK data per_domain per_host %s %o %o', key, per_domain, per_host)
 
-    Object.each(per_domain, function (data, domain) {
+    let per_data = {}
+    if (Object.getLength(per_domain) > 0) {
+      per_data = per_domain
+    } else {
+      per_data = per_host
+    }
+
+    Object.each(per_data, function (data, domain) {
       if (data.body_bytes_sent && data.body_bytes_sent.sum) {
         total_bytes_sent += data.body_bytes_sent.sum
       }
@@ -374,22 +382,71 @@ const host_once_component = {
 
       let filter = ["r.row('metadata')('tag').contains('web')"]
 
+      let tag = false
       Object.each(vm.filter, function (value, prop) {
         // debug('FILTER STRING SPLIT %o', prop.split('.'))
         let _prop = prop.split('.', 2)
         let row = (_prop.length > 1) ? _prop[0] : 'metadata'
         let real_prop = (_prop.length > 1) ? _prop[1] : _prop[0]
 
-        debug('FILTER STRING SPLIT %s %s', row, real_prop)
+        if (real_prop === 'tag') {
+          tag = true
+        }
 
-        filter.push('function:' +
-        "row('" + row + "')('" + real_prop + "').do(function(val) {" +
-        "  return this.r.branch(val.typeOf().eq('ARRAY'), val.contains('" + value + "'), val.eq('" + value + "'))" +
-        '}.bind(this))'
-        )
+        if (!Array.isArray(value)) {
+          let _value = value.split(':')
+          let operation = (_value.length > 1) ? _value[0] : 'eq'
+          let real_value = (_value.length > 1) ? _value[1] : _value[0]
+          let type = (_value.length > 2) ? _value[2] : 'string'
+          // real_value = (isNaN(real_value * 1)) ? "'" + real_value + "'" : real_value * 1
+          real_value = (type === 'string') ? "'" + real_value + "'" : real_value * 1
+
+          debug('FILTER STRING SPLIT %s %s', row, real_prop, operation, real_value)
+
+          filter.push('function:' +
+          "row('" + row + "')('" + real_prop + "').do(function(val) {" +
+          "  return this.r.branch(val.typeOf().eq('ARRAY'), val.contains(" + real_value + '), val.' + operation + '(' + real_value + '))' +
+          '}.bind(this))'
+          )
+        } else {
+          /**
+          * if you are searching for more than one "host", you don't want to use ".contains", because it will bring "domain stats" docs
+          **/
+          let func = "function:row('" + row + "')('" + real_prop + "').do(function(val) {"
+
+          let contains = ''
+          let op = ''
+          let count_close_op = 0
+          Array.each(value, function (single_value, index) {
+            let _value = single_value.split(':')
+            let operation = (_value.length > 1) ? _value[0] : 'eq'
+            let real_value = (_value.length > 1) ? _value[1] : _value[0]
+            let type = (_value.length > 2) ? _value[2] : 'string'
+            // real_value = (isNaN(real_value * 1)) ? "'" + real_value + "'" : real_value * 1
+            real_value = (type === 'string') ? "'" + real_value + "'" : real_value * 1
+
+            // debug('FILTER STRING SPLIT %s %s', row, real_prop, operation, real_value)
+
+            contains += (index < value.length - 1) ? real_value + ',' : real_value
+            op += (index < value.length - 1) ? 'val.' + operation + '(' + real_value + ').or(' : 'val.' + operation + '(' + real_value + ')'
+            count_close_op++
+          })
+          for (let i = 0; i < count_close_op; i++) {
+            op += ')'
+          }
+          func += "return this.r.branch(val.typeOf().eq('ARRAY'),  val.contains(" + contains + '),' + op
+          // func += "return this.r.branch(val.typeOf().ne('ARRAY')," + op
+          func += '}.bind(this))'
+          debug('FILTER STRING SPLIT %s', func)
+          filter.push(func)
+        }
       })
 
-      debug('FILTER ARRAY %o', filter)
+      // if no filer by tag (domain|host) add "domain" as default
+      if (tag === false) {
+        filter.push("r.row('metadata')('tag').contains('domain')")
+      }
+
       if (vm.type === 'minute') {
         START = (END - (5 * MINUTE) >= 0) ? END - (5 * MINUTE) : 0
       } else if (vm.type === 'hour') {
@@ -399,6 +456,7 @@ const host_once_component = {
       }
 
       filter.push("r.row('metadata')('type').eq('" + vm.type + "')")
+      debug('FILTER ARRAY %o', filter)
 
       source = [{
         params: { id: _key },
