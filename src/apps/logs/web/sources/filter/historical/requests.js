@@ -163,43 +163,47 @@ const generic_callback = function (data, metadata, key, vm) {
 
       if (data.geoip) {
         Object.each(data.geoip.location, function (row) {
-          let country = (row.country) ? row.country : undefined
-          let continent = (row.continent) ? row.continent : undefined
-          let city = (row.city && country) ? row.city + ' - ' + country : undefined
+          debug('GEODATA %o', row)
+
+          let country = (row.country) ? row.country : 'Unknown'
+          let continent = (row.continent) ? row.continent : 'Unknown'
+          let city = (row.city && country) ? row.city + ' - ' + country : 'Unknown - ' + country
 
           // world_map_city_counter.push({
-          //   title: city + ' ( hits: ' + row.count.length + ' )',
+          //   title: city + ' ( hits: ' + row.count + ' )',
           //   latitude: row.latitude,
           //   longitude: row.longitude,
-          //   count: row.count.length
+          //   count: row.count
           // })
 
           // let world_map_city = (row.location && row.location.latitude && row.location.longitude) ? row.location + ':' + row.location.latitude : undefined
           // let world_map_city_name = (row.city) ? (row.city.names) ? (row.city.names.en) ? row.city.names.en + ' - ' + country : row.city.names.es + ' - ' + country : undefined : undefined
 
           if (city !== undefined && !city_counter[city]) city_counter[city] = 0
-          if (city !== undefined) city_counter[city] += row.count.length
+          if (city !== undefined) city_counter[city] += row.count
 
           if (city !== undefined && !_tmp_world_map_city_counter[city]) {
             _tmp_world_map_city_counter[city] = Object.clone(row)
-            _tmp_world_map_city_counter[city].count = row.count.length
+            // _tmp_world_map_city_counter[city].count = row.count
           } else if (city !== undefined) {
-            _tmp_world_map_city_counter[city].count += row.count.length
+            _tmp_world_map_city_counter[city].count += row.count
           }
 
           if (country !== undefined && !_tmp_world_map_country_counter[country]) {
             _tmp_world_map_country_counter[country] = Object.clone(row)
-            _tmp_world_map_country_counter[country].count = row.count.length
+            // _tmp_world_map_country_counter[country].count = row.count.length
           } else if (country !== undefined) {
-            _tmp_world_map_country_counter[country].count += row.count.length
+            _tmp_world_map_country_counter[country].count += row.count
           }
 
           if (country !== undefined && !country_counter[country]) country_counter[country] = 0
-          if (country !== undefined) country_counter[country] += row.count.length
+          if (country !== undefined) country_counter[country] += row.count
 
           if (continent !== undefined && !continent_counter[continent]) continent_counter[continent] = 0
-          if (continent !== undefined) continent_counter[continent] += row.count.length
+          if (continent !== undefined) continent_counter[continent] += row.count
         })
+      } else {
+        debug('NO GEODATA')
       }
     })
 
@@ -212,7 +216,7 @@ const generic_callback = function (data, metadata, key, vm) {
       }
     })
 
-    debug('_tmp_world_map_city_counter', _tmp_world_map_city_counter)
+    // debug('_tmp_world_map_city_counter', _tmp_world_map_city_counter)
 
     Object.each(_tmp_world_map_city_counter, function (row, city) {
       world_map_city_counter.push({
@@ -287,7 +291,7 @@ const generic_callback = function (data, metadata, key, vm) {
       top_world_map_country_counter.push(data)
     }
 
-    debug('HISTORICAL HOST CALLBACK data %s %o %o', key, top_city_counter, top_country_counter)
+    debug('HISTORICAL HOST CALLBACK geodata %s %o %o %o', key, world_map_country_counter, top_country_counter, country_counter)
 
     // vm.$set(vm.historical, 'total_bytes_sent', total_bytes_sent)
     // vm.$set(vm.historical, 'total_requests', total_requests)
