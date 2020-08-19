@@ -128,7 +128,7 @@ export default {
     __data_unwatcher: undefined,
     __chart_init: false,
 
-    visible: true
+    visible: false
   },
 
   // tabular: {
@@ -326,16 +326,16 @@ export default {
           this.$options['charts'][this.id].tabular.data.push(data[0])
         } else if (data.length > 0) {
           // let splice = data.length
-          let length = data.length
-          let splice = (this.stat.length || this.$options['charts'][this.id].tabular.data.length) * this.chart.interval
+          // let length = data.length
+          // let splice = (this.stat.length || this.$options['charts'][this.id].tabular.data.length) * this.chart.interval
           this.$options['charts'][this.id].tabular.data = data
 
-          this.$options['charts'][this.id].tabular.data.splice(
-            (splice * -1) + 1,
-            length - splice
-          )
-
-          debug('update_chart_stat %s %d %d %d %o', this.id, this.stat.length, splice, length, this.$options['charts'][this.id].tabular.data)
+          // this.$options['charts'][this.id].tabular.data.splice(
+          //   (splice * -1) + 1,
+          //   length - splice
+          // )
+          //
+          // debug('update_chart_stat %s %d %d %d %o', this.id, this.stat.length, splice, length, this.$options['charts'][this.id].tabular.data)
         }
 
         this.$options['charts'][this.id].tabular.data.sort(function (a, b) { return (a[0] > b[0]) ? 1 : ((b[0] > a[0]) ? -1 : 0) })
@@ -461,6 +461,8 @@ export default {
           } else {
             this.$options['charts'][this.id].tabular.lastupdate = Date.now()
           }
+        } else {
+          debug('no element', this.id, update_data)
         }
 
         // //console.log('graph.vue update', this.id, this.chart.interval, new Date(this.$options['charts'][this.id].tabular.lastupdate), inmediate)
@@ -495,6 +497,8 @@ export default {
       let __visible = this.$options['charts'][this.id].visible
       this.$options['charts'][this.id].visible = isVisible
       let data = JSON.parse(JSON.stringify(this.$options['charts'][this.id].tabular.data))
+
+      debug('visibilityChanged', this.id, __visible, isVisible, data)
       if (
         (!__visible || __visible === false) &&
         isVisible === true &&

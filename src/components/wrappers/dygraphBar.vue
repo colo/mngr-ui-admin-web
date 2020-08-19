@@ -1,6 +1,6 @@
 <template>
   <dygraph-wrapper
-    :chart="chart"
+    :chart="Object.merge(chart, {options: graphOptions})"
     :smoothness="false"
     :id="id+'.base'"
     :ref="id+'.base'"
@@ -51,16 +51,12 @@ export default {
     __unwatch_smooth: undefined,
   },
 
-  // props: {
-  //   // EventBus: {
-  //   //   type: [Object],
-  //   //   default: () => ({})
-  //   // }
-  //   smoothness: {
-  //     type: [Boolean],
-  //     default: false
-  //   }
-  // },
+  props: {
+    opacity: {
+      type: Number,
+      default: 0.6
+    }
+  },
 
   data () {
     return {
@@ -84,7 +80,7 @@ export default {
       /**
       * should add an option for general smooth plotting (true | false)
       **/
-      if (options.fillGraph !== true && this.smoothness === true) { options.plotter = smoothPlotter }
+      // if (options.fillGraph !== true && this.smoothness === true) { options.plotter = smoothPlotter }
 
       /**
       * seting 'ticker' is a really performance improvement
@@ -162,9 +158,9 @@ export default {
   //     this.update()
   //   }
   // },
-  created () {
-    this.chart.options = Object.merge(this.chart.options, this.graphOptions)
-  },
+  // created () {
+  //   this.chart.options = Object.merge(this.chart.options, this.graphOptions)
+  // },
 
   // destroyed () {
   //   if (this.$options.charts[this.id]) delete this.$options.charts[this.id]
@@ -179,6 +175,8 @@ export default {
       var y_bottom = e.dygraph.toDomYCoord(0)
 
       let opColor = dbColors.hex2RGBA(e.color, this.opacity)
+      debug('barChartPlotter', e.color, this.opacity, opColor)
+
       ctx.fillStyle = opColor // e.color;
       ctx.strokeStyle = opColor // e.color;
 

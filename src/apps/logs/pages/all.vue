@@ -16,6 +16,34 @@
           <q-btn flat class="q-mr-xs" label="Educativa" :to="{name : 'logs_educativa'}"/>
         </q-toolbar>
       </div>
+      <q-card>
+        <q-card-section>
+          <div class="netdata-chartblock-container">
+            <chart-tabular
+              :wrapper="{
+                type: 'dygraphBar',
+                props: {
+                  /* smoothness: true, */
+                  colorScheme: $store.state.layout.dashboardColorScheme,
+                  dark: $store.state.layout.dark
+                }
+              }"
+              :always_update="false"
+              :ref="id"
+              :id="id"
+              :stat="stat"
+              :chart="chart"
+              :reactive="false"
+              :no_buffer="false"
+            >
+            <!-- data: [processed_data] -->
+            <!-- stat -> length: 300, -->
+            <!-- :key="view.minute" -->
+            <!-- :always_update="true" re check this, what was used for?-->
+            </chart-tabular>
+          </div>
+        </q-card-section>
+      </q-card>
 
       <q-table
         class="my-sticky-header-table"
@@ -107,9 +135,9 @@
             />
           </q-td>
 
-          <!-- <q-td key="timestamp" :props="props">
+          <q-td key="timestamp" :props="props">
             {{ format_time(props.row.timestamp) }}
-          </q-td> -->
+          </q-td>
           <q-td key="path" :props="props">
             <q-btn
             v-on:click="destroy_pipelines()"
@@ -153,9 +181,16 @@ import ecCardHover from '@components/ecCardHover.vue'
 
 import { requests, store } from '@apps/logs/sources/all/index'
 
+import chartTabular from '@components/chart.tabular'
+import dygraph_line_chart from 'mngr-ui-admin-charts/defaults/dygraph.line'
+
+import moment from 'moment'
+
+const SECOND = 1000
+
 export default {
   mixins: [DataSourcesMixin],
-  components: { ecCardHover },
+  components: { ecCardHover, chartTabular },
   // extends: DataSourcesMixin,
 
   name: 'LogsWebsAll',
@@ -169,10 +204,17 @@ export default {
       height: '0px',
 
       logs: [],
+      chart: Object.merge(Object.clone(dygraph_line_chart), {style: {width: '100%', height: '100px'}}),
+      // chart: Object.clone(dygraph_line_chart),
+      stat: {
+        data: [],
+        interval: 1,
+        length: 60 // 15 secs
+      },
 
       search_filter: '',
       loading: true,
-      allColumns: ['View', 'domain', 'host', 'path'],
+      allColumns: ['View', 'domain', 'host', 'path', 'timestamp'],
       visibleColumns: ['domain'],
       pagination: {
         rowsPerPage: 50
@@ -189,13 +231,13 @@ export default {
           sortable: true
         },
         { name: 'host', align: 'left', label: 'Host', field: 'host', sortable: true },
-        // {
-        //   name: 'timestamp',
-        //   align: 'left',
-        //   label: 'Last Update',
-        //   field: 'timestamp',
-        //   sortable: true
-        // },
+        {
+          name: 'timestamp',
+          align: 'left',
+          label: 'Last Update',
+          field: 'timestamp',
+          sortable: true
+        },
         { name: 'path', align: 'left', label: 'Type', field: 'path', sortable: true }
       ],
 
@@ -239,6 +281,19 @@ export default {
   //   }
   // },
   methods: {
+    end: function () {
+      // if (this.current_day === undefined) {
+      return Date.now() - (5 * SECOND)
+      // } else {
+      // return this.current_day
+      // }
+    },
+    format_time: function (timestamp) {
+      return moment(timestamp).format('dddd, MMMM Do YYYY, h:mm:ss a')
+    },
+    format_log: function (log) {
+      return (log.length <= 100) ? log : log.substring(0, 96) + '...'
+    },
     /**
     * @start pipelines
     **/

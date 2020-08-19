@@ -23,7 +23,7 @@
 
 import * as Debug from 'debug'
 
-const debug = Debug('components:wrappers:dygraphBar')
+const debug = Debug('components:wrappers:Sparkline')
 
 import chartWrapperMixin from '@mixins/chartWrapper.vue'
 

@@ -25,7 +25,7 @@ export default {
     * set/modified by graph.vue or your own logic
     **/
     // focus: true,
-    visible: true,
+    // visible: true,
 
     __range_init: false,
     __stat_unwatcher: undefined,
@@ -585,7 +585,8 @@ export default {
 
         this.$options['charts'][this.id].__buffer_data = this.$options['charts'][this.id].__buffer_data.append(JSON.parse(JSON.stringify(data)))
 
-        debug('no_buffer === false', this.$options['charts'][this.id].__buffer_data)
+        debug('no_buffer === false', this.$options['charts'][this.id].__buffer_data, this.$options['charts'][this.id].stat_data)
+
         // Array.each(Array.clone(this.$options['charts'][this.id].__buffer_data), function (val) {
         Array.each(this.$options['charts'][this.id].__buffer_data, function (val) {
           let found = false
@@ -595,6 +596,10 @@ export default {
 
           if (found === false) { this.$options['charts'][this.id].stat_data.push(val) }
         }.bind(this))
+
+        // this.$options['charts'][this.id].stat_data.sort(function (a, b) {
+        //   return (a.timestamp > b.timestamp) ? 1 : ((b.timestamp > a.timestamp) ? -1 : 0)
+        // })
 
         this.$options['charts'][this.id].__buffer_data = []
         // }
@@ -631,23 +636,27 @@ export default {
       if (this.$options['charts'][this.id].__range_init === true) {
         // if you are not using buffer, you are managing your data, you are in charge of sorting
         if (this.no_buffer === false) {
-          // this.$options['charts'][this.id].stat_data.sort(function (a, b) {
-          //   return (a.timestamp < b.timestamp) ? 1 : ((b.timestamp < a.timestamp) ? -1 : 0)
-          // })
+          this.$options['charts'][this.id].stat_data.sort(function (a, b) {
+            return (a.timestamp < b.timestamp) ? 1 : ((b.timestamp < a.timestamp) ? -1 : 0)
+          })
+
+          debug('__set_stat_data3', this.id, JSON.parse(JSON.stringify(this.$options['charts'][this.id].stat_data))) //
+
+          // let length = this.$options['charts'][this.id].stat_data.length
+          let slice = (!this.chart.interval || this.chart.interval === undefined) ? this.stat.length : this.stat.length * this.chart.interval
+          // let splice = (!this.chart.interval || this.chart.interval === undefined) ? this.stat.length : this.stat.length * this.chart.interval
+          //
+          // this.$options['charts'][this.id].stat_data.splice(
+          //   (splice * -1) + 1,
+          //   length - splice
+          // )
+          this.$options['charts'][this.id].stat_data = this.$options['charts'][this.id].stat_data.slice(0, slice)
+
+          debug('__set_stat_data4', this.id, JSON.parse(JSON.stringify(this.$options['charts'][this.id].stat_data)), slice) //
+
           this.$options['charts'][this.id].stat_data.sort(function (a, b) {
             return (a.timestamp > b.timestamp) ? 1 : ((b.timestamp > a.timestamp) ? -1 : 0)
           })
-
-          let length = this.$options['charts'][this.id].stat_data.length
-          let splice = (!this.chart.interval || this.chart.interval === undefined) ? this.stat.length : this.stat.length * this.chart.interval
-
-          this.$options['charts'][this.id].stat_data.splice(
-            (splice * -1) + 1,
-            length - splice
-          )
-
-          debug('__set_stat_data3', this.id, JSON.parse(JSON.stringify(this.$options['charts'][this.id].stat_data)), splice, length) //
-
           // let length = (!this.chart.interval || this.chart.interval === undefined) ? this.stat.length : this.stat.length * this.chart.interval
           // this.$options['charts'][this.id].stat_data = this.$options['charts'][this.id].stat_data.slice(0, length)
           //

@@ -182,7 +182,7 @@ const generic_callback = function (data, metadata, key, vm) {
     let range = {start: undefined, end: undefined}
     let per_host_range = {start: undefined, end: undefined}
     let timestamp = _data[0].metadata.timestamp // comes sorted by timestamp in desc order, so first item has the biggest timestamp
-    let smallest_start = roundSeconds(timestamp - (5 * SECOND))
+    let smallest_start = roundMilliseconds(timestamp - (5 * SECOND))
     /**
     * logs
     **/
