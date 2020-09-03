@@ -9,20 +9,43 @@
             <q-breadcrumbs-el disabled label="Web"/>
           </q-breadcrumbs>
         </q-toolbar>
-        <q-toolbar>
-          <!-- <q-btn flat round dense icon="assignment_ind"/> -->
-          <!-- <q-toolbar-title>Quasar</q-toolbar-title> -->
-
-          <q-btn flat class="q-mr-xs" label="Web" :to="{name : 'logs_web'}"/>
-          <q-btn flat class="q-mr-xs" label="Educativa" :to="{name : 'logs_educativa'}"/>
-          <!-- <q-btn flat round dense icon="gamepad"/> -->
-        </q-toolbar>
+        <logs-toolbar/>
       </div>
 
+      <q-card flat square>
+        <q-card-section>
+          <div class="netdata-chartblock-container">
+            <chart-tabular
+              :wrapper="{
+                type: 'dygraphBar',
+                props: {
+                  /* smoothness: true, */
+                  colorScheme: $store.state.layout.dashboardColorScheme,
+                  dark: $store.state.layout.dark
+                }
+              }"
+              :always_update="false"
+              :ref="id"
+              :id="id"
+              :stat="stat"
+              :chart="chart"
+              :reactive="false"
+              :no_buffer="false"
+            >
+            <!-- data: [processed_data] -->
+            <!-- stat -> length: 300, -->
+            <!-- :key="view.minute" -->
+            <!-- :always_update="true" re check this, what was used for?-->
+            </chart-tabular>
+          </div>
+        </q-card-section>
+      </q-card>
+
       <q-table
+        flat square
         class="my-sticky-header-table"
         title="Web Logs"
-        :data="webs"
+        :data="logs"
         :columns="columns"
         :row-key="row => row.domain +'.'+ row.host +'.'+ row.path"
         :pagination.sync="pagination"
@@ -104,9 +127,9 @@
               :label="props.row.host"
             />
           </q-td>
-          <!-- <q-td key="timestamp" :props="props">
+          <q-td key="timestamp" :props="props">
             {{ format_time(props.row.timestamp) }}
-          </q-td> -->
+          </q-td>
           <q-td key="path" :props="props">
             <q-btn
               v-on:click="destroy_pipelines()"
@@ -133,6 +156,8 @@
 import * as Debug from 'debug'
 const debug = Debug('apps:logs:web:pages:all')
 
+import LogsToolbar from '@apps/logs/components/toolbar.vue'
+
 import JSPipeline from 'js-pipeline'
 import Pipeline from '@apps/logs/web/pipelines/all'
 
@@ -142,9 +167,16 @@ import DataSourcesMixin from '@mixins/dataSources'
 
 import { requests, store } from '@apps/logs/web/sources/all/index'
 
+import chartTabular from '@components/chart.tabular'
+import dygraph_line_chart from 'mngr-ui-admin-charts/defaults/dygraph.line'
+
+import moment from 'moment'
+
+const SECOND = 1000
+
 export default {
   mixins: [DataSourcesMixin],
-  // components: { LogsWebCard },
+  components: { LogsToolbar, chartTabular },
   // extends: DataSourcesMixin,
 
   name: 'LogsWebsAll',
@@ -157,11 +189,19 @@ export default {
     return {
       height: '0px',
 
-      webs: [],
+      chart: Object.merge(Object.clone(dygraph_line_chart), {style: {width: '100%', height: '100px'}}),
+      // chart: Object.clone(dygraph_line_chart),
+      stat: {
+        data: [],
+        interval: 1,
+        length: 60 // 15 secs
+      },
+
+      logs: [],
 
       search_filter: '',
       loading: true,
-      allColumns: ['View', 'domain', 'host', 'path'],
+      allColumns: ['View', 'domain', 'host', 'path', 'timestamp'],
       visibleColumns: ['domain'],
       pagination: {
         rowsPerPage: 50
@@ -178,13 +218,13 @@ export default {
           sortable: true
         },
         { name: 'host', align: 'left', label: 'Host', field: 'host', sortable: true },
-        // {
-        //   name: 'timestamp',
-        //   align: 'left',
-        //   label: 'Last Update',
-        //   field: 'timestamp',
-        //   sortable: true
-        // },
+        {
+          name: 'timestamp',
+          align: 'left',
+          label: 'Last Update',
+          field: 'timestamp',
+          sortable: true
+        },
         { name: 'path', align: 'left', label: 'Type', field: 'path', sortable: true }
       ],
 
@@ -228,6 +268,19 @@ export default {
   //   }
   // },
   methods: {
+    end: function () {
+      // if (this.current_day === undefined) {
+      return Date.now() - (5 * SECOND)
+      // } else {
+      // return this.current_day
+      // }
+    },
+    format_time: function (timestamp) {
+      return moment(timestamp).format('dddd, MMMM Do YYYY, h:mm:ss a')
+    },
+    format_log: function (log) {
+      return (log.length <= 100) ? log : log.substring(0, 96) + '...'
+    },
     /**
     * @start pipelines
     **/

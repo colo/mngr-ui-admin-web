@@ -1,5 +1,5 @@
 import * as Debug from 'debug'
-const debug = Debug('apps:logs:web:sources:all:requests')
+const debug = Debug('apps:logs:qmail:sources:all:requests')
 
 // import END from '../../../etc/range'
 // const end = require('../../../etc/end')
@@ -15,7 +15,7 @@ const roundMilliseconds = function (timestamp) {
   return d.getTime()
 }
 
-const logs_webs_paths = {
+const logs_qmail_paths = {
   params: function (_key, vm) {
     let source
     let key
@@ -56,7 +56,7 @@ const logs_webs_paths = {
             'metadata'
           ],
           filter: [
-            "this.r.row('metadata')('tag').contains('web')"
+            "this.r.row('metadata')('tag').contains('qmail.send')"
           ],
           'transformation': [
             { 'orderBy': { 'index': 'r.desc(timestamp)' } }
@@ -68,7 +68,7 @@ const logs_webs_paths = {
 
     // debug('MyChart periodical KEY ', key, source)
 
-    // if (!vm.web) {
+    // if (!vm.qmail) {
     //
     // }
 
@@ -95,7 +95,8 @@ const logs_webs_paths = {
         if (timestamp >= smallest_start) {
           logs.push(row.metadata)
 
-          let path = row.metadata.path
+          // let path = row.metadata.path
+          let path = row.metadata.domain
 
           if (!timestamps[timestamp]) timestamps[timestamp] = {}
           if (!timestamps[timestamp][path]) timestamps[timestamp][path] = 0
@@ -172,14 +173,14 @@ const logs_webs_paths = {
   //   // let _hosts_paths = {}
   //   // let _paths = []
   //
-  //   let webs = []
+  //   let qmail = []
   //   if (data && data.logs && data.logs.length > 0) {
   //     // debug('CALLBACK', data)
   //
   //     Array.each(data.logs, function (group) {
   //       debug('GROUP', group)
   //       Array.each(group, function (row) {
-  //         webs.push(row.metadata)
+  //         qmail.push(row.metadata)
   //         //       let host = plugin.metadata.host
   //         //       // debug('All callback', plugin)
   //         //       let path = (plugin.metadata.path) ? plugin.metadata.path : undefined
@@ -200,10 +201,10 @@ const logs_webs_paths = {
   //     //     paths.sort(function (a, b) { return (a > b) ? 1 : ((b > a) ? -1 : 0) })
   //     //   })
   //     //
-  //     webs.sort(function (a, b) { return (a.domain > b.domain) ? 1 : ((b.domain > a.domain) ? -1 : 0) })
+  //     qmail.sort(function (a, b) { return (a.domain > b.domain) ? 1 : ((b.domain > a.domain) ? -1 : 0) })
   //
-  //     if (webs.length > 0) {
-  //       vm.webs = webs
+  //     if (qmail.length > 0) {
+  //       vm.qmail = qmail
   //       vm.loading = false
   //     }
   //
@@ -215,11 +216,11 @@ const logs_webs_paths = {
 }
 
 const once = [
-  logs_webs_paths
+  logs_qmail_paths
 ]
 
 const periodical = [
-  logs_webs_paths
+  logs_qmail_paths
 ]
 
 const requests = {
@@ -227,5 +228,5 @@ const requests = {
   once: once
 }
 
-export { periodical, once, logs_webs_paths }
+export { periodical, once, logs_qmail_paths }
 export default requests

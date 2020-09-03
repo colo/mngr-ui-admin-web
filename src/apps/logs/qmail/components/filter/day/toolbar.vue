@@ -17,18 +17,18 @@
 </template>
 <script>
 import * as Debug from 'debug'
-const debug = Debug('apps:logs:educativa:components:filter:day:toolbar')
+const debug = Debug('apps:logs:web:components:filter:day:toolbar')
 
 import moment from 'moment'
 import { date } from 'quasar'
 
 export default {
 
-  name: 'LogsEducativaFilterDayToolbar',
+  name: 'LogsWebFilterDayToolbar',
 
   data () {
     return {
-      id: 'logs.educativa.filter.day.toolbar',
+      id: 'logs.web.filter.day.toolbar',
       // path: 'all',
       //
       // current_day: undefined,
@@ -71,9 +71,9 @@ export default {
       // },
       //
       // store: false,
-      // // pipeline_id: 'input.logs.educativa.filter',
+      // // pipeline_id: 'input.logs.web.filter',
       // pipeline_id: [
-      //   'input.logs.educativa.filter.day',
+      //   'input.logs.web.filter.day',
       // ],
 
     }
@@ -97,17 +97,17 @@ export default {
   },
   watch: {
     selected_time (value) {
-      debug('selected_time %s', new Date(moment(value, 'hh:mm').unix() * 1000))
+      debug('selected_time %s', new Date(moment(value, 'YYYY/MM/DD').unix() * 1000))
       this.$emit('selected_time', value)
       // if (roundSeconds(moment(this.selected_time, 'hh:mm').unix() * 1000) === roundSeconds(Date.now())) {
-      //   this.current_minute = undefined
+      //   this.current_day = undefined
       // } else {
-      //   this.current_minute = (moment(this.selected_time, 'hh:mm').unix() * 1000) + MINUTE
+      //   this.current_day = (moment(this.selected_time, 'hh:mm').unix() * 1000) + MINUTE
       // }
       // // this.$nextTick(function () {
-      // this.destroy_pipelines('input.logs.web.filter.minute')
-      // this.create_pipelines('input.logs.web.filter.minute')
-      // this.resume_pipelines('input.logs.web.filter.minute')
+      // this.destroy_pipelines('input.logs.web.filter.day')
+      // this.create_pipelines('input.logs.web.filter.day')
+      // this.resume_pipelines('input.logs.web.filter.day')
       // // }.bind(this))
       //
       // // this.convertedDates = `${start} - ${end}`

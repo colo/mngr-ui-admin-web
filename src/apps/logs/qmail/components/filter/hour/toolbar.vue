@@ -5,45 +5,49 @@
     </q-toolbar-title>
     <template>
       <div class="q-pa-md">
-          <q-btn flat dense icon="calendar_today" />
-          <q-popup-proxy v-model="showCalendar" ref="qDateProxy" transition-show="scale" transition-hide="scale">
-              <q-date v-model="selected_time" :options="disabled_days" minimal/>
-          </q-popup-proxy>
+
+        <q-btn flat dense icon="access_time" />
+        <q-popup-proxy v-model="showHour" ref="qHourProxy" transition-show="scale" transition-hide="scale">
+            <q-time
+              v-model="selected_time"
+              :options="disabled_hours"
+              now-btn
+              />
+        </q-popup-proxy>
 
       </div>
     </template>
   </q-toolbar>
-
 </template>
 <script>
 import * as Debug from 'debug'
-const debug = Debug('apps:logs:educativa:components:filter:day:toolbar')
+const debug = Debug('apps:logs:web:components:filter:hour:toolbar')
 
 import moment from 'moment'
 import { date } from 'quasar'
 
 export default {
 
-  name: 'LogsEducativaFilterDayToolbar',
+  name: 'LogsWebFilterHourToolbar',
 
   data () {
     return {
-      id: 'logs.educativa.filter.day.toolbar',
+      id: 'logs.web.filter.hour.toolbar',
       // path: 'all',
       //
-      // current_day: undefined,
+      // current_hour: undefined,
       // top: 15,
       //
       // /** calendar **/
       //
-      selected_time: date.formatDate(Date.now(), 'YYYY/MM/DD'),
+      selected_time: date.formatDate(Date.now(), 'HH') + ':00',
       //
       // showCalendar: false,
 
       showCalendar: false,
-      showDay: false,
+      showHour: false,
 
-      // day: {
+      // hour: {
       //   top_city_counter: {},
       //   top_country_counter: {},
       //
@@ -71,9 +75,9 @@ export default {
       // },
       //
       // store: false,
-      // // pipeline_id: 'input.logs.educativa.filter',
+      // // pipeline_id: 'input.logs.web.filter',
       // pipeline_id: [
-      //   'input.logs.educativa.filter.day',
+      //   'input.logs.web.filter.hour',
       // ],
 
     }
@@ -100,14 +104,14 @@ export default {
       debug('selected_time %s', new Date(moment(value, 'hh:mm').unix() * 1000))
       this.$emit('selected_time', value)
       // if (roundSeconds(moment(this.selected_time, 'hh:mm').unix() * 1000) === roundSeconds(Date.now())) {
-      //   this.current_minute = undefined
+      //   this.current_hour = undefined
       // } else {
-      //   this.current_minute = (moment(this.selected_time, 'hh:mm').unix() * 1000) + MINUTE
+      //   this.current_hour = (moment(this.selected_time, 'hh:mm').unix() * 1000) + MINUTE
       // }
       // // this.$nextTick(function () {
-      // this.destroy_pipelines('input.logs.web.filter.minute')
-      // this.create_pipelines('input.logs.web.filter.minute')
-      // this.resume_pipelines('input.logs.web.filter.minute')
+      // this.destroy_pipelines('input.logs.web.filter.hour')
+      // this.create_pipelines('input.logs.web.filter.hour')
+      // this.resume_pipelines('input.logs.web.filter.hour')
       // // }.bind(this))
       //
       // // this.convertedDates = `${start} - ${end}`
@@ -120,9 +124,19 @@ export default {
       return moment(timestamp).format('dddd, MMMM Do YYYY, h:mm:ss a')
     },
     /** calendar **/
-    disabled_days: function (date) {
-      return date <= moment().format('YYYY/MM/DD')
-      // && date <= '2019/02/15'
+    disabled_hours (hr, min, sec) {
+      debug('disabled_hours ', hr, min, sec)
+      if (hr) {
+        if (min) {
+          return false
+        }
+        return hr <= moment().format('HH')
+      }
+
+      // if (sec !== null && sec % 10 !== 0) {
+      //   return false
+      // }
+      return true
     },
   }
 }

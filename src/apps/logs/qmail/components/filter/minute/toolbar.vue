@@ -1,49 +1,69 @@
 <template>
   <q-toolbar class="text-primary">
+    <!-- <q-btn flat round dense icon="menu" /> -->
     <q-toolbar-title>
       From: {{ format_time(range.start) }} - To: {{ format_time(range.end) }} / Updated on: {{ format_time(timestamp) }}
     </q-toolbar-title>
+    <!-- <q-space class="text-primary"/> -->
     <template>
       <div class="q-pa-md">
-          <q-btn flat dense icon="calendar_today" />
-          <q-popup-proxy v-model="showCalendar" ref="qDateProxy" transition-show="scale" transition-hide="scale">
-              <q-date v-model="selected_time" :options="disabled_days" minimal/>
-          </q-popup-proxy>
+
+        <q-btn flat dense icon="access_time" />
+        <q-popup-proxy v-model="showMinute" ref="qMinuteProxy" transition-show="scale" transition-hide="scale">
+            <q-time
+              v-model="selected_time"
+              :options="disabled_minutes"
+              now-btn
+              />
+              <!-- format24h -->
+            <!-- @input="() => $refs.qDateProxy.hide()"  -->
+          <!-- <q-calendar
+            ref="calendar"
+            v-model="selectedDate"
+            view="month"
+            locale="en-us"
+            mini-mode
+            :selected-start-end-dates="startEndDates"
+            :day-class="classDay"
+            @mousedown:day="onMouseDownDay"
+            @mouseup:day="onMouseUpDay"
+            @mousemove:day="onMouseMoveDay"
+            :disabled-after="disabled_after()"
+          /> -->
+        </q-popup-proxy>
 
       </div>
     </template>
   </q-toolbar>
-
 </template>
 <script>
 import * as Debug from 'debug'
-const debug = Debug('apps:logs:educativa:components:filter:day:toolbar')
+const debug = Debug('apps:logs:web:components:filter:minute:toolbar')
 
 import moment from 'moment'
 import { date } from 'quasar'
 
 export default {
 
-  name: 'LogsEducativaFilterDayToolbar',
+  name: 'LogsWebFilterMinuteToolbar',
 
   data () {
     return {
-      id: 'logs.educativa.filter.day.toolbar',
+      id: 'logs.web.filter.minute.toolbar',
       // path: 'all',
       //
-      // current_day: undefined,
+      // current_minute: undefined,
       // top: 15,
       //
       // /** calendar **/
       //
-      selected_time: date.formatDate(Date.now(), 'YYYY/MM/DD'),
+      selected_time: date.formatDate(Date.now(), 'HH:mm'),
       //
       // showCalendar: false,
 
-      showCalendar: false,
-      showDay: false,
+      showMinute: false,
 
-      // day: {
+      // minute: {
       //   top_city_counter: {},
       //   top_country_counter: {},
       //
@@ -71,9 +91,9 @@ export default {
       // },
       //
       // store: false,
-      // // pipeline_id: 'input.logs.educativa.filter',
+      // // pipeline_id: 'input.logs.web.filter',
       // pipeline_id: [
-      //   'input.logs.educativa.filter.day',
+      //   'input.logs.web.filter.minute',
       // ],
 
     }
@@ -120,9 +140,19 @@ export default {
       return moment(timestamp).format('dddd, MMMM Do YYYY, h:mm:ss a')
     },
     /** calendar **/
-    disabled_days: function (date) {
-      return date <= moment().format('YYYY/MM/DD')
-      // && date <= '2019/02/15'
+    disabled_minutes (hr, min, sec) {
+      debug('disabled_minutes ', hr, min, sec)
+      if (hr) {
+        if (min !== null) {
+          return min <= moment().format('mm')
+        }
+        return false
+      }
+
+      // if (sec !== null && sec % 10 !== 0) {
+      //   return false
+      // }
+      return true
     },
   }
 }

@@ -6,7 +6,7 @@
           <q-breadcrumbs active-color="white" style="font-size: 16px">
             <q-breadcrumbs-el label="Home" icon="home" to="/"/>
             <q-breadcrumbs-el label="Logs" :to="{name : 'logs'}"/>
-            <q-breadcrumbs-el disabled label="Educativa"/>
+            <q-breadcrumbs-el disabled label="Web"/>
           </q-breadcrumbs>
         </q-toolbar>
         <logs-toolbar/>
@@ -56,8 +56,7 @@
         :filter="search_filter"
       >
       <!-- dark
-      color="amber"
-       -->
+      color="amber" -->
         <template v-slot:top="props">
           <q-select
             v-if="$q.screen.lt.sm"
@@ -104,7 +103,7 @@
             <!-- <q-btn type="a" :href="props.row.schema+'://'+props.row.uri+':'+props.row.port" target="_blank" flat icon="open_in_new" /> -->
             <q-btn
               v-on:click="destroy_pipelines()"
-              :to="'/logs/educativa/filter/?domain=' + props.row.domain+'&host=' + props.row.host+'&path=' + props.row.path"
+              :to="'/logs/qmail/filter/?domain=' + props.row.domain+'&host=' + props.row.host+'&path=' + props.row.path"
               flat
               icon="open_in_browser"
             />
@@ -114,9 +113,7 @@
             <!-- <q-btn type="a" :href="props.row.schema+'://'+props.row.uri+':'+props.row.port" target="_blank" flat icon="open_in_new" /> -->
             <q-btn
               v-on:click="destroy_pipelines()"
-              :to="'/logs/educativa/filter/?domain=' + props.row.domain"
-              flat
-              icon="open_in_browser"
+              :to="'/logs/qmail/filter/?domain=' + props.row.domain" flat icon="open_in_browser"
               :label="props.row.domain"
             />
           </q-td>
@@ -124,7 +121,7 @@
           <q-td key="host" :props="props">
             <q-btn
               v-on:click="destroy_pipelines()"
-              :to="'/logs/educativa/filter/?host=' + props.row.host"
+              :to="'/logs/qmail/filter/?host=' + props.row.host"
               flat
               icon="open_in_browser"
               :label="props.row.host"
@@ -136,9 +133,7 @@
           <q-td key="path" :props="props">
             <q-btn
               v-on:click="destroy_pipelines()"
-              :to="'/logs/educativa/filter/?path=' + props.row.path"
-              flat
-              icon="open_in_browser"
+              :to="'/logs/qmail/filter/?path=' + props.row.path" flat icon="open_in_browser"
               :label="props.row.path"
             />
           </q-td>
@@ -146,10 +141,6 @@
         </template>
       </q-table>
     </div>
-
-    <!-- <vk-card class="uk-background-secondary">
-
-    </vk-card> -->
 
     <q-page-scroller position="bottom-right" :scroll-offset="150" :offset="[18, 18]" :duration="50">
       <q-btn fab icon="keyboard_arrow_up" color="accent" />
@@ -163,18 +154,18 @@
 // import HelloWorld from '@/components/HelloWorld.vue'
 
 import * as Debug from 'debug'
-const debug = Debug('apps:logs:educativa:pages:all')
+const debug = Debug('apps:logs:qmail:pages:all')
 
 import LogsToolbar from '@apps/logs/components/toolbar.vue'
 
 import JSPipeline from 'js-pipeline'
-import Pipeline from '@apps/logs/educativa/pipelines/all'
+import Pipeline from '@apps/logs/qmail/pipelines/all'
 
 import DataSourcesMixin from '@mixins/dataSources'
 
-// import LogsWebCard from '@apps/logs/components/webCard.vue'
+// import LogsWebCard from '@apps/logs/components/qmailCard.vue'
 
-import { requests, store } from '@apps/logs/educativa/sources/all/index'
+import { requests, store } from '@apps/logs/qmail/sources/all/index'
 
 import chartTabular from '@components/chart.tabular'
 import dygraph_line_chart from 'mngr-ui-admin-charts/defaults/dygraph.line'
@@ -188,7 +179,7 @@ export default {
   components: { LogsToolbar, chartTabular },
   // extends: DataSourcesMixin,
 
-  name: 'LogsEducativaAll',
+  name: 'LogsWebsAll',
 
   // pipelines: {},
   // __pipelines_cfg: {},
@@ -237,16 +228,16 @@ export default {
         { name: 'path', align: 'left', label: 'Type', field: 'path', sortable: true }
       ],
 
-      // web: undefined,
-      // webs_paths: {},
+      // qmail: undefined,
+      // qmail_paths: {},
       // paths: [],
       /**
       * dataSources
       **/
       store: false,
-      pipeline_id: 'input.logs.educativa.all',
+      pipeline_id: 'input.logs.qmail.all',
 
-      id: 'logs.educativa.all',
+      id: 'logs.qmail.all',
       path: 'all',
 
       components: {
@@ -264,13 +255,13 @@ export default {
     }
   },
   // computed: {
-  //   'web': function () {
-  //     return (this.$route && this.$route.params && this.$route.params.web) ? this.$route.params.web : undefined
+  //   'qmail': function () {
+  //     return (this.$route && this.$route.params && this.$route.params.qmail) ? this.$route.params.qmail : undefined
   //   }
   // },
   // computed: {
-  //   'web': function () {
-  //     // return (this.$route && this.$route.params && this.$route.params.web) ? this.$route.params.web : undefined
+  //   'qmail': function () {
+  //     // return (this.$route && this.$route.params && this.$route.params.qmail) ? this.$route.params.qmail : undefined
   //     return (this.$route && this.$route.query)
   //       ? (this.$route.query.domain) ? this.$route.query.domain : (this.$route.query.host) ? this.$route.query.host : this.$route.query.path
   //       : undefined
@@ -296,16 +287,16 @@ export default {
     create_pipelines: function (next) {
       debug('create_pipelines %o', this.$options.pipelines)
 
-      if (this.$options.pipelines['input.logs.educativa.all'] && this.$options.pipelines['input.logs.educativa.all'].get_input_by_id('input.logs.educativa.all')) {
+      if (this.$options.pipelines['input.logs.qmail.all'] && this.$options.pipelines['input.logs.qmail.all'].get_input_by_id('input.logs.qmail.all')) {
         // let requests = this.__components_sources_to_requests(this.components)
         // if (requests.once) {
-        //   this.$options.pipelines['input.logs.educativa.all'].get_input_by_id('input.logs.educativa.all').conn_pollers[0].options.requests.once.combine(requests.once)
-        //   this.$options.pipelines['input.logs.educativa.all'].get_input_by_id('input.logs.educativa.all').conn_pollers[0].fireEvent('onOnceRequestsUpdated')
+        //   this.$options.pipelines['input.logs.qmail.all'].get_input_by_id('input.logs.qmail.all').conn_pollers[0].options.requests.once.combine(requests.once)
+        //   this.$options.pipelines['input.logs.qmail.all'].get_input_by_id('input.logs.qmail.all').conn_pollers[0].fireEvent('onOnceRequestsUpdated')
         // }
         //
         // if (requests.periodical) {
-        //   this.$options.pipelines['input.logs.educativa.all'].get_input_by_id('input.logs.educativa.all').conn_pollers[0].options.requests.periodical.combine(requests.periodical)
-        //   this.$options.pipelines['input.logs.educativa.all'].get_input_by_id('input.logs.educativa.all').conn_pollers[0].fireEvent('onPeriodicalRequestsUpdated')
+        //   this.$options.pipelines['input.logs.qmail.all'].get_input_by_id('input.logs.qmail.all').conn_pollers[0].options.requests.periodical.combine(requests.periodical)
+        //   this.$options.pipelines['input.logs.qmail.all'].get_input_by_id('input.logs.qmail.all').conn_pollers[0].fireEvent('onPeriodicalRequestsUpdated')
         // }
       } else {
         let template = Object.clone(Pipeline)

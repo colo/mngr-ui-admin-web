@@ -12,14 +12,7 @@
             <q-breadcrumbs-el :label="type +':'+ web" v-if="type && web" />
           </q-breadcrumbs>
         </q-toolbar>
-        <q-toolbar>
-          <!-- <q-btn flat round dense icon="assignment_ind"/> -->
-          <!-- <q-toolbar-title>Quasar</q-toolbar-title> -->
-
-          <q-btn flat class="q-mr-xs" label="Web" :to="{name : 'logs_web'}"/>
-          <q-btn flat class="q-mr-xs" label="Educativa" :to="{name : 'logs_educativa'}"/>
-          <!-- <q-btn flat round dense icon="gamepad"/> -->
-        </q-toolbar>
+        <logs-toolbar/>
       </div>
       <!-- -->
       <q-tabs
@@ -39,22 +32,27 @@
       <q-separator />
       <q-tab-panels v-model="range_tab">
         <!-- animated -->
-        <q-tab-panel name="periodical" :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical'">
-          <!-- <div class="text-h6">From: {{ format_time(periodical.range.start) }} - To: {{ format_time(periodical.range.end) }} / Updated on: {{ format_time(periodical.timestamp) }}</div> -->
+        <q-tab-panel name="periodical">
+          <!-- :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical'" -->
           <logs-educativa-filter-periodical/>
-
         </q-tab-panel>
 
-        <q-tab-panel name="minute" :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute'">
-          <logs-educativa-filter-minute/>
+        <q-tab-panel name="minute">
+           <!-- :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute'" -->
+          <!-- <logs-educativa-filter-minute/> -->
+          <logs-educativa-filter-historical :type="'minute'"/>
         </q-tab-panel>
 
-        <q-tab-panel name="hour" :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour'">
-          <logs-educativa-filter-hour/>
+        <q-tab-panel name="hour">
+           <!-- :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour'" -->
+          <!-- <logs-educativa-filter-hour/> -->
+          <logs-educativa-filter-historical :type="'hour'"/>
         </q-tab-panel>
 
-        <q-tab-panel name="day" :key="$route.path +'.'+ JSON.stringify($route.query)+'.day'">
-          <logs-educativa-filter-day/>
+        <q-tab-panel name="day">
+          <!-- :key="$route.path +'.'+ JSON.stringify($route.query)+'.day'" -->
+          <!-- <logs-educativa-filter-day/> -->
+          <logs-educativa-filter-historical :type="'day'"/>
         </q-tab-panel>
       </q-tab-panels>
 
@@ -72,12 +70,15 @@
 import * as Debug from 'debug'
 const debug = Debug('apps:logs:educativa:pages:filter')
 
+import LogsToolbar from '@apps/logs/components/toolbar.vue'
+
 import { date } from 'quasar'
 
 import LogsEducativaFilterPeriodical from '@apps/logs/educativa/components/filter/periodical'
-import LogsEducativaFilterMinute from '@apps/logs/educativa/components/filter/minute'
-import LogsEducativaFilterHour from '@apps/logs/educativa/components/filter/hour'
-import LogsEducativaFilterDay from '@apps/logs/educativa/components/filter/day'
+import LogsEducativaFilterHistorical from '@apps/logs/educativa/components/filter/historical'
+// import LogsEducativaFilterMinute from '@apps/logs/educativa/components/filter/minute'
+// import LogsEducativaFilterHour from '@apps/logs/educativa/components/filter/hour'
+// import LogsEducativaFilterDay from '@apps/logs/educativa/components/filter/day'
 
 // const MAX_FEED_DATA = 10
 import moment from 'moment'
@@ -125,7 +126,14 @@ const WEEK = DAY * 7
 
 export default {
 
-  components: { LogsEducativaFilterPeriodical, LogsEducativaFilterMinute, LogsEducativaFilterHour, LogsEducativaFilterDay },
+  components: {
+    LogsToolbar,
+    LogsEducativaFilterPeriodical,
+    LogsEducativaFilterHistorical,
+    // LogsEducativaFilterMinute,
+    // LogsEducativaFilterHour,
+    // LogsEducativaFilterDay
+  },
 
   name: 'LogsEducativaFilter',
 

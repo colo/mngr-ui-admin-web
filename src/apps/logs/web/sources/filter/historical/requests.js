@@ -15,7 +15,7 @@ const generic_callback = function (data, metadata, key, vm) {
   const END = vm.end()
   const TOP = vm.top
 
-  if (/historical/.test(key) && data.logs_historical && Object.getLength(data.logs_historical) > 0) {
+  if (/historical/.test(key) && data[key] && Object.getLength(data[key]) > 0) {
     data = JSON.parse(JSON.stringify(data))
     debug('HISTORICAL HOST CALLBACK data %s %o', key, data, END)
     // let type
@@ -25,10 +25,10 @@ const generic_callback = function (data, metadata, key, vm) {
 
     let range = {start: undefined, end: undefined}
     let per_host_range = {start: undefined, end: undefined}
-    let timestamp = data.logs_historical[0].metadata.timestamp // comes sorted by timestamp in desc order, so first item has the biggest timestamp
+    let timestamp = data[key][0].metadata.timestamp // comes sorted by timestamp in desc order, so first item has the biggest timestamp
     let smallest_start = vm.round(timestamp)
 
-    Array.each(data.logs_historical, function (row) {
+    Array.each(data[key], function (row) {
       let start = row.metadata.range.start
       let end = row.metadata.range.end
 
@@ -356,7 +356,7 @@ const generic_callback = function (data, metadata, key, vm) {
 
     data = undefined
 
-    // // data = data.logs_historical[0]
+    // // data = data[key][0]
     //
     // // if (/minute/.test(key)){
     // //   const START = END - MINUTE
@@ -373,7 +373,8 @@ const host_once_component = {
 
     if (!_key) {
       // key = ['periodical.once', 'historical.minute.once', 'historical.hour.once', 'historical.day.once']// 'config.once',
-      key = ['historical.' + vm.type + '.once']// 'config.once',
+      // key = ['historical.' + vm.type + '.once']// 'config.once',
+      key = ['logs_historical_' + vm.type]// 'config.once',
     }
 
     if (
@@ -467,7 +468,7 @@ const host_once_component = {
         path: 'all',
         range: 'posix ' + START + '-' + END + '/*',
         query: {
-          'from': 'logs_historical',
+          'from': 'logs_historical_' + vm.type,
           'index': false,
           /**
           * right now needed to match OUTPUT 'id' with this query (need to @fix)

@@ -9,7 +9,7 @@
         <q-btn flat dense icon="access_time" />
         <q-popup-proxy v-model="showHour" ref="qHourProxy" transition-show="scale" transition-hide="scale">
             <q-time
-              v-model="selected_hour"
+              v-model="selected_time"
               :options="disabled_hours"
               now-btn
               />
@@ -40,7 +40,7 @@ export default {
       //
       // /** calendar **/
       //
-      selected_hour: date.formatDate(Date.now(), 'HH') + ':00',
+      selected_time: date.formatDate(Date.now(), 'HH') + ':00',
       //
       // showCalendar: false,
 
@@ -100,18 +100,18 @@ export default {
 
   },
   watch: {
-    selected_hour () {
-      debug('selected_hour %s', new Date(moment(this.selected_hour, 'hh:mm').unix() * 1000))
-      this.$emit('selected_hour', this.selected_hour)
-      // if (roundSeconds(moment(this.selected_hour, 'hh:mm').unix() * 1000) === roundSeconds(Date.now())) {
-      //   this.current_hour = undefined
+    selected_time (value) {
+      debug('selected_time %s', new Date(moment(value, 'hh:mm').unix() * 1000))
+      this.$emit('selected_time', value)
+      // if (roundSeconds(moment(this.selected_time, 'hh:mm').unix() * 1000) === roundSeconds(Date.now())) {
+      //   this.current_minute = undefined
       // } else {
-      //   this.current_hour = (moment(this.selected_hour, 'hh:mm').unix() * 1000) + MINUTE
+      //   this.current_minute = (moment(this.selected_time, 'hh:mm').unix() * 1000) + MINUTE
       // }
       // // this.$nextTick(function () {
-      // this.destroy_pipelines('input.logs.educativa.filter.hour')
-      // this.create_pipelines('input.logs.educativa.filter.hour')
-      // this.resume_pipelines('input.logs.educativa.filter.hour')
+      // this.destroy_pipelines('input.logs.web.filter.minute')
+      // this.create_pipelines('input.logs.web.filter.minute')
+      // this.resume_pipelines('input.logs.web.filter.minute')
       // // }.bind(this))
       //
       // // this.convertedDates = `${start} - ${end}`

@@ -11,12 +11,9 @@
             <q-breadcrumbs-el disabled label="Logs"/>
           </q-breadcrumbs>
         </q-toolbar>
-        <q-toolbar>
-          <q-btn flat class="q-mr-xs" label="Web" :to="{name : 'logs_web'}"/>
-          <q-btn flat class="q-mr-xs" label="Educativa" :to="{name : 'logs_educativa'}"/>
-        </q-toolbar>
+        <logs-toolbar/>
       </div>
-      <q-card>
+      <q-card flat square>
         <q-card-section>
           <div class="netdata-chartblock-container">
             <chart-tabular
@@ -46,6 +43,7 @@
       </q-card>
 
       <q-table
+        flat square
         class="my-sticky-header-table"
         title="Logs"
         :data="logs"
@@ -172,6 +170,8 @@
 import * as Debug from 'debug'
 const debug = Debug('apps:logs:pages:all')
 
+import LogsToolbar from '@apps/logs/components/toolbar.vue'
+
 import JSPipeline from 'js-pipeline'
 import Pipeline from '@apps/logs/pipelines//all'
 
@@ -190,7 +190,8 @@ const SECOND = 1000
 
 export default {
   mixins: [DataSourcesMixin],
-  components: { ecCardHover, chartTabular },
+  // components: { ecCardHover, LogsToolbar, chartTabular },
+  components: { LogsToolbar, chartTabular },
   // extends: DataSourcesMixin,
 
   name: 'LogsWebsAll',

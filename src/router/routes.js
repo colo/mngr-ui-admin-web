@@ -235,12 +235,39 @@ const routes = [
             // ]
           },
           {
+            path: 'qmail',
+            name: 'logs_qmail',
+            redirect: { name: 'logs_qmail_all' },
+            component: () => import(/* webpackChunkName: "logs.qmail" */ '@apps/logs/qmail/index.vue'),
+            meta: {
+              breadcrumb: { label: 'Logs Qmail', icon: 'widgets', app: 'logs' }
+            },
+            children: [
+              {
+                path: '',
+                name: 'logs_qmail_all',
+                component: () => import(/* webpackChunkName: "logs.qmail.all" */ '@apps/logs/qmail/pages/all.vue'),
+                meta: {
+                  breadcrumb: { label: 'Logs Qmail All', icon: 'widgets', app: 'logs' }
+                }
+              },
+              {
+                path: 'filter',
+                name: 'logs_qmail_filter',
+                component: () => import(/* webpackChunkName: "logs.qmail.filter" */ '@apps/logs/qmail/pages/filter.vue'),
+                meta: {
+                  breadcrumb: { label: 'Logs Qmail Filter', icon: 'widgets', app: 'logs' }
+                }
+              }
+            ]
+          },
+          {
             path: 'educativa',
             name: 'logs_educativa',
             redirect: { name: 'logs_educativa_all' },
             component: () => import(/* webpackChunkName: "logs.educativa" */ '@apps/logs/educativa/index.vue'),
             meta: {
-              breadcrumb: { label: 'Logs Webs', icon: 'widgets', app: 'logs' }
+              breadcrumb: { label: 'Logs Educativa', icon: 'widgets', app: 'logs' }
             },
             children: [
               {
@@ -248,7 +275,7 @@ const routes = [
                 name: 'logs_educativa_all',
                 component: () => import(/* webpackChunkName: "logs.educativa.all" */ '@apps/logs/educativa/pages/all.vue'),
                 meta: {
-                  breadcrumb: { label: 'Logs Webs All', icon: 'widgets', app: 'logs' }
+                  breadcrumb: { label: 'Logs Educativa All', icon: 'widgets', app: 'logs' }
                 }
               },
               {
@@ -256,7 +283,7 @@ const routes = [
                 name: 'logs_educativa_filter',
                 component: () => import(/* webpackChunkName: "logs.educativa.filter" */ '@apps/logs/educativa/pages/filter.vue'),
                 meta: {
-                  breadcrumb: { label: 'Logs Webs Filter', icon: 'widgets', app: 'logs' }
+                  breadcrumb: { label: 'Logs Educativa Filter', icon: 'widgets', app: 'logs' }
                 }
               }
             ]
@@ -267,7 +294,7 @@ const routes = [
             redirect: { name: 'logs_web_all' },
             component: () => import(/* webpackChunkName: "logs.web" */ '@apps/logs/web/index.vue'),
             meta: {
-              breadcrumb: { label: 'Logs Webs', icon: 'widgets', app: 'logs' }
+              breadcrumb: { label: 'Logs Web', icon: 'widgets', app: 'logs' }
             },
             children: [
               {
@@ -275,7 +302,7 @@ const routes = [
                 name: 'logs_web_all',
                 component: () => import(/* webpackChunkName: "logs.web.all" */ '@apps/logs/web/pages/all.vue'),
                 meta: {
-                  breadcrumb: { label: 'Logs Webs All', icon: 'widgets', app: 'logs' }
+                  breadcrumb: { label: 'Logs Web All', icon: 'widgets', app: 'logs' }
                 }
               },
               {
@@ -283,7 +310,7 @@ const routes = [
                 name: 'logs_web_filter',
                 component: () => import(/* webpackChunkName: "logs.web.filter" */ '@apps/logs/web/pages/filter.vue'),
                 meta: {
-                  breadcrumb: { label: 'Logs Webs Filter', icon: 'widgets', app: 'logs' }
+                  breadcrumb: { label: 'Logs Web Filter', icon: 'widgets', app: 'logs' }
                 }
               }
             ]

@@ -7,9 +7,9 @@
           <q-breadcrumbs active-color="white" style="font-size: 16px">
             <q-breadcrumbs-el label="Home" icon="home" to="/"/>
             <q-breadcrumbs-el label="Logs" :to="{name : 'logs'}"/>
-            <q-breadcrumbs-el label="Web" :to="{name : 'logs_web'}"/>
+            <q-breadcrumbs-el label="Qmail" :to="{name : 'logs_qmail'}"/>
             <q-breadcrumbs-el label="Filter" v-if="filterType"/>
-            <q-breadcrumbs-el :label="filterType +':'+ web" v-if="filterType && web" />
+            <q-breadcrumbs-el :label="filterType +':'+ qmail" v-if="filterType && qmail" />
           </q-breadcrumbs>
         </q-toolbar>
         <logs-toolbar/>
@@ -34,25 +34,25 @@
         <!-- animated -->
         <q-tab-panel name="periodical">
           <!-- :key="$route.path +'.'+ JSON.stringify($route.query)+'.periodical'" -->
-          <logs-web-filter-periodical/>
+          <logs-qmail-filter-periodical/>
         </q-tab-panel>
 
         <q-tab-panel name="minute">
            <!-- :key="$route.path +'.'+ JSON.stringify($route.query)+'.minute'" -->
-          <!-- <logs-web-filter-minute/> -->
-          <logs-web-filter-historical :type="'minute'"/>
+          <!-- <logs-qmail-filter-minute/> -->
+          <logs-qmail-filter-historical :type="'minute'"/>
         </q-tab-panel>
 
         <q-tab-panel name="hour">
            <!-- :key="$route.path +'.'+ JSON.stringify($route.query)+'.hour'" -->
-          <!-- <logs-web-filter-hour/> -->
-          <logs-web-filter-historical :type="'hour'"/>
+          <!-- <logs-qmail-filter-hour/> -->
+          <logs-qmail-filter-historical :type="'hour'"/>
         </q-tab-panel>
 
         <q-tab-panel name="day">
           <!-- :key="$route.path +'.'+ JSON.stringify($route.query)+'.day'" -->
-          <!-- <logs-web-filter-day/> -->
-          <logs-web-filter-historical :type="'day'"/>
+          <!-- <logs-qmail-filter-day/> -->
+          <logs-qmail-filter-historical :type="'day'"/>
         </q-tab-panel>
       </q-tab-panels>
 
@@ -68,7 +68,7 @@
 <script>
 /* eslint handle-callback-err: "off" */
 import * as Debug from 'debug'
-const debug = Debug('apps:logs:web:pages:filter')
+const debug = Debug('apps:logs:qmail:pages:filter')
 
 import LogsToolbar from '@apps/logs/components/toolbar.vue'
 
@@ -82,25 +82,25 @@ import LogsToolbar from '@apps/logs/components/toolbar.vue'
 // import DataSourcesMixin from '@mixins/dataSources'
 // import chartTabular from '@components/chart.tabular'
 
-import LogsWebFilterPeriodical from '@apps/logs/web/components/filter/periodical'
-import LogsWebFilterHistorical from '@apps/logs/web/components/filter/historical'
-// import LogsWebFilterMinute from '@apps/logs/web/components/filter/minute'
-// import LogsWebFilterHour from '@apps/logs/web/components/filter/hour'
-// import LogsWebFilterDay from '@apps/logs/web/components/filter/day'
+import LogsQmailFilterPeriodical from '@apps/logs/qmail/components/filter/periodical'
+import LogsQmailFilterHistorical from '@apps/logs/qmail/components/filter/historical'
+// import LogsQmailFilterMinute from '@apps/logs/qmail/components/filter/minute'
+// import LogsQmailFilterHour from '@apps/logs/qmail/components/filter/hour'
+// import LogsQmailFilterDay from '@apps/logs/qmail/components/filter/day'
 
 // import JSPipeline from 'js-pipeline'
 //
-// import PeriodicalPipeline from '@apps/logs/web/pipelines/filter/periodical'
-// import MinutePipeline from '@apps/logs/web/pipelines/filter/minute'
-// import HourPipeline from '@apps/logs/web/pipelines/filter/hour'
-// import DayPipeline from '@apps/logs/web/pipelines/filter/day'
+// import PeriodicalPipeline from '@apps/logs/qmail/pipelines/filter/periodical'
+// import MinutePipeline from '@apps/logs/qmail/pipelines/filter/minute'
+// import HourPipeline from '@apps/logs/qmail/pipelines/filter/hour'
+// import DayPipeline from '@apps/logs/qmail/pipelines/filter/day'
 //
-// import * as PeriodicalSources from '@apps/logs/web/sources/filter/periodical/index'
-// import * as MinuteSources from '@apps/logs/web/sources/filter/minute/index'
-// import * as HourSources from '@apps/logs/web/sources/filter/hour/index'
-// import * as DaySources from '@apps/logs/web/sources/filter/day/index'
+// import * as PeriodicalSources from '@apps/logs/qmail/sources/filter/periodical/index'
+// import * as MinuteSources from '@apps/logs/qmail/sources/filter/minute/index'
+// import * as HourSources from '@apps/logs/qmail/sources/filter/hour/index'
+// import * as DaySources from '@apps/logs/qmail/sources/filter/day/index'
 
-// import { requests, store } from '@apps/logs/web/sources/filter/index'
+// import { requests, store } from '@apps/logs/qmail/sources/filter/index'
 
 // const MAX_FEED_DATA = 10
 import moment from 'moment'
@@ -145,18 +145,18 @@ export default {
 
   components: {
     LogsToolbar,
-    LogsWebFilterPeriodical,
-    LogsWebFilterHistorical,
-    // LogsWebFilterMinute,
-    // LogsWebFilterHour,
-    // LogsWebFilterDay
+    LogsQmailFilterPeriodical,
+    LogsQmailFilterHistorical,
+    // LogsQmailFilterMinute,
+    // LogsQmailFilterHour,
+    // LogsQmailFilterDay
   },
 
-  name: 'LogsWebFilter',
+  name: 'LogsQmailFilter',
 
   data () {
     return {
-      id: 'logs.web.filter',
+      id: 'logs.qmail.filter',
       path: 'all',
 
       range_tab: 'minute',
@@ -182,7 +182,7 @@ export default {
 
   computed: {
     // 'filter': function () {
-    //   // return (this.$route && this.$route.params && this.$route.params.web) ? this.$route.params.web : undefined
+    //   // return (this.$route && this.$route.params && this.$route.params.qmail) ? this.$route.params.qmail : undefined
     //   return (this.$route && this.$route.query)
     //     ? this.$route.query
     //     : undefined
@@ -191,7 +191,7 @@ export default {
     //   return (this.filter) ? Object.keys(this.filter)[0] : undefined
     // },
     'filter': function () {
-      // return (this.$route && this.$route.params && this.$route.params.web) ? this.$route.params.web : undefined
+      // return (this.$route && this.$route.params && this.$route.params.qmail) ? this.$route.params.qmail : undefined
       debug('computed filter QUERY', this.$route.query)
       const allowed_filters = ['domain', 'path', 'host', /^metadata/, /^data/]
       let filter = {}
@@ -208,7 +208,7 @@ export default {
       debug('computed type', Object.keys(this.filter))
       return (this.filter && Object.getLength(this.filter) > 0) ? Object.keys(this.filter)[0] : undefined
     },
-    'web': function () {
+    'qmail': function () {
       return (this.filter && this.filterType) ? this.filter[this.filterType] : undefined
     }
   },
