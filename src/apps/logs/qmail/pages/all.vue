@@ -44,7 +44,7 @@
       <q-table
         flat square
         class="my-sticky-header-table"
-        title="Web Logs"
+        title="Qmail Logs"
         :data="logs"
         :columns="columns"
         :row-key="row => row.domain +'.'+ row.host +'.'+ row.path"

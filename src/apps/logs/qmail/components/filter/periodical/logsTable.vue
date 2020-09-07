@@ -1,98 +1,109 @@
 <template>
-    <q-table
-      class="my-sticky-header-table"
-      title="Web Logs"
-      :data="logs"
-      :columns="columns"
-      :row-key="(row, index) => row.timestamp + row.domain +'.'+ row.host +'.'+ row.path + '.' + index"
-      :pagination.sync="pagination"
-      virtual-scroll
-      :rows-per-page-options="[0]"
-      :visible-columns="($q.screen.lt.sm) ? visibleColumns : allColumns"
-      :loading="loading_logs"
-      :filter="search_filter"
-    >
-    <!-- dark
-    color="amber" -->
-      <template v-slot:top="props">
-        <q-select
-          v-if="$q.screen.lt.sm"
-          v-model="visibleColumns"
-          multiple
-          borderless
-          dense
-          options-dense
-          :display-value="$q.lang.table.columns"
-          emit-value
-          map-options
-          :options="columns"
-          option-value="name"
-          style="min-width: 150px"
-        />
-        <q-space />
-        <!-- <div v-if="$q.screen.gt.xs" class="col">
-          <q-toggle v-model="visibleColumns" val="schema" label="Schema" />
-          <q-toggle v-model="visibleColumns" val="uri" label="URI" />
-          <q-toggle v-model="visibleColumns" val="port" label="Port" />
-          <q-toggle v-model="visibleColumns" val="host" label="Host" />
-          <q-toggle v-model="visibleColumns" val="timestamp" label="Last Update" />
-          <q-toggle v-model="visibleColumns" val="path" label="Type" />
-        </div> -->
-
-        <q-input borderless dense debounce="100" v-model="search_filter" placeholder="Search">
-          <template v-slot:append>
-            <q-icon name="search" />
-          </template>
-        </q-input>
-        <q-btn
-        flat round dense
-        :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'"
-        @click="props.toggleFullscreen"
-        class="q-ml-md"
+  <q-table
+    flat square
+    class="my-sticky-header-table"
+    title="Qmail Logs"
+    :data="logs"
+    :columns="columns"
+    :row-key="row => row.domain +'.'+ row.host +'.'+ row.path"
+    :pagination.sync="pagination"
+    virtual-scroll
+    :rows-per-page-options="[0]"
+    :visible-columns="($q.screen.lt.sm) ? visibleColumns : allColumns"
+    :loading="loading_logs"
+    :filter="search_filter"
+  >
+  <!-- dark
+  color="amber" -->
+    <template v-slot:top="props">
+      <q-select
+        v-if="$q.screen.lt.sm"
+        v-model="visibleColumns"
+        multiple
+        borderless
+        dense
+        options-dense
+        :display-value="$q.lang.table.columns"
+        emit-value
+        map-options
+        :options="columns"
+        option-value="name"
+        style="min-width: 150px"
       />
-      </template>
+      <q-space />
+      <!-- <div v-if="$q.screen.gt.xs" class="col">
+        <q-toggle v-model="visibleColumns" val="schema" label="Schema" />
+        <q-toggle v-model="visibleColumns" val="uri" label="URI" />
+        <q-toggle v-model="visibleColumns" val="port" label="Port" />
+        <q-toggle v-model="visibleColumns" val="host" label="Host" />
+        <q-toggle v-model="visibleColumns" val="timestamp" label="Last Update" />
+        <q-toggle v-model="visibleColumns" val="path" label="Type" />
+      </div> -->
 
-      <template v-slot:body="props">
-      <q-tr :props="props">
+      <q-input borderless dense debounce="100" v-model="search_filter" placeholder="Search">
+        <template v-slot:append>
+          <q-icon name="search" />
+        </template>
+      </q-input>
+      <q-btn
+      flat round dense
+      :icon="props.inFullscreen ? 'fullscreen_exit' : 'fullscreen'"
+      @click="props.toggleFullscreen"
+      class="q-ml-md"
+    />
+    </template>
 
-        <q-td key="date" :props="props">
-          {{ format_time(props.row.timestamp) }}
-        </q-td>
+    <template v-slot:body="props">
+    <q-tr :props="props">
 
-        <q-td key="log" :props="props">
-          {{ format_log(props.row.log) }}
-        </q-td>
+      <q-td key="View" :props="props">
+        <!-- View -->
+        <!-- <q-btn type="a" :href="props.row.schema+'://'+props.row.uri+':'+props.row.port" target="_blank" flat icon="open_in_new" /> -->
+        <q-btn
+          v-on:click="destroy_pipelines()"
+          :to="'/logs/qmail/filter/?domain=' + props.row.domain+'&host=' + props.row.host+'&path=' + props.row.path"
+          flat
+          icon="open_in_browser"
+        />
+      </q-td>
 
-        <q-td key="domain" :props="props">
-          {{ props.row.domain }}
-          <!-- <q-btn type="a" :href="props.row.schema+'://'+props.row.uri+':'+props.row.port" target="_blank" flat icon="open_in_new" /> -->
-          <q-btn :to="'/logs/web/filter/?domain=' + props.row.domain" flat icon="open_in_new" />
-          <!-- v-on:click="$emit('destroy_pipelines'); $emit('create_pipelines')" -->
-        </q-td>
+      <q-td key="domain" :props="props">
+        <!-- <q-btn type="a" :href="props.row.schema+'://'+props.row.uri+':'+props.row.port" target="_blank" flat icon="open_in_new" /> -->
+        <q-btn
+          v-on:click="destroy_pipelines()"
+          :to="'/logs/qmail/filter/?domain=' + props.row.domain" flat icon="open_in_browser"
+          :label="props.row.domain"
+        />
+      </q-td>
 
-        <q-td key="host" :props="props">
-          {{ props.row.host }}
-
-          <q-btn :to="'/logs/web/filter/?host=' + props.row.host" flat icon="open_in_new" />
-          <!-- v-on:click="$emit('destroy_pipelines'); $emit('create_pipelines')" -->
-        </q-td>
-
-        <q-td key="path" :props="props">
-          {{ props.row.path }}
-
-          <q-btn :to="'/logs/web/filter/?path=' + props.row.path" flat icon="open_in_new" />
-          <!-- v-on:click="$emit('update')" -->
-          <!-- v-on:click="$emit('destroy_pipelines'); $emit('create_pipelines')" -->
-        </q-td>
-      </q-tr>
-      </template>
-    </q-table>
+      <q-td key="host" :props="props">
+        <q-btn
+          v-on:click="destroy_pipelines()"
+          :to="'/logs/qmail/filter/?host=' + props.row.host"
+          flat
+          icon="open_in_browser"
+          :label="props.row.host"
+        />
+      </q-td>
+      <q-td key="timestamp" :props="props">
+        {{ format_time(props.row.timestamp) }}
+      </q-td>
+      <q-td key="path" :props="props">
+        <q-btn
+          v-on:click="destroy_pipelines()"
+          :to="'/logs/qmail/filter/?path=' + props.row.path" flat icon="open_in_browser"
+          :label="props.row.path"
+        />
+      </q-td>
+    </q-tr>
+    </template>
+  </q-table>
 
 </template>
 
 <script>
 import * as Debug from 'debug'
-const debug = Debug('apps:logs:web:components:filter:periodical:logsTable')
+const debug = Debug('apps:logs:qmail:components:filter:periodical:logsTable')
 
 // import { date } from 'quasar'
 //
@@ -101,18 +112,18 @@ const debug = Debug('apps:logs:web:components:filter:periodical:logsTable')
 //
 // import JSPipeline from 'js-pipeline'
 //
-// import PeriodicalPipeline from '@apps/logs/web/pipelines/filter/periodical'
+// import PeriodicalPipeline from '@apps/logs/qmail/pipelines/filter/periodical'
 //
-// import * as PeriodicalSources from '@apps/logs/web/sources/filter/periodical/index'
+// import * as PeriodicalSources from '@apps/logs/qmail/sources/filter/periodical/index'
 //
 import moment from 'moment'
 //
 // import { mapState } from 'vuex'
 //
-// import WorldCitiesMap from '@apps/logs/web/components/worldCitiesMap'
-// import TopCountry from '@apps/logs/web/components/topCountry'
-// import TopCity from '@apps/logs/web/components/topCity'
-// import Toolbar from '@apps/logs/web/components/filter/periodical/toolbar'
+// import WorldCitiesMap from '@apps/logs/qmail/components/worldCitiesMap'
+// import TopCountry from '@apps/logs/qmail/components/topCountry'
+// import TopCity from '@apps/logs/qmail/components/topCity'
+// import Toolbar from '@apps/logs/qmail/components/filter/periodical/toolbar'
 //
 // import GridView from '@components/gridView'
 
@@ -192,79 +203,20 @@ export default {
 
   data () {
     return {
-      id: 'logs.web.filter.periodical.logs.table',
-      // path: 'all',
-      // height: 0,
-      //
-      // top: 15,
-      //
-      // periodical: {
-      //   range: { start: 0, end: 0},
-      //
-      //   top_city_counter: {},
-      //   top_country_counter: {},
-      //
-      //   logs: [],
-      //
-      //   total_bytes_sent: 0,
-      //   hits: 0,
-      //
-      //   current_bytes_sent: 0,
-      //
-      //   status_counter: {},
-      //
-      //   city_counter: {},
-      //   country_counter: {},
-      //   continent_counter: {},
-      //   world_map_cities: [],
-      //
-      //   addr_counter: {},
-      //   user_counter: {},
-      //   referer_counter: {},
-      //   type_counter: {},
-      //
-      //   user_agent_os_counter: {},
-      //   user_agent_os_family_counter: {},
-      //   user_agent_engine_counter: {},
-      //   user_agent_browser_counter: {},
-      //   user_agent_device_counter: {}
-      //
-      // },
-      //
-      // store: false,
-      // // pipeline_id: 'input.logs.web.filter',
-      // pipeline_id: [
-      //   'input.logs.web.filter.periodical',
-      // ],
-
-      // logs: [],
+      id: 'logs.qmail.filter.periodical.logs.table',
 
       search_filter: '',
       // loading_logs: true,
-      allColumns: ['date', 'log', 'domain', 'host', 'path'],
-      visibleColumns: ['log'],
+      allColumns: ['View', 'domain', 'host', 'path', 'timestamp'],
+      visibleColumns: ['domain'],
       pagination: {
-        rowsPerPage: 10
+        sortBy: 'timestamp', // string column name
+        descending: true, // boolean
+        rowsPerPage: 50
       },
 
       columns: [
-        // { name: 'schema', label: 'Schema', field: 'schema', sortable: true, align: 'left' },
-        {
-          name: 'date',
-          required: true,
-          label: 'Date',
-          align: 'left',
-          field: 'timestamp',
-          sortable: true
-        },
-        {
-          name: 'log',
-          required: true,
-          label: 'Log',
-          align: 'left',
-          field: 'log',
-          sortable: true
-        },
+        { name: 'View', label: 'View', field: 'View', sortable: true, align: 'left' },
         {
           name: 'domain',
           required: true,
@@ -274,13 +226,13 @@ export default {
           sortable: true
         },
         { name: 'host', align: 'left', label: 'Host', field: 'host', sortable: true },
-        // {
-        //   name: 'timestamp',
-        //   align: 'left',
-        //   label: 'Last Update',
-        //   field: 'timestamp',
-        //   sortable: true
-        // },
+        {
+          name: 'timestamp',
+          align: 'left',
+          label: 'Last Update',
+          field: 'timestamp',
+          sortable: true
+        },
         { name: 'path', align: 'left', label: 'Type', field: 'path', sortable: true }
       ],
 
@@ -551,7 +503,7 @@ export default {
   //     colorScheme: state => state.layout.dashboardColorScheme
   //   }),
   //   'filter': function () {
-  //     // return (this.$route && this.$route.params && this.$route.params.web) ? this.$route.params.web : undefined
+  //     // return (this.$route && this.$route.params && this.$route.params.qmail) ? this.$route.params.qmail : undefined
   //     return (this.$route && this.$route.query)
   //       ? this.$route.query
   //       : undefined
@@ -559,7 +511,7 @@ export default {
   //   'type': function () {
   //     return (this.filter) ? Object.keys(this.filter)[0] : undefined
   //   },
-  //   'web': function () {
+  //   'qmail': function () {
   //     return (this.filter && this.type) ? this.filter[this.type] : undefined
   //   }
   // },

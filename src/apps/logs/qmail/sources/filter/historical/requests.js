@@ -39,14 +39,17 @@ const generic_callback = function (data, metadata, key, vm) {
 
         // if (timestamp === undefined || timestamp < row.metadata.timestamp) { timestamp = row.metadata.timestamp }
 
-        if (Array.isArray(row.metadata.host)) {
-          let domain = row.metadata.domain
-          if (!per_domain[domain]) per_domain[domain] = row.data
-        } else {
-          let host = row.metadata.host
-          if (!per_host[host]) per_host[host] = row.data
-          // debug('HISTORICAL HOST CALLBACK data per_host %s %o', host, row)
-        }
+        // if (Array.isArray(row.metadata.host)) {
+        //   let domain = row.metadata.domain
+        //   if (!per_domain[domain]) per_domain[domain] = row.data
+        // } else {
+        let host = row.metadata.host
+        let path = row.metadata.path
+        if (!per_host[host]) per_host[host] = {}
+        if (!per_host[host][path]) per_host[host][path] = {}
+        per_host[host][path] = Object.merge(per_host[host][path], row.data)
+        // debug('HISTORICAL HOST CALLBACK data per_host %s %o', host, row)
+        // }
       }
     })
     //
@@ -72,7 +75,7 @@ const generic_callback = function (data, metadata, key, vm) {
     // let _tmp_world_map_country_counter = {}
     // let _tmp_top_per_domain = {}
     //
-    // debug('HISTORICAL HOST CALLBACK data per_domain per_host %s %o %o', key, per_domain, per_host)
+    debug('HISTORICAL HOST CALLBACK data per_host %s %o', key, per_host)
     //
     let per_data = {}
     if (Object.getLength(per_domain) > 0) {
@@ -93,47 +96,70 @@ const generic_callback = function (data, metadata, key, vm) {
     let top_deliveries_host = { domain: undefined, value: 0}
 
     Object.each(per_data, function (data, host) {
-      if (data.messages) {
-        messages += Object.getLength(data.messages)
-        // Object.each(data.messages, function (message) {
-        //   bytes += message.bytes
-        // })
-        if (!_tmp_top_msg_per_host[host]) _tmp_top_msg_per_host[host] = 0
-        _tmp_top_msg_per_host[host] += Object.getLength(data.messages)
-      }
+      if (!_tmp_top_deliveries_per_host[host]) _tmp_top_deliveries_per_host[host] = 0
+      if (!_tmp_top_msg_per_host[host]) _tmp_top_msg_per_host[host] = 0
 
-      if (data.delivery && data.delivery.finished) {
-        Object.each(data.delivery.finished, function (delivery) {
-          bytes = (delivery.bytes) ? bytes + delivery.bytes : bytes
+      Object.each(data, function (value, path) {
+        if (path === 'logs.qmail.send.stats') {
+          messages += (value.messages) ? value.messages : 0
+          bytes += (value.bytes) ? value.bytes : 0
+          _tmp_top_msg_per_host[host] += (value.messages) ? value.messages : 0
 
-          // debug('HISTORICAL HOST CALLBACK data per_domain per_host %d %d %o', bytes, delivery.bytes, delivery)
-
-          if (!_tmp_top_deliveries_per_host[host]) _tmp_top_deliveries_per_host[host] = 0
-          _tmp_top_deliveries_per_host[host] += 1
-
-          if (delivery.status === 'success') {
-            success_delivery++
-          } else {
-            failed_delivery++
+          if (value.to && value.to.success && value.to.success.domains) {
+            Object.each(value.to.success.domains, function (value, domain) {
+              domain = domain.toLowerCase()
+              if (!domain_to_counter[domain]) domain_to_counter[domain] = 0
+              domain_to_counter[domain] += value
+              success_delivery += value
+              _tmp_top_deliveries_per_host[host] += value
+            })
           }
-        })
-      }
 
-      if (data.to && data.to.domains) {
-        Object.each(data.to.domains, function (value, domain) {
-          domain = domain.toLowerCase()
-          if (!domain_to_counter[domain]) domain_to_counter[domain] = 0
-          domain_to_counter[domain] += value
-        })
-      }
+          if (value.to && value.to.failed && value.to.failed.domains) {
+            Object.each(value.to.failed.domains, function (value, domain) {
+              domain = domain.toLowerCase()
+              if (!domain_to_counter[domain]) domain_to_counter[domain] = 0
+              domain_to_counter[domain] += value.length
 
-      if (data.from && data.from.domains) {
-        Object.each(data.from.domains, function (value, domain) {
-          domain = domain.toLowerCase()
-          if (!domain_from_counter[domain]) domain_from_counter[domain] = 0
-          domain_from_counter[domain] += value
-        })
-      }
+              failed_delivery += value.length
+              _tmp_top_deliveries_per_host[host] += value.length
+            })
+          }
+
+          if (value.from && value.from.domains) {
+            Object.each(value.from.domains, function (value, domain) {
+              domain = domain.toLowerCase()
+              if (!domain_from_counter[domain]) domain_from_counter[domain] = 0
+              domain_from_counter[domain] += value
+            })
+          }
+        }
+
+        // if (path === 'logs.qmail.send.delivered') {
+        //   Object.each(value, function (delivery, id) {
+        //     bytes = (delivery.bytes) ? bytes + delivery.bytes : bytes
+        //
+        //     // debug('HISTORICAL HOST CALLBACK data per_domain per_host %d %d %o', bytes, delivery.bytes, delivery)
+        //
+        //     if (!_tmp_top_deliveries_per_host[host]) _tmp_top_deliveries_per_host[host] = 0
+        //     _tmp_top_deliveries_per_host[host] += 1
+        //
+        //     if (delivery.status === 'success') {
+        //       success_delivery++
+        //     } else {
+        //       failed_delivery++
+        //     }
+        //   })
+        // }
+      })
+      // if (data.messages) {
+      //   messages += Object.getLength(data.messages)
+      //   // Object.each(data.messages, function (message) {
+      //   //   bytes += message.bytes
+      //   // })
+      //   if (!_tmp_top_msg_per_host[host]) _tmp_top_msg_per_host[host] = 0
+      //   _tmp_top_msg_per_host[host] += Object.getLength(data.messages)
+      // }
 
     //
     //   if (data.unique_visitors) {
@@ -438,6 +464,12 @@ const host_once_component = {
       let START
 
       let filter = ["r.row('metadata')('tag').contains('qmail.send')"]
+      // let filter = [
+      //   "r.row('metadata')('path').eq('logs.qmail.send.status')",
+      //   "r.row('metadata')('path').eq('logs.qmail.send.delivered')",
+      //   "r.row('metadata')('path').eq('logs.qmail.send.stats')",
+      //   "r.row('metadata')('path').eq('logs.qmail.send.queue')"
+      // ]
 
       let tag = false
       Object.each(vm.filter, function (value, prop) {
@@ -452,7 +484,7 @@ const host_once_component = {
 
         if (!Array.isArray(value)) {
           let _value = value.split(':')
-          let operation = (_value.length > 1) ? _value[0] : 'eq'
+          let operation = (_value.length > 1) ? _value[0] : 'match'
           let real_value = (_value.length > 1) ? _value[1] : _value[0]
           let type = (_value.length > 2) ? _value[2] : 'string'
           // real_value = (isNaN(real_value * 1)) ? "'" + real_value + "'" : real_value * 1
@@ -513,6 +545,9 @@ const host_once_component = {
       }
 
       filter.push("r.row('metadata')('type').eq('" + vm.type + "')")
+      filter.push("r.row('metadata')('path').ne('logs.qmail.send')")
+      filter.push("r.row('metadata')('path').ne('logs.qmail.send.queue')")
+      filter.push("r.row('metadata')('path').ne('logs.qmail.send.delivered')")
       debug('FILTER ARRAY %o', filter)
 
       source = [{

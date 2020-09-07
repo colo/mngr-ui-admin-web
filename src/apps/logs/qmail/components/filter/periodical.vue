@@ -13,7 +13,6 @@
 
     <q-card-section>
       <div :style="{height: (height) + 'px'}">
-        <!-- , 'margin-top': '25px' -->
         <grid-view
           v-if="grid.layouts && Object.getLength(components) > 0"
           :swap_components="true"
@@ -23,54 +22,6 @@
           v-on:height="setHeight"
         />
       </div>
-    </q-card-section>
-
-    <q-card-section>
-    <!-- <div v-for="(val, user) in periodical.user_counter" :key="'user.'+user">
-      periodical.user_counter: {{user}} - {{val}} <br/>
-    </div>
-
-    <hr>
-
-    <div v-for="(val, referer) in periodical.referer_counter" :key="'referer.'+referer">
-      periodical.referer_counter: {{referer}} - {{val}} <br/>
-    </div>
-
-    <hr>
-
-    <div v-for="(val, type) in periodical.type_counter" :key="'type.'+type">
-      periodical.type_counter: {{type}} - {{val}} <br/>
-    </div>
-
-    <hr>
-
-    <div v-for="(val, os) in periodical.user_agent_os_counter" :key="'os.'+os">
-      periodical.user_agent_os_counter: {{os}} - {{val}} <br/>
-    </div>
-
-    <hr> -->
-
-    <div v-for="(val, os) in periodical.user_agent_os_family_counter" :key="'os_family.'+os+'-'+val">
-      periodical.user_agent_os_family_counter: {{os}} - {{val}} <br/>
-    </div>
-
-    <hr>
-
-    <div v-for="(val, engine) in periodical.user_agent_engine_counter" :key="'engine.'+engine+'-'+val">
-      periodical.user_agent_engine_counter: {{engine}} - {{val}} <br/>
-    </div>
-
-    <hr>
-
-    <div v-for="(val, browser) in periodical.user_agent_browser_counter" :key="'browser.'+browser+'-'+val">
-      periodical.user_agent_browser_counter: {{browser}} - {{val}} <br/>
-    </div>
-
-    <hr>
-
-    <div v-for="(val, device) in periodical.user_agent_device_counter" :key="'device.'+device+'-'+val">
-      periodical.user_agent_device_counter: {{device}} - {{val}} <br/>
-    </div>
     </q-card-section>
 
   </q-card>
@@ -195,45 +146,45 @@ export default {
       // toolBarValues: {},
 
       periodical: {
-        range: { start: 0, end: 0},
-
-        top_host_counter: {},
-        top_domain_counter: {},
-
-        host_counter: {},
-        domain_counter: {},
-
-        top_city_counter: {},
-        top_country_counter: {},
-
-        logs: [],
-
-        total_bytes_sent: 0,
-        total_requests: 0,
-
-        current_bytes_sent: 0,
-
-        status_counter: {},
-
-        city_counter: {},
-        country_counter: {},
-        continent_counter: {},
-        world_map_cities: [],
-        top_world_map_cities: [],
-
-        world_map_countries: [],
-        top_world_map_countries: [],
-
-        addr_counter: {},
-        user_counter: {},
-        referer_counter: {},
-        type_counter: {},
-
-        user_agent_os_counter: {},
-        user_agent_os_family_counter: {},
-        user_agent_engine_counter: {},
-        user_agent_browser_counter: {},
-        user_agent_device_counter: {}
+        // range: { start: 0, end: 0},
+        //
+        // top_host_counter: {},
+        // top_domain_counter: {},
+        //
+        // host_counter: {},
+        // domain_counter: {},
+        //
+        // top_city_counter: {},
+        // top_country_counter: {},
+        //
+        // logs: [],
+        //
+        // total_bytes_sent: 0,
+        // total_requests: 0,
+        //
+        // current_bytes_sent: 0,
+        //
+        // status_counter: {},
+        //
+        // city_counter: {},
+        // country_counter: {},
+        // continent_counter: {},
+        // world_map_cities: [],
+        // top_world_map_cities: [],
+        //
+        // world_map_countries: [],
+        // top_world_map_countries: [],
+        //
+        // addr_counter: {},
+        // user_counter: {},
+        // referer_counter: {},
+        // type_counter: {},
+        //
+        // user_agent_os_counter: {},
+        // user_agent_os_family_counter: {},
+        // user_agent_engine_counter: {},
+        // user_agent_browser_counter: {},
+        // user_agent_device_counter: {}
 
       },
 
@@ -254,19 +205,18 @@ export default {
         layouts: {
           'lg': [
 
-            { x: 0, y: 1, w: 12, h: 36, i: 'topHost', immobile: false },
-            { x: 12, y: 1, w: 12, h: 36, i: 'topDomain', immobile: false },
+            // { x: 0, y: 1, w: 12, h: 36, i: 'topHost', immobile: false },
+            // { x: 12, y: 1, w: 12, h: 36, i: 'topDomain', immobile: false },
+            //
+            // { x: 0, y: 36, w: 12, h: 36, i: 'topCountry', immobile: false },
+            // { x: 12, y: 36, w: 12, h: 36, i: 'worldCountriesMap', immobile: false },
+            // { x: 0, y: 72, w: 12, h: 36, i: 'worldCitiesMap', immobile: false },
+            // { x: 12, y: 72, w: 12, h: 36, i: 'topCity', immobile: false },
+            // { x: 0, y: 108, w: 12, h: 36, i: 'topCountrySum', immobile: false },
+            // { x: 12, y: 108, w: 12, h: 36, i: 'topCitySum', immobile: false },
+            // { x: 0, y: 144, w: 24, h: 50, i: 'logs', immobile: false },
+            { x: 0, y: 0, w: 24, h: 50, i: 'logs', immobile: false },
 
-            { x: 0, y: 36, w: 12, h: 36, i: 'topCountry', immobile: false },
-            { x: 12, y: 36, w: 12, h: 36, i: 'worldCountriesMap', immobile: false },
-            { x: 0, y: 72, w: 12, h: 36, i: 'worldCitiesMap', immobile: false },
-            { x: 12, y: 72, w: 12, h: 36, i: 'topCity', immobile: false },
-            { x: 0, y: 108, w: 12, h: 36, i: 'topCountrySum', immobile: false },
-            { x: 12, y: 108, w: 12, h: 36, i: 'topCitySum', immobile: false },
-            { x: 0, y: 144, w: 24, h: 50, i: 'logs', immobile: false },
-            // { x: 15, y: 0, w: 6, h: 10, i: 'mounts', immobile: false },
-            // { x: 21, y: 0, w: 3, h: 10, i: 'memory', immobile: false },
-            // // { x: 0, y: 1, w: 12, h: 2, i: 'separator' }
           ],
           'md': [
             // { x: 0, y: 0, w: 4, h: 10, i: 'loadavg', immobile: false },
@@ -470,222 +420,79 @@ export default {
           // this.$set(this.components.toolbar[0].props, 'range', periodical.range)
           // this.$set(this.components.toolbar[0].props, 'timestamp', periodical.timestamp)
 
-          // this.toolBarValues = periodical
-          if (periodical.domain_counter) {
-            let top_domain = {domain: undefined, value: 0}
-            Object.each(periodical.domain_counter, function (value, domain) {
-              if (value > top_domain.value) {
-                top_domain = {
-                  domain: domain,
-                  value: value
-                }
-              }
-            })
-            periodical.top_domain = top_domain
-          }
-
-          this.infoBarValues = periodical
-
-          // this.$set(this.components.bytesTrend[0].props, 'bytes', periodical.total_bytes_sent)
-
-          // this.$set(this.components.requestsBars[0].props, 'value', {
-          //   value: periodical.total_requests,
-          //   title: periodical.total_requests + ' - ' + this.format_timestmap_standar(periodical.timestamp)
-          // })
-
-          // this.$set(this.components.bytesBars[0].props, 'value', {
-          //   value: (periodical.total_bytes_sent / 1024 / 1024).toFixed(0),
-          //   title: (periodical.total_bytes_sent / 1024 / 1024).toFixed(0) + 'Mb -' + this.format_timestmap_standar(periodical.timestamp)
-          // })
-          //
-          // this.$set(this.components.visitorsMini[0].props, 'value', periodical.unique_visitors)
-          //
-          // let users = 0
-          // Object.each(periodical.user_counter, function (val, user) {
-          //   if (user !== '-') {
-          //     users += val
-          //   }
-          // })
-          //
-          // this.$set(this.components.usersMini[0].props, 'value', users)
-          //
-          // let referers = 0
-          // Object.each(periodical.referer_counter, function (val, referer) {
-          //   if (referer !== 'internal' && referer !== 'unknown') {
-          //     referers += val
-          //   }
-          // })
-          //
-          // this.$set(this.components.refererMini[0].props, 'value', referers)
-          //
-          // this.$set(this.components.staticMini[0].props, 'value', periodical.type_counter.static)
-          // this.$set(this.components.dynamicMini[0].props, 'value', periodical.type_counter.dynamic)
-          //
-          // let valid = 0, failed = 0
-          // Object.each(periodical.status_counter, function (val, status) {
-          //   status *= 1
-          //   if (status < 400) {
-          //     valid += val
-          //   } else {
-          //     failed += val
-          //   }
-          // })
-          // this.$set(this.components.validMini[0].props, 'value', valid)
-          // this.$set(this.components.failedMini[0].props, 'value', failed)
-
-          this.$set(this.components.topHost[0].props, 'top_host_counter', periodical.top_host_counter)
-          this.$set(this.components.topDomain[0].props, 'top_domain_counter', periodical.top_domain_counter)
-
-          // this.$set(this.components.topCountry, 0, Object.merge(this.components.topCountry[0], {
-          //   id: this.id + '.periodical.topCountry.component',
-          //   props: {
-          //     top_country_counter: periodical.top_country_counter
-          //   }
-          //
-          // }))
-          this.$set(this.components.topCountry[0].props, 'top_country_counter', periodical.top_country_counter)
-          this.$set(this.components.topCountrySum[0].props, 'top_country_counter', periodical.top_country_counter)
-
-          // this.$set(this.components.worldCitiesMap, 0, Object.merge(this.components.worldCitiesMap[0], {
-          //   id: this.id + '.periodical.worldCitiesMap.component',
-          //   props: {
-          //     world_map_cities: periodical.world_map_cities,
-          //   }
-          //
-          // }))
-
-          Array.each(periodical.top_world_map_cities, function (value) {
-            if (value !== undefined && value !== null) {
-              let city = value.title.substring(0, value.title.indexOf('(')).trim()
-
-              if (!this.cities_color[city]) {
-                let index = 0
-
-                // debug('watch periodical', colorSet.list)
-
-                Object.each(periodical.top_city_counter, function (value, city) {
-                  this.cities_color[city] = colorSet.getIndex(index).rgba
-
-                  index++
-                  if (index > colorSet.list.length) { index = 0 }
-                }.bind(this))
-              }
-
-              value.color = this.cities_color[city]
-            }
-          }.bind(this))
-
-          this.$set(this.components.worldCitiesMap[0].props, 'world_map_cities', periodical.top_world_map_cities)
-
-          Array.each(periodical.top_world_map_countries, function (value) {
-            if (value !== undefined && value !== null) {
-              let country = value.name.trim()
-
-              if (!this.countries_color[country]) {
-                let index = 0
-
-                // debug('watch periodical', colorSet.list)
-
-                Object.each(periodical.top_country_counter, function (value, country) {
-                  this.countries_color[country] = colorSet.getIndex(index).rgba
-
-                  index++
-                  if (index > colorSet.list.length) { index = 0 }
-                }.bind(this))
-              }
-
-              value.color = this.countries_color[country]
-            }
-          }.bind(this))
-          // Change name => title
-          // Array.each(periodical.top_world_map_countries, function (value) {
-          //   if (value !== undefined) {
-          //     value.name = value.title
-          //   }
-          // })
-
-          this.$set(this.components.worldCountriesMap[0].props, 'world_map_countries', periodical.top_world_map_countries)
-
-          // this.$set(this.components.topCity, 0, Object.merge(this.components.topCity[0], {
-          //   id: this.id + '.periodical.topCity.component',
-          //   props: {
-          //     top_city_counter: periodical.top_city_counter
-          //   }
-          //
-          // }))
-
-          // Object.each(periodical.top_city_counter, function (value, city) {
-          //   if (!this.cities_color[city]) this.cities_color[city] = colorSet.next()
-          // }.bind(this))
-
-          this.$set(this.components.topCity[0].props, 'top_city_counter', periodical.top_city_counter)
-          this.$set(this.components.topCitySum[0].props, 'top_city_counter', periodical.top_city_counter)
-
+          // if (periodical.domain_counter) {
+          //   let top_domain = {domain: undefined, value: 0}
+          //   Object.each(periodical.domain_counter, function (value, domain) {
+          //     if (value > top_domain.value) {
+          //       top_domain = {
+          //         domain: domain,
+          //         value: value
+          //       }
+          //     }
+          //   })
+          //   periodical.top_domain = top_domain
+          // }
           this.$set(this.components.logs[0].props, 'logs', periodical.logs)
           this.$set(this.components.logs[0].props, 'loading_logs', this.loading_logs)
 
-          // debug('watch periodical', periodical, this.components)
+          this.infoBarValues = periodical
 
-          // this.$set(this.components.netOut, 0, Object.merge(this.components.netOut[0], {
-          //   id: this.host + '.netOut.component',
-          //   props: {
-          //     net: host_data['os.networkInterfaces.out'],
-          //     net_max: host_data['os.networkInterfaces.max.out'],
-          //     host: this.host
+          // this.$set(this.components.topHost[0].props, 'top_host_counter', periodical.top_host_counter)
+          // this.$set(this.components.topDomain[0].props, 'top_domain_counter', periodical.top_domain_counter)
+          //
+          // this.$set(this.components.topCountry[0].props, 'top_country_counter', periodical.top_country_counter)
+          // this.$set(this.components.topCountrySum[0].props, 'top_country_counter', periodical.top_country_counter)
+          //
+          //
+          // Array.each(periodical.top_world_map_cities, function (value) {
+          //   if (value !== undefined && value !== null) {
+          //     let city = value.title.substring(0, value.title.indexOf('(')).trim()
+          //
+          //     if (!this.cities_color[city]) {
+          //       let index = 0
+          //
+          //       // debug('watch periodical', colorSet.list)
+          //
+          //       Object.each(periodical.top_city_counter, function (value, city) {
+          //         this.cities_color[city] = colorSet.getIndex(index).rgba
+          //
+          //         index++
+          //         if (index > colorSet.list.length) { index = 0 }
+          //       }.bind(this))
+          //     }
+          //
+          //     value.color = this.cities_color[city]
           //   }
-          //
-          // }))
-          //
-          // this.$set(this.components.netIn, 0, Object.merge(this.components.netIn[0], {
-          //   id: this.host + '.netIn.component',
-          //   props: {
-          //     net: host_data['os.networkInterfaces.in'],
-          //     net_max: host_data['os.networkInterfaces.max.in'],
-          //     host: this.host
-          //   }
-          //
-          // }))
-          //
-          // this.$set(this.components.cpu, 0, Object.merge(this.components.cpu[0], {
-          //   id: this.host + '.cpu.component',
-          //   props: {
-          //     used: host_data['os.cpus.percentage'],
-          //     host: this.host
-          //   }
-          // }))
-          //
-          // let index = 0
-          // this.$set(this.components, 'mounts', [])
-          //
-          // Object.each(host_data['os.mounts.used'], function (used, mount) {
-          //   if (index <= 1) {
-          //     this.components.mounts.push({
-          //       style: {
-          //         'width': (Object.getLength(host_data['os.mounts.used']) === 1) ? '100%' : '50%',
-          //         'float': (Object.getLength(host_data['os.mounts.used']) === 1) ? undefined : (index === 0) ? 'left' : 'right'
-          //       },
-          //       id: this.host + '.' + mount + '.used.component',
-          //       props: {
-          //         used: used,
-          //         mount: mount,
-          //         host: this.host
-          //       }
-          //
-          //     })
-          //     this.$set(this.components.mounts[index], 'component', Mount)
-          //   }
-          //
-          //   index++
           // }.bind(this))
           //
-          // this.$set(this.components.memory, 0, Object.merge(this.components.memory[0], {
-          //   id: this.host + '.memory.component',
-          //   props: {
-          //     used: host_data['os.memory.percentage'],
-          //     host: this.host
-          //   }
+          // this.$set(this.components.worldCitiesMap[0].props, 'world_map_cities', periodical.top_world_map_cities)
           //
-          // }))
+          // Array.each(periodical.top_world_map_countries, function (value) {
+          //   if (value !== undefined && value !== null) {
+          //     let country = value.name.trim()
+          //
+          //     if (!this.countries_color[country]) {
+          //       let index = 0
+          //
+          //       // debug('watch periodical', colorSet.list)
+          //
+          //       Object.each(periodical.top_country_counter, function (value, country) {
+          //         this.countries_color[country] = colorSet.getIndex(index).rgba
+          //
+          //         index++
+          //         if (index > colorSet.list.length) { index = 0 }
+          //       }.bind(this))
+          //     }
+          //
+          //     value.color = this.countries_color[country]
+          //   }
+          // }.bind(this))
+          //
+          // this.$set(this.components.worldCountriesMap[0].props, 'world_map_countries', periodical.top_world_map_countries)
+          //
+          //
+          // this.$set(this.components.topCity[0].props, 'top_city_counter', periodical.top_city_counter)
+          // this.$set(this.components.topCitySum[0].props, 'top_city_counter', periodical.top_city_counter)
         }
       },
       deep: true

@@ -534,7 +534,11 @@ export default {
             let info = 'Bytes'
             let unit = 'bytes'
             let divider = 1
-            if (values.bytes > 1048576) {
+            if (values.bytes > 1073741824) {
+              unit = 'GB'
+              info = 'GBytes'
+              divider = 1073741824
+            } else if (values.bytes > 1048576) {
               unit = 'MB'
               info = 'MBytes'
               divider = 1048576
