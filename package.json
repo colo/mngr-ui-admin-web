@@ -15,7 +15,7 @@
     "@amcharts/amcharts4": "^4.9.1",
     "@amcharts/amcharts4-geodata": "^4.1.12",
     "@quasar/extras": "^1.8.2",
-    "axios": "^0.18.1",
+    "axios": "^0.21.1",
     "chart.js": "^2.9.3",
     "chartjs-plugin-funnel": "^1.1.5",
     "chartjs-plugin-labels": "^1.1.0",
